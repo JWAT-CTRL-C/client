@@ -1,3 +1,184 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  /* Text */
+  .h1-bold {
+    @apply text-[36px] font-bold leading-[140%];
+  }
+
+  .h1-semibold {
+    @apply text-[36px] font-semibold leading-[140%];
+  }
+
+  .h2-bold {
+    @apply text-[30px] font-bold leading-[140%];
+  }
+
+  .h2-semibold {
+    @apply text-[30px] font-semibold leading-[140%];
+  }
+
+  .h3-bold {
+    @apply text-[24px] font-bold leading-[140%];
+  }
+
+  .h3-semibold {
+    @apply text-[24px] font-semibold leading-[140%];
+  }
+
+  .h3-regular {
+    @apply text-[24px] font-normal leading-[140%];
+  }
+
+  .h4-bold {
+    @apply text-[20px] font-bold leading-[140%];
+  }
+
+  .h4-semibold {
+    @apply text-[20px] font-semibold leading-[140%];
+  }
+
+  .h4-regular {
+    @apply text-[20px] font-normal leading-[140%];
+  }
+
+  .h5-regular {
+    @apply text-[17px] font-normal leading-[140%];
+  }
+
+  .h5-bold {
+    @apply text-[17px] font-bold leading-[140%];
+  }
+
+  .h5-semibold {
+    @apply text-[17px] font-semibold leading-[140%];
+  }
+
+  .h5-regular {
+    @apply text-[17px] font-normal leading-[140%];
+  }
+
+  .base-bold {
+    @apply text-[15px] font-bold leading-[140%];
+  }
+
+  .base-semibold {
+    @apply text-[15px] font-semibold leading-[140%];
+  }
+
+  .base-medium {
+    @apply text-[15px] font-medium leading-[140%];
+  }
+
+  .base-regular {
+    @apply text-[15px] font-normal leading-[140%];
+  }
+
+  .small-bold {
+    @apply text-[12px] font-bold leading-[140%];
+  }
+
+  .small-semibold {
+    @apply text-[12px] font-semibold leading-[140%];
+  }
+
+  .small-medium {
+    @apply text-[12px] font-medium leading-[140%];
+  }
+
+  .small-regular {
+    @apply text-[12px] font-normal leading-[140%];
+  }
+
+  .subtle-semibold {
+    @apply text-[12px] font-semibold leading-[140%];
+  }
+
+  .subtle-medium {
+    @apply text-[12px] font-medium leading-[140%];
+  }
+
+  .tiny-medium {
+    @apply text-[10px] font-medium leading-[140%];
+  }
+
+  /* Invert */
+  .invert-white {
+    @apply brightness-0 invert transition;
+  }
+
+  .invert-black {
+    @apply brightness-100 invert transition;
+  }
+
+  /* Flex */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-between {
+    @apply flex items-center justify-between;
+  }
+
+  .flex-around {
+    @apply flex items-center justify-around;
+  }
+
+  .flex-start {
+    @apply flex items-center justify-start;
+  }
+
+  .flex-end {
+    @apply flex items-center justify-end;
+  }
+
+  /* Custom scrollbar background*/
+  .custom-scrollbar-bg::-webkit-scrollbar {
+    width: 8px;
+    height: 0px;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar-bg::-webkit-scrollbar-thumb {
+    background: var(--foreground1);
+    border-radius: 50px;
+  }
+
+  .custom-scrollbar-bg::-webkit-scrollbar-thumb:hover {
+    background: var(--foreground1);
+  }
+
+  /* Custom scrollbar foreground*/
+  .custom-scrollbar-fg::-webkit-scrollbar {
+    width: 8px;
+    height: 0px;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar-fg::-webkit-scrollbar-thumb {
+    background: var(--background1);
+    border-radius: 50px;
+  }
+
+  .custom-scrollbar-fg::-webkit-scrollbar-thumb:hover {
+    background: var(--background1);
+  }
+
+  /* Custom scrollbar none*/
+  .custom-scrollbar-none::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--text1);
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px transparent;
+  }
+}
