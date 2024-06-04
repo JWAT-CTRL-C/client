@@ -1,17 +1,12 @@
-import { Inter } from 'next/font/google';
 import { Button, useMantineColorScheme } from '@mantine/core';
 import { signOut, useSession } from 'next-auth/react';
-
-import { cn } from '@/libs/utils';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   const { data } = useSession();
   const { toggleColorScheme } = useMantineColorScheme({ keepTransitions: true });
 
   return (
-    <main className={cn('bg-background flex-center h-dvh flex-col p-24', inter.className)}>
+    <main className='flex-center h-dvh flex-col p-24'>
       <h1 className='text-4xl font-bold'>Welcome to Synergy</h1>
       <p className='mt-12'>
         You are signed in as <span className='font-bold'>{data?.user?.name}</span> with email:&nbsp;
