@@ -1,4 +1,7 @@
+import DefaultLayout from '@/components/layouts/DefaultLayout';
+import AuthLayout from '@/components/layouts/authLayout';
 import { AuthenticationForm } from '@/components/pages/auth/AuthenticationForm';
+import { Container } from '@mantine/core';
 
 export default function Auth() {
   return (
@@ -7,3 +10,7 @@ export default function Auth() {
     </div>
   );
 }
+
+Auth.getLayout = function getLayout(page: any) {
+  return <AuthLayout>{page}</AuthLayout>;
+};
