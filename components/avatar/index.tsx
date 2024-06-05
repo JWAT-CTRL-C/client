@@ -16,7 +16,7 @@ import { FaRegMoon, FaRegSun } from 'react-icons/fa';
 const AvatarComp = () => {
   const router = useRouter();
   const { toggleColorScheme, colorScheme } = useMantineColorScheme({ keepTransitions: true });
-  const [checked, setChecked] = useState(colorScheme === 'dark' ? true : false);
+  const [checked, setChecked] = useState(colorScheme === 'dark' || colorScheme === 'auto' ? true : false);
   const theme = useMantineTheme();
 
   const sunIcon = <FaRegSun style={{ width: rem(16), height: rem(16) }} color={theme.colors.yellow[4]} />;
