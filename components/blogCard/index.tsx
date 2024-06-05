@@ -3,7 +3,7 @@ import { Avatar, Badge, Box, Button, Card, Flex, Group, Image, Text, Title } fro
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   return (
-    <Card className='cursor-pointer' shadow='sm' padding='lg' radius='md' withBorder>
+    <Card className='flex cursor-pointer justify-between' shadow='sm' padding='lg' radius='md' withBorder>
       <Card.Section>
         <Image
           src={
