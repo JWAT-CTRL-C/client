@@ -15,7 +15,6 @@ import { sidebarConfig } from './sidebarConfig';
 
 const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
-
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
   const isBlog = router.pathname.startsWith('/blog');
@@ -38,7 +37,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className='my-auto flex  h-full flex-col justify-between   text-white'>
+    <div className='my-auto flex  h-full flex-col justify-between   '>
       <div>
         {sidebarState.map((item) => (
           <Group

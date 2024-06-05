@@ -36,14 +36,14 @@ const Header = () => {
             <Tabs.Tab
               size={'lg'}
               value='blog'
-              className='flex-1'
+              className='w-1/5 flex-1'
               leftSection={<FaBlog style={iconStyle} />}
               style={{ flex: 1, textAlign: 'center' }}>
               Blog
             </Tabs.Tab>
             <Tabs.Tab
               size={'lg'}
-              className='flex-1'
+              className='w-1/5 flex-1'
               value='workspace'
               leftSection={<FaBriefcase style={iconStyle} />}
               style={{ flex: 1, textAlign: 'center' }}>
