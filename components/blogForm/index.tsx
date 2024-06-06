@@ -1,97 +1,72 @@
-import { Button, FileInput, Group, Image, Select, TagsInput, TextInput } from '@mantine/core';
+import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Document from '@tiptap/extension-document';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
 import { FaFileImage } from 'react-icons/fa';
+import TextEditor from './textEditor';
 
 const initialValues = {
   title: '',
   tag: [] as string[],
   workspace: '',
-  backgroundImg: null as File | null
+  backgroundImg: null as File | null,
+  content: ''
 };
 
 const BlogForm = () => {
   const form = useForm({
-    mode: 'uncontrolled',
     initialValues,
 
     validate: {
       title: (title) => (title.trim().length === 0 ? 'Title is required' : null),
-      tag: (tags) => (tags.length === 0 ? 'Tags is required' : null),
+      tag: (tags) => (tags.length === 0 ? 'Tags are required' : null),
       workspace: (workspace, values) => {
         if (
           values.tag.some((tag) => tag.toLowerCase().includes('workspace')) &&
           workspace.trim().length === 0
         ) {
-          return 'Title is required';
+          return 'Workspace is required';
         }
         return null;
-      }
+      },
+      content: (content) =>
+        content.trim().length === 0 || content === '<p></p>' ? 'Content is required' : null
       // backgroundImg: (backgroundImg) => (backgroundImg === null ? 'Background image is required' : null)
     }
   });
 
-  const editor = useEditor({
-    extensions: [Document, Paragraph, Text, StarterKit],
-
-    content: '<b>Write your blog here! 🌎️</b>',
-    injectCSS: true
-  });
-
-  const workSpaceList = ['ábc', 'Angular', 'React ', 'Vue'];
+  const workSpaceList = ['abc', 'Angular', 'React', 'Vue'];
 
   const handleClearForm = () => {
     form.reset();
     form.setFieldValue('backgroundImg', null);
   };
 
-  const handleSubmit = (values: typeof form.values) => {
-    console.log(values);
-  };
+  const handleSubmit = (values: typeof form.values) => {};
+
+  console.log(form.getValues());
 
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
-      <TextInput
-        withAsterisk
-        label='Title'
-        placeholder='Title...'
-        key={form.key('title')}
-        {...form.getInputProps('title')}
-      />
+      <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('title')} />
 
       <TagsInput
         withAsterisk
         label='Tag'
         clearable
         placeholder='Tag...'
-        key={form.key('tag')}
         onClear={() => form.setFieldValue('tag', [])}
-        // onKeyDown={(e) => {
-        //   if (e.key === 'Enter') {
-        //     e.preventDefault();
-        //     setTags([...tags, e.currentTarget.value]);
-        //   }
-        // }}
         {...form.getInputProps('tag')}
         onChange={(value) => {
           form.setFieldValue('tag', value);
         }}
       />
 
-      {form.getValues().tag.some((tag) => tag.toLowerCase().includes('workspace')) && (
+      {form.values.tag.some((tag) => tag.toLowerCase().includes('workspace')) && (
         <Select
           withAsterisk
           clearable
           data={workSpaceList}
-          defaultValue={workSpaceList[0]}
-          label='workspace'
+          label='Workspace'
           placeholder='Workspace...'
-          key={form.key('workspace')}
           {...form.getInputProps('workspace')}
         />
       )}
@@ -101,7 +76,6 @@ const BlogForm = () => {
         clearable
         description='Optional'
         rightSection={<FaFileImage />}
-        value={form.getValues().backgroundImg}
         label='Background Image'
         placeholder='Background Image...'
         {...form.getInputProps('backgroundImg')}
@@ -110,11 +84,13 @@ const BlogForm = () => {
         }}
       />
 
-      {form.getValues().backgroundImg && (
-        <Image src={URL.createObjectURL(form.getValues().backgroundImg!)} alt='Background Image Preview' />
+      {form.values.backgroundImg && (
+        <Image src={URL.createObjectURL(form.values.backgroundImg!)} alt='Background Image Preview' />
       )}
 
-      <EditorContent className='w-full bg-slate-950' editor={editor} />
+      <Input.Wrapper withAsterisk label='Content' error={form.errors.content}>
+        <TextEditor form={form} />
+      </Input.Wrapper>
 
       <Group justify='space-between' mt='md'>
         <Button variant='outline' type='reset' onClick={handleClearForm}>

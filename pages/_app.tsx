@@ -1,5 +1,6 @@
 import '@mantine/core/styles.css';
 import '@/styles/globals.css';
+import '@mantine/tiptap/styles.css';
 
 import { ReactElement, ReactNode, useState } from 'react';
 import { NextPage } from 'next';
