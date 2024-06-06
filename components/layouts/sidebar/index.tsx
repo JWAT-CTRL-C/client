@@ -10,9 +10,9 @@ const Sidebar = () => {
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
   const isBlog = router.pathname.startsWith('/blog');
-  const isWorkspace = router.pathname.startsWith('/workspace');
-  const [active, setActive] = useState(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
+  const isWorkspace = router.pathname.startsWith('/workspaces');
 
+  const [active, setActive] = useState(0);
   useEffect(() => {
     if (isBlog) {
       setSidebarState(blogConfig);
@@ -20,24 +20,26 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    // setActive(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
+    if (router.pathname === '/blog' || router.pathname === '/workspaces') {
+      setActive(0);
+    }
   }, [router.pathname]);
 
-  const handleToPage = (link: string) => {
-    setActive(link);
+  const handleToPage = (link: string, index: number) => {
     router.push(link);
+    setActive(index);
   };
 
   return (
     <div className='my-auto flex  h-full flex-col justify-between   '>
       <div>
-        {sidebarState.map((item) => (
+        {sidebarState.map((item, index) => (
           <NavLink
-            key={item.link}
-            active={active === item.link}
+            key={item.label}
+            active={index === active}
             label={item.label}
             className={`my-5 cursor-pointer rounded-md p-4 `}
-            onClick={() => handleToPage(item.link)}
+            onClick={() => handleToPage(item.link, index)}
             leftSection={item.icon}></NavLink>
         ))}
       </div>

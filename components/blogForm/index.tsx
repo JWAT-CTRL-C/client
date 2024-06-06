@@ -1,9 +1,17 @@
-import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput, Text } from '@mantine/core';
+import { blogFormType } from '@/libs/types/blogFormType';
+import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
 
-const initialValues = {
+type BlogFormProps = {
+  updateValues?: blogFormType;
+  handleSubmitForm: (values: blogFormType) => void;
+  isEditing?: boolean;
+  workSpaceList: string[];
+};
+
+const initialValues: blogFormType = {
   title: '',
   tag: [] as string[],
   workspace: '',
@@ -11,9 +19,9 @@ const initialValues = {
   content: ''
 };
 
-const BlogForm = () => {
+const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
   const form = useForm({
-    initialValues,
+    initialValues: isEditing ? updateValues : initialValues,
 
     validate: {
       title: (title) => (title.trim().length === 0 ? 'Title is required' : null),
@@ -33,16 +41,14 @@ const BlogForm = () => {
     }
   });
 
-  const workSpaceList = ['abc', 'Angular', 'React', 'Vue'];
-
   const handleClearForm = () => {
     form.reset();
     form.setFieldValue('backgroundImg', null);
   };
 
-  const handleSubmit = (values: typeof form.values) => {};
-
-  console.log(form.getValues());
+  const handleSubmit = (values: blogFormType) => {
+    handleSubmitForm(values);
+  };
 
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
@@ -51,6 +57,7 @@ const BlogForm = () => {
       <TagsInput
         withAsterisk
         label='Tag'
+        description="Type 'workspaces'  to show your workspaces"
         clearable
         placeholder='Tag...'
         onClear={() => form.setFieldValue('tag', [])}
@@ -60,12 +67,16 @@ const BlogForm = () => {
         }}
       />
 
-      {form.values.tag.some((tag) => tag.toLowerCase().includes('workspace')) && (
+      {form.values.tag?.some((tag) => tag.toLowerCase().includes('workspace')) && (
         <Select
           withAsterisk
-          clearable
           data={workSpaceList}
+          disabled={workSpaceList.length === 0}
           label='Workspace'
+          description={
+            workSpaceList.length === 0 &&
+            "You don't belong to any workspaces , Please remove 'workspaces' from tag field"
+          }
           placeholder='Workspace...'
           {...form.getInputProps('workspace')}
         />
@@ -85,7 +96,14 @@ const BlogForm = () => {
       />
 
       {form.values.backgroundImg && (
-        <Image src={URL.createObjectURL(form.values.backgroundImg!)} alt='Background Image Preview' />
+        <Image
+          src={
+            typeof form.getValues().backgroundImg === 'string'
+              ? form.getValues().backgroundImg
+              : URL.createObjectURL(form.values.backgroundImg! as File)
+          }
+          alt='Background Image Preview'
+        />
       )}
 
       <Input.Wrapper withAsterisk label='Content' error={form.errors.content}>

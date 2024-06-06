@@ -1,18 +1,20 @@
-import { RichTextEditor, Link } from '@mantine/tiptap';
-import { useEditor, BubbleMenu } from '@tiptap/react';
+import { blogFormType } from '@/libs/types/blogFormType';
+import { UseFormReturnType } from '@mantine/form';
+import { Link, RichTextEditor } from '@mantine/tiptap';
+import { Color } from '@tiptap/extension-color';
 import Highlight from '@tiptap/extension-highlight';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import TextAlign from '@tiptap/extension-text-align';
-import Superscript from '@tiptap/extension-superscript';
-import SubScript from '@tiptap/extension-subscript';
 import { Image as ImageTiptab } from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Color } from '@tiptap/extension-color';
+import SubScript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
+import TextAlign from '@tiptap/extension-text-align';
 import TextStyle from '@tiptap/extension-text-style';
-import { UseFormReturnType } from '@mantine/form';
-import { Text } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import Underline from '@tiptap/extension-underline';
+import { BubbleMenu, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import FontFamily from '@tiptap/extension-font-family';
+import { useEffect } from 'react';
+import { useMantineTheme } from '@mantine/core';
 
 const colors = [
   '#25262b',
@@ -31,18 +33,13 @@ const colors = [
   '#fd7e14'
 ];
 
-interface FormValues {
-  title: string;
-  tag: string[];
-  workspace: string;
-  backgroundImg: File | null;
-  content: string;
-}
-
-const TextEditor = ({ form }: { form: UseFormReturnType<FormValues> }) => {
+const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
   const editor = useEditor({
     extensions: [
       TextStyle,
+      FontFamily.configure({
+        types: ['textStyle']
+      }),
       Color,
       StarterKit,
       Underline,
@@ -60,16 +57,27 @@ const TextEditor = ({ form }: { form: UseFormReturnType<FormValues> }) => {
     },
     content: form.getValues().content
   });
+  const theme = useMantineTheme();
 
   useEffect(() => {
-    if (editor && form.getValues().content !== editor.getHTML()) {
+    if (editor && form.values.content !== editor.getHTML()) {
       editor.commands.setContent(form.values.content, false);
     }
-  }, [form.getValues().content, editor]);
+  }, [form.values.content, editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <>
-      <RichTextEditor editor={editor} className={form.errors.content ? 'border border-red-500' : ''}>
+      <RichTextEditor
+        editor={editor}
+        className='mb-1 overflow-clip text-xs'
+        style={{
+          borderColor: form.errors.content ? theme.colors.red[7] : '',
+          borderRadius: theme.radius.md
+        }}>
         <RichTextEditor.Toolbar sticky stickyOffset={60}>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
