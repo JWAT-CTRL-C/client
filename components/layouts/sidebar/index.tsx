@@ -1,11 +1,9 @@
 import { Group, NavLink, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import {
-  FaSignOutAlt,
-  FaUserCog
-} from 'react-icons/fa';
+import { FaSignOutAlt, FaUserCog } from 'react-icons/fa';
 import { sidebarConfig } from './sidebarConfig';
+import { signOut } from 'next-auth/react';
 
 const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
@@ -51,9 +49,11 @@ const Sidebar = () => {
 
         <Group
           className='my-3 cursor-pointer rounded-md p-4 hover:bg-primary'
-          onClick={() => router.push('auth')}>
+          onClick={() => {
+            signOut();
+          }}>
           <FaSignOutAlt size={20} />
-          <Text>Logout</Text>
+          <Text>Log out</Text>
         </Group>
       </div>
     </div>

@@ -1,14 +1,18 @@
+import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
-import { Center, Container, Title } from '@mantine/core';
+import { Center, Container, Flex, Group, Title } from '@mantine/core';
 import React from 'react';
 
 const CreateBlog = () => {
   return (
-    <Container>
+    <Flex direction='column' gap={3}>
       <Center>
         <Title order={1}>Create new blog</Title>
       </Center>
-    </Container>
+      <Group justify='center' className='w-full'>
+        <BlogForm />
+      </Group>
+    </Flex>
   );
 };
 

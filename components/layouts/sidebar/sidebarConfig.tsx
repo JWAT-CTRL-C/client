@@ -8,9 +8,9 @@ export const sidebarConfig: SidebarConfig = {
     { link: '/blog/yourBlog', label: 'Your blog', icon: <FaNewspaper size={20} /> }
   ],
   workspaceConfig: [
-    { link: '/workspace', label: 'Home', icon: <FaHome size={20} /> },
-    { link: '/workspace/task', label: 'Task', icon: <FaTasks size={20} /> },
-    { link: '/workspace/history', label: 'History', icon: <FaHistory size={20} /> },
-    { link: '/workspace/create', label: 'New work space', icon: <FaNetworkWired size={20} /> }
+    { link: '/workspaces', label: 'Home', icon: <FaHome size={20} /> },
+    { link: '/workspaces/task', label: 'Task', icon: <FaTasks size={20} /> },
+    { link: '/workspaces/history', label: 'History', icon: <FaHistory size={20} /> },
+    { link: '/workspaces/create', label: 'New work space', icon: <FaNetworkWired size={20} /> }
   ]
 };

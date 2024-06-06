@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import Sidebar from './sidebar';
-import { AppShell, Burger, Group } from '@mantine/core';
+import { AppShell, Burger, Container, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { FaAviato } from 'react-icons/fa';
 import Header from './header';
@@ -30,7 +30,9 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         {/* Navbar */}
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        <Container>{children}</Container>
+      </AppShell.Main>
     </AppShell>
   );
 };
