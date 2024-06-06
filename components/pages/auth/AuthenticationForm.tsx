@@ -16,12 +16,13 @@ import {
 } from '@mantine/core';
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 import { GoogleButton } from '@/components/shared/GoogleButton';
 import { TwitterButton } from '@/components/shared/TwitterButton';
 
 export function AuthenticationForm(props: PaperProps) {
   const [type, toggleType] = useToggle(['login', 'register']);
-  const [loading, { toggle }] = useDisclosure();
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm({
     initialValues: {
       email: '',
@@ -37,21 +38,24 @@ export function AuthenticationForm(props: PaperProps) {
 
   const searchParams = useSearchParams();
 
-  const handleSubmit =
-    type === 'register'
-      ? async (values: typeof form.values) => {}
-      : async (values: typeof form.values) => {
-          try {
-            toggle();
-            await signIn('credentials', {
-              email: values.email,
-              password: values.password,
-              callbackUrl: searchParams.get('callbackUrl') || '/'
-            }).finally(toggle);
-          } catch (e) {
-            console.log(e);
-          }
-        };
+  const handleSubmit = async (values: typeof form.values) => {
+    if (type === 'login') {
+      try {
+        setIsLoading(true);
+        await signIn('credentials', {
+          email: values.email,
+          password: values.password,
+          callbackUrl: searchParams.get('callbackUrl') || '/'
+        });
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // Register user
+    }
+  };
 
   return (
     <Paper radius='md' p='xl' withBorder {...props}>
@@ -70,40 +74,38 @@ export function AuthenticationForm(props: PaperProps) {
         <Stack>
           {type === 'register' && (
             <TextInput
+              key={form.key('name')}
               label='Name'
               placeholder='Your name'
-              value={form.values.name}
-              onChange={(event) => form.setFieldValue('name', event.currentTarget.value)}
               radius='md'
+              {...form.getInputProps('name')}
             />
           )}
 
           <TextInput
+            key={form.key('email')}
             required
             label='Email'
             placeholder='example@synergy.dev'
-            value={form.values.email}
-            onChange={(event) => form.setFieldValue('email', event.currentTarget.value)}
-            error={form.errors.email}
             radius='md'
+            {...form.getInputProps('email')}
           />
 
           <PasswordInput
+            key={form.key('password')}
             required
             label='Password'
             placeholder='Your password'
-            value={form.values.password}
-            onChange={(event) => form.setFieldValue('password', event.currentTarget.value)}
-            error={form.errors.password}
             radius='md'
+            {...form.getInputProps('password')}
           />
 
           {type === 'register' && (
             <Checkbox
+              key={form.key('terms')}
               className='select-none'
               label='I accept terms and conditions'
-              checked={form.values.terms}
-              onChange={(event) => form.setFieldValue('terms', event.currentTarget.checked)}
+              {...form.getInputProps('terms', { type: 'checkbox' })}
             />
           )}
         </Stack>
@@ -120,7 +122,7 @@ export function AuthenticationForm(props: PaperProps) {
             size='xs'>
             {type === 'register' ? 'Already have an account? Login' : "Don't have an account? Register"}
           </Anchor>
-          <Button type='submit' radius='xl' loading={loading} disabled={loading}>
+          <Button type='submit' radius='xl' loading={isLoading} disabled={isLoading}>
             {upperFirst(type)}
           </Button>
         </Group>
