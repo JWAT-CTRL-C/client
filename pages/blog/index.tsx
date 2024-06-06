@@ -69,7 +69,7 @@ const fakeDataBlogCards: BlogCardType[] = [
 const Blog = () => {
   return (
     <SimpleGrid
-      cols={{ base: 1, sm: 2, lg: 3 }}
+      cols={{ base: 1, sm: , lg: 3 }}
       spacing={{ base: 5, sm: 'xl' }}
       verticalSpacing={{ base: 'md', sm: 'xl' }}>
       {fakeDataBlogCards.map((blog) => (

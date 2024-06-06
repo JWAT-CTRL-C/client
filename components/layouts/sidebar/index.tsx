@@ -2,13 +2,7 @@ import { Group, NavLink, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
-  FaHistory,
-  FaHome,
-  FaNetworkWired,
-  FaNewspaper,
-  FaPlusSquare,
   FaSignOutAlt,
-  FaTasks,
   FaUserCog
 } from 'react-icons/fa';
 import { sidebarConfig } from './sidebarConfig';
@@ -28,7 +22,7 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    setActive(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
+    // setActive(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
   }, [router.pathname]);
 
   const handleToPage = (link: string) => {
