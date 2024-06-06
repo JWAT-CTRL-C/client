@@ -27,7 +27,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   const getLayout = Component.getLayout ?? ((page) => page);
 
   useIsomorphicLayoutEffect(() => {
-    document.body.className = cn('min-h-screen font-sans antialiased', inter.variable);
+    document.body.className = cn('custom-scrollbar-bg min-h-screen font-sans antialiased', inter.variable);
   }, []);
 
   return (

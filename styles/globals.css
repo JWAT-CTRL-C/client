@@ -184,12 +184,12 @@
   }
 
   .custom-scrollbar-bg::-webkit-scrollbar-thumb {
-    background: var(--foreground);
+    background: hsl(var(--foreground));
     border-radius: 50px;
   }
 
   .custom-scrollbar-bg::-webkit-scrollbar-thumb:hover {
-    background: var(--foreground);
+    background: hsl(var(--foreground));
   }
 
   /* Custom scrollbar foreground*/
@@ -200,12 +200,12 @@
   }
 
   .custom-scrollbar-fg::-webkit-scrollbar-thumb {
-    background: var(--background);
+    background: hsl(var(--background));
     border-radius: 50px;
   }
 
   .custom-scrollbar-fg::-webkit-scrollbar-thumb:hover {
-    background: var(--background);
+    background: hsl(var(--background));
   }
 
   /* Custom scrollbar none*/
