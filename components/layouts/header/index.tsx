@@ -37,17 +37,15 @@ const Header = () => {
               size={'lg'}
               value='blog'
               className='w-1/5 flex-1'
-              leftSection={<FaBlog style={iconStyle} />}
-              style={{ flex: 1, textAlign: 'center' }}>
+              leftSection={<FaBlog style={iconStyle} />}>
               Blog
             </Tabs.Tab>
             <Tabs.Tab
               size={'lg'}
               className='w-1/5 flex-1'
               value='workspace'
-              leftSection={<FaBriefcase style={iconStyle} />}
-              style={{ flex: 1, textAlign: 'center' }}>
-              Work space
+              leftSection={<FaBriefcase style={iconStyle} />}>
+              Workspace
             </Tabs.Tab>
           </Tabs.List>
         </Tabs>

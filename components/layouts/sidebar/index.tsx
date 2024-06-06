@@ -1,4 +1,4 @@
-import { Group, Text } from '@mantine/core';
+import { Group, NavLink, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import {
@@ -40,13 +40,13 @@ const Sidebar = () => {
     <div className='my-auto flex  h-full flex-col justify-between   '>
       <div>
         {sidebarState.map((item) => (
-          <Group
+          <NavLink
             key={item.link}
-            className={`my-5 cursor-pointer rounded-md p-4 hover:bg-primary ${active === item.link && 'bg-primary'}`}
-            onClick={() => handleToPage(item.link)}>
-            {item.icon}
-            <Text>{item.label}</Text>
-          </Group>
+            active={active === item.link}
+            label={item.label}
+            className={`my-5 cursor-pointer rounded-md p-4 `}
+            onClick={() => handleToPage(item.link)}
+            leftSection={item.icon}></NavLink>
         ))}
       </div>
       <div className=''>
