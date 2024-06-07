@@ -38,7 +38,7 @@ const Header = () => {
               value='blog'
               className='w-1/3 flex-1  border-b-2 md:px-8'
               leftSection={<FaBlog style={iconStyle} />}>
-              Blog
+              Blogs
             </Tabs.Tab>
             <Tabs.Tab
               size={'lg'}
