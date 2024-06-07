@@ -1,14 +1,26 @@
 import { blogFormType } from '@/libs/types/blogFormType';
-import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput } from '@mantine/core';
+import {
+  Autocomplete,
+  Button,
+  FileInput,
+  Group,
+  Image,
+  Input,
+  Select,
+  TagsInput,
+  TextInput
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
+import { workspacesType } from '@/libs/types/workspacesType';
+import { useState } from 'react';
 
 type BlogFormProps = {
   updateValues?: blogFormType;
   handleSubmitForm: (values: blogFormType) => void;
   isEditing?: boolean;
-  workSpaceList: string[];
+  workSpaceList: workspacesType[];
 };
 
 const initialValues: blogFormType = {
@@ -16,23 +28,36 @@ const initialValues: blogFormType = {
   tag: [] as string[],
   workspace: '',
   backgroundImg: null as File | null,
-  content: ''
+  content: '',
+  source: ''
 };
 
 const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
+  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.workspaceName);
+  const sourceList = workSpaceList.map((workSpace) => workSpace.sources);
+  const sourceListOnlyname = workSpaceList.map((source) => source.workspaceName);
+
   const form = useForm({
     initialValues: isEditing ? updateValues : initialValues,
 
     validate: {
       title: (title) => (title.trim().length === 0 ? 'Title is required' : null),
-      tag: (tags) => (tags.length === 0 ? 'Tags are required' : null),
+      tag: (tags) => {
+        if (tags.length === 0) return 'Tags are required';
+
+        if (workSpaceList.length === 0 && tags.includes('workspaces'))
+          return "You don't belong to any workspace so remove it from tag field";
+        return null;
+      },
       workspace: (workspace, values) => {
-        if (
-          values.tag.some((tag) => tag.toLowerCase().includes('workspace')) &&
-          workspace.trim().length === 0
-        ) {
-          return 'Workspace is required';
-        }
+        if (workspace && workspace.trim().length === 0) return 'Workspace is required';
+
+        return null;
+      },
+
+      source: (source) => {
+        if (source && source.trim().length === 0) return 'Source is required';
+        if (source && !sourceListOnlyname.includes(source)) return `${source} not belong to workspaces`;
         return null;
       },
       content: (content) =>
@@ -40,6 +65,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       // backgroundImg: (backgroundImg) => (backgroundImg === null ? 'Background image is required' : null)
     }
   });
+
+  const [indexSelectingField, setIndexSelectingField] = useState(0);
 
   const handleClearForm = () => {
     form.reset();
@@ -50,6 +77,18 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     handleSubmitForm(values);
   };
 
+  const handleSelectField = (value: string | null) => {
+    value && form.setFieldValue('workspace', value);
+
+    const indexSelecting =
+      value && workSpaceListOnlyName.findIndex((workspaceName) => workspaceName === value);
+
+    setIndexSelectingField(indexSelecting || 0);
+
+    if (value && !form.getValues().tag.includes('workspaces'))
+      form.setFieldValue('tag', [...form.getValues().tag, 'workspaces']);
+  };
+
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
       <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('title')} />
@@ -57,33 +96,35 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       <TagsInput
         withAsterisk
         label='Tag'
-        description="Type 'workspaces'  to show your workspaces"
         clearable
         placeholder='Tag...'
         onClear={() => form.setFieldValue('tag', [])}
         {...form.getInputProps('tag')}
-        onChange={(value) => {
-          form.setFieldValue('tag', value);
+        onChange={(tag) => {
+          form.setFieldValue('tag', tag);
         }}
       />
 
-      {form.values.tag?.some((tag) => tag.toLowerCase().includes('workspace')) && (
-        <Select
-          withAsterisk
-          data={workSpaceList}
-          disabled={workSpaceList.length === 0}
-          label='Workspace'
-          description={
-            workSpaceList.length === 0 &&
-            "You don't belong to any workspaces , Please remove 'workspaces' from tag field"
-          }
-          placeholder='Workspace...'
-          {...form.getInputProps('workspace')}
-        />
-      )}
+      <Select
+        data={workSpaceListOnlyName}
+        disabled={workSpaceList.length === 0}
+        label='Workspace'
+        placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
+        {...form.getInputProps('workspace')}
+        onChange={(workspace) => {
+          handleSelectField(workspace);
+        }}
+      />
+
+      <Autocomplete
+        label='Source'
+        placeholder='Source...'
+        disabled={workSpaceList.length === 0}
+        data={sourceList[indexSelectingField].map((source) => source.sourceName)}
+        {...form.getInputProps('source')}
+      />
 
       <FileInput
-        withAsterisk
         clearable
         description='Optional'
         rightSection={<FaFileImage />}

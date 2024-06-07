@@ -30,9 +30,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         {/* Navbar */}
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>
-        <Container>{children}</Container>
-      </AppShell.Main>
+      <AppShell.Main>{children}</AppShell.Main>
     </AppShell>
   );
 };
