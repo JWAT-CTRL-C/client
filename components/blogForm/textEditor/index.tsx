@@ -14,7 +14,7 @@ import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import FontFamily from '@tiptap/extension-font-family';
 import { useEffect } from 'react';
-import { useMantineTheme } from '@mantine/core';
+import { Container, Grid, useMantineTheme } from '@mantine/core';
 
 const colors = [
   '#25262b',
@@ -73,57 +73,64 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
     <>
       <RichTextEditor
         editor={editor}
-        className='mb-1 overflow-clip text-xs'
+        className='mb-1 h-full overflow-clip text-xs'
         style={{
           borderColor: form.errors.content ? theme.colors.red[7] : '',
           borderRadius: theme.radius.md
         }}>
         <RichTextEditor.Toolbar sticky stickyOffset={60}>
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Bold />
-            <RichTextEditor.Italic />
-            <RichTextEditor.Underline />
-            <RichTextEditor.Strikethrough />
-            <RichTextEditor.ClearFormatting />
-            <RichTextEditor.Highlight />
-            <RichTextEditor.Code />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.H1 />
-            <RichTextEditor.H2 />
-            <RichTextEditor.H3 />
-            <RichTextEditor.H4 />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Blockquote />
-            <RichTextEditor.Hr />
-            <RichTextEditor.BulletList />
-            <RichTextEditor.OrderedList />
-            <RichTextEditor.Subscript />
-            <RichTextEditor.Superscript />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Link />
-            <RichTextEditor.Unlink />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.AlignLeft />
-            <RichTextEditor.AlignCenter />
-            <RichTextEditor.AlignJustify />
-            <RichTextEditor.AlignRight />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Undo />
-            <RichTextEditor.Redo />
-          </RichTextEditor.ControlsGroup>
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.ColorPicker colors={colors}></RichTextEditor.ColorPicker>
-          </RichTextEditor.ControlsGroup>
+          <Grid gutter='xs' grow>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Bold />
+                <RichTextEditor.Italic />
+                <RichTextEditor.Underline />
+                <RichTextEditor.Strikethrough />
+                <RichTextEditor.ClearFormatting />
+                <RichTextEditor.Highlight />
+                <RichTextEditor.Code />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.H1 />
+                <RichTextEditor.H2 />
+                <RichTextEditor.H3 />
+                <RichTextEditor.H4 />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Blockquote />
+                <RichTextEditor.Hr />
+                <RichTextEditor.BulletList />
+                <RichTextEditor.OrderedList />
+                <RichTextEditor.Subscript />
+                <RichTextEditor.Superscript />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Link />
+                <RichTextEditor.Unlink />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.AlignLeft />
+                <RichTextEditor.AlignCenter />
+                <RichTextEditor.AlignJustify />
+                <RichTextEditor.AlignRight />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
+              <RichTextEditor.ControlsGroup>
+                <RichTextEditor.Undo />
+                <RichTextEditor.Redo />
+                <RichTextEditor.ColorPicker colors={colors} />
+              </RichTextEditor.ControlsGroup>
+            </Grid.Col>
+          </Grid>
         </RichTextEditor.Toolbar>
 
         {editor && (
@@ -135,7 +142,7 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
             </RichTextEditor.ControlsGroup>
           </BubbleMenu>
         )}
-        <RichTextEditor.Content />
+        <RichTextEditor.Content className='min-h-96' />
       </RichTextEditor>
     </>
   );

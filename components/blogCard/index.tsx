@@ -1,5 +1,5 @@
-import { BlogCardType, tagColors } from '@/libs/types/blogCardType';
-import { Avatar, Badge, Box, Button, Card, Flex, Group, Image, Text, Title } from '@mantine/core';
+import { BlogCardType } from '@/libs/types/blogCardType';
+import { Avatar, Card, Flex, Group, Image, Rating, Text } from '@mantine/core';
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   return (
@@ -15,21 +15,25 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
       </Card.Section>
 
       <Flex direction={'column'} mt='md' mb='xs' wrap='nowrap' gap='md'>
-        <Badge color={`${tagColors[blog.tag]}`}>{blog.tag}</Badge>
+        {/* <Badge color={`${tagColors[blog.tag]}`}>{blog.tag}</Badge> */}
         <Text fw={500} size='md' className='cursor-text text-xl'>
           {blog.title}
         </Text>
       </Flex>
 
-      <Title className='cursor-text text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
+      {/* <Title className='cursor-text text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
         {blog.description}
-      </Title>
+      </Title> */}
       <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
         <Avatar size={'md'} src={blog.authorAvatar ? blog.authorAvatar : null} alt="it's me" />
         <Group flex={1} align='center' wrap='nowrap' justify='space-between' className='cursor-text'>
           <Text size='xs'>{blog.authorName}</Text>
           <Text size='xs'>{blog.createdAt}</Text>
         </Group>
+      </Group>
+
+      <Group>
+        <Rating defaultValue={blog.rating} readOnly />
       </Group>
     </Card>
   );

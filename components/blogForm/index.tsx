@@ -129,6 +129,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         description='Optional'
         rightSection={<FaFileImage />}
         label='Background Image'
+        accept='image/*'
         placeholder='Background Image...'
         {...form.getInputProps('backgroundImg')}
         onChange={(value) => {

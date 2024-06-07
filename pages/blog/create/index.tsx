@@ -89,7 +89,7 @@ const CreateBlog = () => {
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workSpaceList}
           //isEditing
-          updateValues={[]}
+          // updateValues={updateValues}
         />
       </Group>
     </Flex>
