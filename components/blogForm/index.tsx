@@ -14,7 +14,7 @@ import { useForm } from '@mantine/form';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
 import { workspacesType } from '@/libs/types/workspacesType';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type BlogFormProps = {
   updateValues?: blogFormType;
@@ -68,10 +68,15 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
   const [indexSelectingField, setIndexSelectingField] = useState(0);
 
-  const handleClearForm = () => {
+  function handleClearForm() {
     form.reset();
+    form.setFieldValue('workspace', null);
+    form.setFieldValue('title', '');
+    form.setFieldValue('tag', []);
+    form.setFieldValue('source', '');
     form.setFieldValue('backgroundImg', null);
-  };
+    form.setFieldValue('content', '');
+  }
 
   const handleSubmit = (values: blogFormType) => {
     handleSubmitForm(values);
@@ -104,32 +109,37 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
           form.setFieldValue('tag', tag);
         }}
       />
-
       <Select
         data={workSpaceListOnlyName}
+        checkIconPosition='right'
+        description='Optional'
+        clearable
+        allowDeselect={false}
         onClear={() => {
-          if (form.getValues().tag.includes('workspaces'))
+          form.setFieldValue('workspace', '');
+          if (form.getValues().tag.includes('workspaces')) {
             form.setFieldValue(
               'tag',
               form.getValues().tag.filter((tag) => tag !== 'workspaces')
             );
-          form.setFieldValue('workspace', '');
+          }
         }}
-        clearable
         disabled={workSpaceList.length === 0}
-        label='Workspace'
+        label='Workspaces'
+        //clearable
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
         {...form.getInputProps('workspace')}
-        onChange={(workspace) => {
-          handleSelectField(workspace);
-        }}
+        onChange={(workspace) => handleSelectField(workspace)}
       />
 
       <Autocomplete
         label='Source'
+        description='Optional'
         placeholder='Source...'
         disabled={workSpaceList.length === 0}
-        data={sourceList[indexSelectingField].map((source) => source.sourceName)}
+        data={
+          form.getValues().workspace ? sourceList[indexSelectingField].map((source) => source.sourceName) : []
+        }
         {...form.getInputProps('source')}
       />
 
