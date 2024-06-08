@@ -57,7 +57,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       source: (source) => {
         if (source && source.trim().length === 0) return 'Source is required';
-        if (source && !sourceListOnlyname.includes(source)) return `${source} not belong to workspaces`;
+
         return null;
       },
       content: (content) =>

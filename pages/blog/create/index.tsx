@@ -68,7 +68,7 @@ const CreateBlog = () => {
 
   const updateValues = {
     title: 'dwqdwq',
-    tag: ['apple', 'camera', 'def'] as string[],
+    tag: ['apple', 'camera', 'def', 'workspaces'] as string[],
     workspace: workspaceValue,
     backgroundImg: 'https://i1.sndcdn.com/avatars-000787434634-i9sqvl-t240x240.jpg',
     content: '<b>Hello</b>!',
@@ -88,8 +88,8 @@ const CreateBlog = () => {
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workSpaceList}
-          //isEditing
-          // updateValues={updateValues}
+          isEditing
+          updateValues={updateValues}
         />
       </Group>
     </Flex>
