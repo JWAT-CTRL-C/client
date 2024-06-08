@@ -1,7 +1,7 @@
 export type BlogCardType = {
   id: number | string;
   title: string;
-  // description: string;
+   description: string;
   createdAt: string;
   bgUrl: string | null | undefined;
   authorAvatar?: string;

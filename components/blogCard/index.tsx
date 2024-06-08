@@ -1,5 +1,5 @@
 import { BlogCardType } from '@/libs/types/blogCardType';
-import { Avatar, Card, Flex, Group, Image, Rating, Text } from '@mantine/core';
+import { Avatar, Card, Flex, Group, Image, Rating, Text, Title } from '@mantine/core';
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   return (
@@ -21,9 +21,9 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
         </Text>
       </Flex>
 
-      {/* <Title className='cursor-text text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
+      <Title className='cursor-text text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
         {blog.description}
-      </Title> */}
+      </Title>
       <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
         <Avatar size={'md'} src={blog.authorAvatar ? blog.authorAvatar : null} alt="it's me" />
         <Group flex={1} align='center' wrap='nowrap' justify='space-between' className='cursor-text'>
