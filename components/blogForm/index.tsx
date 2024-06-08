@@ -107,6 +107,15 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       <Select
         data={workSpaceListOnlyName}
+        onClear={() => {
+          if (form.getValues().tag.includes('workspaces'))
+            form.setFieldValue(
+              'tag',
+              form.getValues().tag.filter((tag) => tag !== 'workspaces')
+            );
+          form.setFieldValue('workspace', '');
+        }}
+        clearable
         disabled={workSpaceList.length === 0}
         label='Workspace'
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
