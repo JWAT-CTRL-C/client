@@ -5,6 +5,7 @@ import { workspacesType } from '@/libs/types/workspacesType';
 import { Center, Flex, Group, Title } from '@mantine/core';
 
 const CreateBlog = () => {
+  // Use api to get workspaces belong to current user
   const workSpaceList: workspacesType[] = [
     {
       workspaceId: 'ws1',
@@ -88,8 +89,8 @@ const CreateBlog = () => {
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workSpaceList}
-          isEditing
-          updateValues={updateValues}
+          // isEditing
+          // updateValues={updateValues}
         />
       </Group>
     </Flex>

@@ -26,7 +26,7 @@ type BlogFormProps = {
 const initialValues: blogFormType = {
   title: '',
   tag: [] as string[],
-  workspace: '',
+  workspace: null,
   backgroundImg: null as File | null,
   content: '',
   source: ''
@@ -69,13 +69,13 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const [indexSelectingField, setIndexSelectingField] = useState(0);
 
   function handleClearForm() {
-    form.reset();
-    form.setFieldValue('workspace', null);
-    form.setFieldValue('title', '');
-    form.setFieldValue('tag', []);
-    form.setFieldValue('source', '');
-    form.setFieldValue('backgroundImg', null);
-    form.setFieldValue('content', '');
+    form.setValues(initialValues);
+    // form.setFieldValue('workspace', null);
+    // form.setFieldValue('title', '');
+    // form.setFieldValue('tag', []);
+    // form.setFieldValue('source', '');
+    // form.setFieldValue('backgroundImg', null);
+    // form.setFieldValue('content', '');
   }
 
   const handleSubmit = (values: blogFormType) => {
@@ -138,7 +138,9 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Source...'
         disabled={workSpaceList.length === 0}
         data={
-          form.getValues().workspace ? sourceList[indexSelectingField].map((source) => source.sourceName) : []
+          form.getValues().workspace
+            ? sourceList[indexSelectingField]?.map((source) => source.sourceName)
+            : []
         }
         {...form.getInputProps('source')}
       />
