@@ -44,12 +44,12 @@ export default function EditGeneralWorkspaceForm() {
         {...form.getInputProps('wkps_desc')}
       />
       <Divider my='sm' label='Resources' labelPosition='left' />
-      <Group>
+      {/* <Group>
         <TextInput mt='lg' placeholder='Resource url' type='url' {...field.getInputProps()} />
         <Button variant='filled' radius='100' mt='lg' color='violet' onClick={() => handleAddResource()}>
           <FaPlus />
         </Button>
-      </Group>
+      </Group> */}
       <Group mt='lg'>
         <Button type='submit' variant='pill' fullWidth>
           Save
