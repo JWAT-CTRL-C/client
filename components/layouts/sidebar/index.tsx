@@ -1,26 +1,18 @@
 import { Group, NavLink, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import {
-  FaHistory,
-  FaHome,
-  FaNetworkWired,
-  FaNewspaper,
-  FaPlusSquare,
-  FaSignOutAlt,
-  FaTasks,
-  FaUserCog
-} from 'react-icons/fa';
+import { FaSignOutAlt, FaUserCog } from 'react-icons/fa';
 import { sidebarConfig } from './sidebarConfig';
+import { signOut } from 'next-auth/react';
 
 const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
-  const isBlog = router.pathname.startsWith('/blog');
-  const isWorkspace = router.pathname.startsWith('/workspace');
-  const [active, setActive] = useState(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
+  const isBlog = router.pathname.startsWith('/blogs');
+  const isWorkspace = router.pathname.startsWith('/workspaces');
 
+  const [active, setActive] = useState(0);
   useEffect(() => {
     if (isBlog) {
       setSidebarState(blogConfig);
@@ -28,39 +20,42 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    setActive(isBlog ? blogConfig[0].link : workspaceConfig[0].link);
+    if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
+      setActive(0);
+    }
   }, [router.pathname]);
 
-  const handleToPage = (link: string) => {
-    setActive(link);
+  const handleToPage = (link: string, index: number) => {
     router.push(link);
+    setActive(index);
   };
 
   return (
     <div className='my-auto flex  h-full flex-col justify-between   '>
       <div>
-        {sidebarState.map((item) => (
+        {sidebarState.map((item, index) => (
           <NavLink
-            key={item.link}
-            active={active === item.link}
+            key={item.label}
+            active={index === active}
             label={item.label}
             className={`my-5 cursor-pointer rounded-md p-4 `}
-            onClick={() => handleToPage(item.link)}
+            onClick={() => handleToPage(item.link, index)}
             leftSection={item.icon}></NavLink>
         ))}
       </div>
       <div className=''>
-        <Group className='my-3 cursor-pointer rounded-md p-4 hover:bg-primary'>
-          <FaUserCog size={20} />
-          <Text>Change account</Text>
-        </Group>
+        <NavLink
+          label={'Change account'}
+          className={`my-5 cursor-pointer rounded-md p-4 `}
+          leftSection={<FaUserCog size={20} />}></NavLink>
 
-        <Group
-          className='my-3 cursor-pointer rounded-md p-4 hover:bg-primary'
-          onClick={() => router.push('auth')}>
-          <FaSignOutAlt size={20} />
-          <Text>Logout</Text>
-        </Group>
+        <NavLink
+          label={'Log out'}
+          className={`my-5 cursor-pointer rounded-md p-4 `}
+          onClick={() => {
+            signOut();
+          }}
+          leftSection={<FaSignOutAlt size={20} />}></NavLink>
       </div>
     </div>
   );

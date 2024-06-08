@@ -1,20 +1,14 @@
+import { Tag } from "./tagType";
+
 export type BlogCardType = {
-    id:number | string,
-  title: string;
-  description: string;
-  createdAt: string;
-  bgUrl: string | null | undefined;
-  authorAvatar: string;
-  authorName: string;
-  tag: Tag;
+  blog_id: number | string;
+  blog_tle: string;
+   blog_cont: string;
+  crd_at: string | Date;
+  blog_image: string | null | undefined;
+  auth_img?: string;
+  auth_name: string;
+  blog_rtg: number;
+  blog_tag: Tag[];
 };
 
-export type Tag = keyof typeof tagColors;
-
-export const tagColors = {
-  onSale: '#f03e3e', // Red
-  new: '#12b886', // Green
-  popular: '#228be6', // Blue
-  recommended: '#be4bdb', // Purple
-  featured: '#f59f00' // Yellow
-};
