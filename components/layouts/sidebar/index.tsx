@@ -44,19 +44,18 @@ const Sidebar = () => {
         ))}
       </div>
       <div className=''>
-        <Group className='my-3 cursor-pointer rounded-md p-4 hover:bg-primary'>
-          <FaUserCog size={20} />
-          <Text>Change account</Text>
-        </Group>
+        <NavLink
+          label={'Change account'}
+          className={`my-5 cursor-pointer rounded-md p-4 `}
+          leftSection={<FaUserCog size={20} />}></NavLink>
 
-        <Group
-          className='my-3 cursor-pointer rounded-md p-4 hover:bg-primary'
+        <NavLink
+          label={'Log out'}
+          className={`my-5 cursor-pointer rounded-md p-4 `}
           onClick={() => {
             signOut();
-          }}>
-          <FaSignOutAlt size={20} />
-          <Text>Log out</Text>
-        </Group>
+          }}
+          leftSection={<FaSignOutAlt size={20} />}></NavLink>
       </div>
     </div>
   );
