@@ -24,45 +24,45 @@ type BlogFormProps = {
 };
 
 const initialValues: blogFormType = {
-  title: '',
-  tag: [] as string[],
-  workspace: null,
-  backgroundImg: null as File | null,
-  content: '',
-  source: ''
+  blog_tle: '',
+  blog_tag: [] as string[],
+  blog_wksp: null,
+  blog_img: null as File | null,
+  blog_cont: '',
+  blog_src: ''
 };
 
 const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
-  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.workspaceName);
-  const sourceList = workSpaceList.map((workSpace) => workSpace.sources);
-  const sourceListOnlyname = workSpaceList.map((source) => source.workspaceName);
+  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.wksp_name);
+  const sourceList = workSpaceList.map((workSpace) => workSpace.wksp_src);
+  const sourceListOnlyname = workSpaceList.map((source) => source.wksp_name);
 
   const form = useForm({
     initialValues: isEditing ? updateValues : initialValues,
 
     validate: {
-      title: (title) => (title.trim().length === 0 ? 'Title is required' : null),
-      tag: (tags) => {
-        if (tags.length === 0) return 'Tags are required';
+      blog_tle: (blog_tle) => (blog_tle.trim().length === 0 ? 'Title is required' : null),
+      blog_tag: (blog_tags) => {
+        if (blog_tags.length === 0) return 'Tags are required';
 
-        if (workSpaceList.length === 0 && tags.includes('workspaces'))
+        if (workSpaceList.length === 0 && blog_tags.includes('workspaces'))
           return "You don't belong to any workspace so remove it from tag field";
         return null;
       },
-      workspace: (workspace, values) => {
-        if (workspace && workspace.trim().length === 0) return 'Workspace is required';
+      blog_wksp: (blog_wksp, values) => {
+        if (blog_wksp && blog_wksp.trim().length === 0) return 'Workspace is required';
 
         return null;
       },
 
-      source: (source) => {
-        if (source && source.trim().length === 0) return 'Source is required';
+      blog_src: (blog_src) => {
+        if (blog_src && blog_src.trim().length === 0) return 'Source is required';
 
         return null;
       },
-      content: (content) =>
-        content.trim().length === 0 || content === '<p></p>' ? 'Content is required' : null
-      // backgroundImg: (backgroundImg) => (backgroundImg === null ? 'Background image is required' : null)
+      blog_cont: (blog_cont) =>
+        blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null
+      // blog_img: (blog_img) => (blog_img === null ? 'Background image is required' : null)
     }
   });
 
@@ -70,12 +70,12 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
   function handleClearForm() {
     form.setValues(initialValues);
-    // form.setFieldValue('workspace', null);
-    // form.setFieldValue('title', '');
-    // form.setFieldValue('tag', []);
-    // form.setFieldValue('source', '');
-    // form.setFieldValue('backgroundImg', null);
-    // form.setFieldValue('content', '');
+    // form.setFieldValue('blog_wksp', null);
+    // form.setFieldValue('blog_tle', '');
+    // form.setFieldValue('blog_tag', []);
+    // form.setFieldValue('blog_src', '');
+    // form.setFieldValue('blog_img', null);
+    // form.setFieldValue('blog_cont', '');
   }
 
   const handleSubmit = (values: blogFormType) => {
@@ -83,30 +83,30 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   };
 
   const handleSelectField = (value: string | null) => {
-    value && form.setFieldValue('workspace', value);
+    value && form.setFieldValue('blog_wksp', value);
 
     const indexSelecting =
-      value && workSpaceListOnlyName.findIndex((workspaceName) => workspaceName === value);
+      value && workSpaceListOnlyName.findIndex((wksp_name) => wksp_name === value);
 
     setIndexSelectingField(indexSelecting || 0);
 
-    if (value && !form.getValues().tag.includes('workspaces'))
-      form.setFieldValue('tag', [...form.getValues().tag, 'workspaces']);
+    if (value && !form.getValues().blog_tag.includes('workspaces'))
+      form.setFieldValue('blog_tag', [...form.getValues().blog_tag, 'workspaces']);
   };
 
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
-      <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('title')} />
+      <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('blog_tle')} />
 
       <TagsInput
         withAsterisk
         label='Tag'
         clearable
         placeholder='Tag...'
-        onClear={() => form.setFieldValue('tag', [])}
-        {...form.getInputProps('tag')}
-        onChange={(tag) => {
-          form.setFieldValue('tag', tag);
+        onClear={() => form.setFieldValue('blog_tag', [])}
+        {...form.getInputProps('blog_tag')}
+        onChange={(blog_tag) => {
+          form.setFieldValue('blog_tag', blog_tag);
         }}
       />
       <Select
@@ -116,11 +116,11 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         clearable
         allowDeselect={false}
         onClear={() => {
-          form.setFieldValue('workspace', '');
-          if (form.getValues().tag.includes('workspaces')) {
+          form.setFieldValue('blog_wksp', '');
+          if (form.getValues().blog_tag.includes('workspaces')) {
             form.setFieldValue(
-              'tag',
-              form.getValues().tag.filter((tag) => tag !== 'workspaces')
+              'blog_tag',
+              form.getValues().blog_tag.filter((blog_tag) => blog_tag !== 'workspaces')
             );
           }
         }}
@@ -128,8 +128,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         label='Workspaces'
         //clearable
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
-        {...form.getInputProps('workspace')}
-        onChange={(workspace) => handleSelectField(workspace)}
+        {...form.getInputProps('blog_wksp')}
+        onChange={(blog_wksp) => handleSelectField(blog_wksp)}
       />
 
       <Autocomplete
@@ -138,11 +138,11 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Source...'
         disabled={workSpaceList.length === 0}
         data={
-          form.getValues().workspace
-            ? sourceList[indexSelectingField]?.map((source) => source.sourceName)
+          form.getValues().blog_wksp
+            ? sourceList[indexSelectingField]?.map((source) => source.src_name)
             : []
         }
-        {...form.getInputProps('source')}
+        {...form.getInputProps('blog_src')}
       />
 
       <FileInput
@@ -152,24 +152,24 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         label='Background Image'
         accept='image/*'
         placeholder='Background Image...'
-        {...form.getInputProps('backgroundImg')}
+        {...form.getInputProps('blog_img')}
         onChange={(value) => {
-          form.setFieldValue('backgroundImg', value);
+          form.setFieldValue('blog_img', value);
         }}
       />
 
-      {form.values.backgroundImg && (
+      {form.values.blog_img && (
         <Image
           src={
-            typeof form.getValues().backgroundImg === 'string'
-              ? form.getValues().backgroundImg
-              : URL.createObjectURL(form.values.backgroundImg! as File)
+            typeof form.getValues().blog_img === 'string'
+              ? form.getValues().blog_img
+              : URL.createObjectURL(form.values.blog_img! as File)
           }
           alt='Background Image Preview'
         />
       )}
 
-      <Input.Wrapper withAsterisk label='Content' error={form.errors.content}>
+      <Input.Wrapper withAsterisk label='Content' error={form.errors.blog_cont}>
         <TextEditor form={form} />
       </Input.Wrapper>
 

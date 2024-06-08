@@ -1,8 +1,8 @@
 export type blogFormType = {
-  title: string;
-  tag: string[];
-  workspace?: string | null;
-  backgroundImg: File | null | string;
-  content: string;
-  source?: string;
+  blog_tle: string;
+  blog_tag: string[];
+  blog_wksp?: string | null;
+  blog_img: File | null | string;
+  blog_cont: string;
+  blog_src?: string;
 };

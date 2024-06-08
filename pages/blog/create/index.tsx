@@ -8,72 +8,71 @@ const CreateBlog = () => {
   // Use api to get workspaces belong to current user
   const workSpaceList: workspacesType[] = [
     {
-      workspaceId: 'ws1',
-      workspaceName: 'Workspace 1',
-      workspaceDes: 'Description for Workspace 1',
-      sources: [
+      wksp_id: 'ws1',
+      wksp_name: 'Workspace 1',
+      wksp_desc: 'Description for Workspace 1',
+      wksp_src: [
         {
-          sourceId: 'src1',
-          sourceUrl: 'http://example.com/source1',
-          sourceName: 'Source 1'
+          src_id: 'src1',
+          src_url: 'http://example.com/source1',
+          src_name: 'Source 1'
         },
         {
-          sourceId: 'src2',
-          sourceUrl: 'http://example.com/source2',
-          sourceName: 'Source 2'
+          src_id: 'src2',
+          src_url: 'http://example.com/source2',
+          src_name: 'Source 2'
         }
       ]
     },
     {
-      workspaceId: 'ws2',
-      workspaceName: 'Workspace 2',
-      workspaceDes: 'Description for Workspace 2',
-      sources: [
+      wksp_id: 'ws2',
+      wksp_name: 'Workspace 2',
+      wksp_desc: 'Description for Workspace 2',
+      wksp_src: [
         {
-          sourceId: 'src3',
-          sourceUrl: 'http://example.com/source3',
-          sourceName: 'Source 3'
+          src_id: 'src3',
+          src_url: 'http://example.com/source3',
+          src_name: 'Source 3'
         },
         {
-          sourceId: 'src4',
-          sourceUrl: 'http://example.com/source4',
-          sourceName: 'Source 4'
+          src_id: 'src4',
+          src_url: 'http://example.com/source4',
+          src_name: 'Source 4'
         }
       ]
     },
     {
-      workspaceId: 'ws3',
-      workspaceName: 'Workspace 3',
-      workspaceDes: 'Description for Workspace 3',
-      sources: [
+      wksp_id: 'ws3',
+      wksp_name: 'Workspace 3',
+      wksp_desc: 'Description for Workspace 3',
+      wksp_src: [
         {
-          sourceId: 'src5',
-          sourceUrl: 'http://example.com/source5',
-          sourceName: 'Source 5'
+          src_id: 'src5',
+          src_url: 'http://example.com/source5',
+          src_name: 'Source 5'
         },
         {
-          sourceId: 'src6',
-          sourceUrl: 'http://example.com/source6',
-          sourceName: 'Source 6'
+          src_id: 'src6',
+          src_url: 'http://example.com/source6',
+          src_name: 'Source 6'
         }
       ]
     }
   ];
-  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.workspaceName);
-  const sourceList = workSpaceList.map((workSpace) => workSpace.sources);
-  const workspaceValue = workSpaceList.map((workspace) => workspace.workspaceName)[0];
+  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.wksp_name);
+  const sourceList = workSpaceList.map((workSpace) => workSpace.wksp_src);
+  const workspaceValue = workSpaceList.map((workspace) => workspace.wksp_name)[0];
   const indexSelecting = workSpaceListOnlyName.findIndex((workspaceName) => workspaceName === workspaceValue);
 
   const firstSource =
-    indexSelecting !== -1 && sourceList[indexSelecting] ? sourceList[indexSelecting][0].sourceName : '';
-
-  const updateValues = {
-    title: 'dwqdwq',
-    tag: ['apple', 'camera', 'def', 'workspaces'] as string[],
-    workspace: workspaceValue,
-    backgroundImg: 'https://i1.sndcdn.com/avatars-000787434634-i9sqvl-t240x240.jpg',
-    content: '<b>Hello</b>!',
-    source: firstSource
+    indexSelecting !== -1 && sourceList[indexSelecting] ? sourceList[indexSelecting][0].src_name : '';
+  const updateValues: blogFormType = {
+    blog_tle: 'dwqdwq',
+    blog_tag: ['apple', 'camera', 'def', 'workspaces'],
+    blog_wksp: workspaceValue,
+    blog_img: 'https://i1.sndcdn.com/avatars-000787434634-i9sqvl-t240x240.jpg',
+    blog_cont: '<b>Hello</b>!',
+    blog_src: firstSource
   };
 
   const handleCreateBlog = (values: blogFormType) => {
@@ -89,8 +88,8 @@ const CreateBlog = () => {
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workSpaceList}
-          // isEditing
-          // updateValues={updateValues}
+          isEditing
+          updateValues={updateValues}
         />
       </Group>
     </Flex>

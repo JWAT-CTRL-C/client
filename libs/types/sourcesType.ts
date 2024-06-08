@@ -1,6 +1,6 @@
 export type sourceType = {
-  sourceId: string;
-  sourceName: string;
+  src_id: string;
+  src_name: string;
 
-  sourceUrl: string;
+  src_url: string;
 };

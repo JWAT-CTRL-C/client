@@ -52,18 +52,18 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
       Placeholder.configure({ placeholder: 'Write your content here...' })
     ],
     onUpdate({ editor }) {
-      form.setFieldValue('content', editor.getHTML());
-      form.validateField('content');
+      form.setFieldValue('blog_cont', editor.getHTML());
+      form.validateField('blog_cont');
     },
-    content: form.getValues().content
+    content: form.getValues().blog_cont
   });
   const theme = useMantineTheme();
 
   useEffect(() => {
-    if (editor && form.values.content !== editor.getHTML()) {
-      editor.commands.setContent(form.values.content, false);
+    if (editor && form.values.blog_cont !== editor.getHTML()) {
+      editor.commands.setContent(form.values.blog_cont, false);
     }
-  }, [form.values.content, editor]);
+  }, [form.values.blog_cont, editor]);
 
   if (!editor) {
     return null;
@@ -75,7 +75,7 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
         editor={editor}
         className='mb-1 h-full overflow-clip text-xs'
         style={{
-          borderColor: form.errors.content ? theme.colors.red[7] : '',
+          borderColor: form.errors.blog_cont ? theme.colors.red[7] : '',
           borderRadius: theme.radius.md
         }}>
         <RichTextEditor.Toolbar sticky stickyOffset={60}>

@@ -1,8 +1,8 @@
 import { sourceType } from './sourcesType';
 
 export type workspacesType = {
-  workspaceId: string;
-  workspaceName: string;
-  workspaceDes: string;
-  sources: sourceType[] | [];
+  wksp_id: string;
+  wksp_name: string;
+  wksp_desc: string;
+  wksp_src: sourceType[] | [];
 };
