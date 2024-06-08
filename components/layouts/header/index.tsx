@@ -11,7 +11,7 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
   useEffect(() => {
-    if (router.pathname.startsWith('/blog')) {
+    if (router.pathname.startsWith('/blogs')) {
       setActiveTab('blogs');
     } else if (router.pathname.startsWith('/workspaces')) {
       setActiveTab('workspaces');
