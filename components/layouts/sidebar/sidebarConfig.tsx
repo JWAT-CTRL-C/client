@@ -3,9 +3,9 @@ import { FaHistory, FaHome, FaNetworkWired, FaNewspaper, FaPlusSquare, FaTasks }
 
 export const sidebarConfig: SidebarConfig = {
   blogConfig: [
-    { link: '/blog', label: 'Home', icon: <FaHome size={20} /> },
-    { link: '/blog/create', label: 'New blog', icon: <FaPlusSquare size={20} /> },
-    { link: '/blog/yourBlog', label: 'Your blog', icon: <FaNewspaper size={20} /> }
+    { link: '/blogs', label: 'Home', icon: <FaHome size={20} /> },
+    { link: '/blogs/create', label: 'New blog', icon: <FaPlusSquare size={20} /> },
+    { link: '/blogs/yourBlog', label: 'Your blog', icon: <FaNewspaper size={20} /> }
   ],
   workspaceConfig: [
     { link: '/workspaces', label: 'Home', icon: <FaHome size={20} /> },

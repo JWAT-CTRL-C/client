@@ -27,7 +27,7 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
         {blog.blog_cont}
       </Title>
       <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
-        <Avatar size={'md'} src={blog.auth_img ? blog.auth_img : null} alt="it's me" />
+        <Avatar size={'md'} src={blog.auth_img ?? ''} alt="it's me" />
         <Group flex={1} align='center' wrap='nowrap' justify='space-between' className='cursor-text'>
           <Text size='xs'>{blog.auth_name}</Text>
           <Text size='xs'>{convertIsotoDate(blog.crd_at as string)}</Text>

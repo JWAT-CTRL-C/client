@@ -9,7 +9,7 @@ const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
-  const isBlog = router.pathname.startsWith('/blog');
+  const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');
 
   const [active, setActive] = useState(0);
@@ -20,7 +20,7 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    if (router.pathname === '/blog' || router.pathname === '/workspaces') {
+    if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
       setActive(0);
     }
   }, [router.pathname]);

@@ -43,7 +43,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     validate: {
       blog_tle: (blog_tle) => (blog_tle.trim().length === 0 ? 'Title is required' : null),
       blog_tag: (blog_tags) => {
-        if (blog_tags.length === 0) return 'Tags are required';
+        // if (blog_tags.length === 0) return 'Tags are required';
 
         if (workSpaceList.length === 0 && blog_tags.includes('workspaces'))
           return "You don't belong to any workspace so remove it from tag field";
@@ -85,8 +85,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const handleSelectField = (value: string | null) => {
     value && form.setFieldValue('blog_wksp', value);
 
-    const indexSelecting =
-      value && workSpaceListOnlyName.findIndex((wksp_name) => wksp_name === value);
+    const indexSelecting = value && workSpaceListOnlyName.findIndex((wksp_name) => wksp_name === value);
 
     setIndexSelectingField(indexSelecting || 0);
 
@@ -99,9 +98,9 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('blog_tle')} />
 
       <TagsInput
-        withAsterisk
         label='Tag'
         clearable
+        description='Optional'
         placeholder='Tag...'
         onClear={() => form.setFieldValue('blog_tag', [])}
         {...form.getInputProps('blog_tag')}
@@ -138,9 +137,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Source...'
         disabled={workSpaceList.length === 0}
         data={
-          form.getValues().blog_wksp
-            ? sourceList[indexSelectingField]?.map((source) => source.src_name)
-            : []
+          form.getValues().blog_wksp ? sourceList[indexSelectingField]?.map((source) => source.src_name) : []
         }
         {...form.getInputProps('blog_src')}
       />

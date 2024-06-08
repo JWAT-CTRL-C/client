@@ -12,13 +12,15 @@ const Header = () => {
 
   useEffect(() => {
     if (router.pathname.startsWith('/blog')) {
-      setActiveTab('blog');
+      setActiveTab('blogs');
     } else if (router.pathname.startsWith('/workspaces')) {
       setActiveTab('workspaces');
     }
   }, [router.pathname]);
 
   const handleTabChange = (value: string | null) => {
+    console.log(value);
+
     setActiveTab(value);
     if (value) {
       router.push(`/${value}`);
@@ -35,7 +37,7 @@ const Header = () => {
           <Tabs.List style={{ display: 'flex', width: '100%' }}>
             <Tabs.Tab
               size={'lg'}
-              value='blog'
+              value='blogs'
               className='w-1/3 flex-1  border-b-2 md:px-8'
               leftSection={<FaBlog style={iconStyle} />}>
               Blogs
