@@ -23,7 +23,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { title } from 'process';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
 
@@ -32,6 +32,7 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
   const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const theme = useMantineTheme();
+  const router = useRouter();
 
   const columns: ColumnDef<blogTableType>[] = [
     {
@@ -93,7 +94,12 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
       id: 'edit',
       header: 'Edit',
       cell: ({ row, cell, column }) => (
-        <Flex justify='center'>
+        <Flex
+          justify='center'
+          onClick={() => {
+            console.log(row.original.blog_id);
+            handleToEditBlogPage(row.original.blog_id);
+          }}>
           <ActionIcon>
             <FaRegEdit />
           </ActionIcon>
@@ -154,7 +160,9 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
     }
   };
 
-  console.log(columnFilters);
+  const handleToEditBlogPage = (id: string | number) => {
+    router.push(`/blogs/edit/${id}`);
+  };
 
   return (
     <Group>
