@@ -88,8 +88,8 @@ const CreateBlog = () => {
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workSpaceList}
-          isEditing
-          updateValues={updateValues}
+          // isEditing
+          // updateValues={updateValues}
         />
       </Group>
     </Flex>

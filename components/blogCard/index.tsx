@@ -3,17 +3,13 @@ import { convertIsotoDate } from '@/libs/utils';
 import { Avatar, Card, Flex, Group, Image, Rating, Text, Title } from '@mantine/core';
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
+  const defaultBackground =
+    'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png';
+
   return (
     <Card className='flex cursor-pointer justify-between' shadow='sm' padding='lg' radius='md' withBorder>
       <Card.Section>
-        <Image
-          src={
-            blog.blog_image ||
-            'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png'
-          }
-          height={30}
-          alt='Norway'
-        />
+        <Image src={blog.blog_image || defaultBackground} height={30} alt='Norway' />
       </Card.Section>
 
       <Flex direction={'column'} mt='md' mb='xs' wrap='nowrap' gap='md'>
@@ -27,7 +23,7 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
         {blog.blog_cont}
       </Title>
       <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
-        <Avatar size={'md'} src={blog.auth_img ?? ''} alt="it's me" />
+        <Avatar size={'md'} src={blog.auth_img} alt="it's me" />
         <Group flex={1} align='center' wrap='nowrap' justify='space-between' className='cursor-text'>
           <Text size='xs'>{blog.auth_name}</Text>
           <Text size='xs'>{convertIsotoDate(blog.crd_at as string)}</Text>
