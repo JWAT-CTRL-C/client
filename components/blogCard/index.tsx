@@ -14,17 +14,17 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
 
       <Flex direction={'column'} mt='md' mb='xs' wrap='nowrap' gap='md'>
         {/* <Badge color={`${tagColors[blog.tag]}`}>{blog.tag}</Badge> */}
-        <Text fw={500} size='md' className='cursor-text text-xl'>
+        <Text fw={500} size='md' className=' text-xl'>
           {blog.blog_tle}
         </Text>
       </Flex>
 
-      <Title className='cursor-text text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
+      <Title className=' text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
         {blog.blog_cont}
       </Title>
       <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
         <Avatar size={'md'} src={blog.auth_img} alt="it's me" />
-        <Group flex={1} align='center' wrap='nowrap' justify='space-between' className='cursor-text'>
+        <Group flex={1} align='center' wrap='nowrap' justify='space-between' className=''>
           <Text size='xs'>{blog.auth_name}</Text>
           <Text size='xs'>{convertIsotoDate(blog.crd_at as string)}</Text>
         </Group>
