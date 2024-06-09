@@ -23,6 +23,10 @@ const Sidebar = () => {
     if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
       setActive(0);
     }
+
+    if (router.pathname.includes('create') || router.pathname.includes('edit')) {
+      setActive(-1);
+    }
   }, [router.pathname]);
 
   const handleToPage = (link: string, index: number) => {
