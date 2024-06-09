@@ -186,7 +186,15 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
         </Group>
       </Flex>
       <Space h='xl' />
-      <Table striped highlightOnHover withTableBorder withColumnBorders stickyHeader stickyHeaderOffset={60}>
+      <Table
+        horizontalSpacing='md'
+        verticalSpacing='md'
+        striped
+        highlightOnHover
+        withTableBorder
+        withColumnBorders
+        stickyHeader
+        stickyHeaderOffset={60}>
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
