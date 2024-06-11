@@ -3,7 +3,9 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaSignOutAlt, FaUserCog } from 'react-icons/fa';
 import { sidebarConfig } from './sidebarConfig';
-import { signOut } from 'next-auth/react';
+
+import Cookies from 'js-cookie';
+import { removeUserAuth } from '@/libs/utils';
 
 const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
@@ -57,7 +59,8 @@ const Sidebar = () => {
           label={'Log out'}
           className={`my-5 cursor-pointer rounded-md p-4 `}
           onClick={() => {
-            signOut();
+            router.push('/auth');
+            removeUserAuth()
           }}
           leftSection={<FaSignOutAlt size={20} />}></NavLink>
       </div>

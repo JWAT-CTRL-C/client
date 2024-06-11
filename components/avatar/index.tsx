@@ -1,3 +1,4 @@
+import { removeUserAuth } from '@/libs/utils';
 import {
   Avatar,
   Button,
@@ -9,7 +10,8 @@ import {
   useMantineTheme
 } from '@mantine/core';
 import { log } from 'console';
-import { signOut } from 'next-auth/react';
+import Cookies from 'js-cookie';
+
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { FaRegMoon, FaRegSun } from 'react-icons/fa';
@@ -64,7 +66,12 @@ const AvatarComp = () => {
 
         <Menu.Divider />
 
-        <Menu.Item color='red' onClick={() => signOut()}>
+        <Menu.Item
+          color='red'
+          onClick={() => {
+            router.push('/auth');
+            removeUserAuth();
+          }}>
           Log out
         </Menu.Item>
       </Menu.Dropdown>

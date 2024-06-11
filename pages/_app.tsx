@@ -6,7 +6,7 @@ import { ReactElement, ReactNode, useState } from 'react';
 import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
-import { SessionProvider } from 'next-auth/react';
+// import { SessionProvider } from 'next-auth/react';
 import { MantineProvider } from '@mantine/core';
 import { useIsomorphicLayoutEffect } from 'react-use';
 import { HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -34,11 +34,11 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
   return (
     <QueryClientProvider client={queryClient}>
       <HydrationBoundary state={pageProps.dehydratedState}>
-        <SessionProvider session={session}>
+        {/* <SessionProvider session={session}> */}
           <MantineProvider defaultColorScheme='auto' theme={theme}>
             {getLayout(<Component {...pageProps} />)}
           </MantineProvider>
-        </SessionProvider>
+        {/* </SessionProvider> */}
       </HydrationBoundary>
     </QueryClientProvider>
   );
