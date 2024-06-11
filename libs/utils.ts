@@ -40,7 +40,7 @@ export const transformBlogData = (blogs: BlogResponse[]): BlogCardType[] => {
     crd_at: blog.crd_at,
     blog_image: blog.blogImage ? blog.blogImage.blog_img_url : null,
     auth_img: null,
-    auth_name: blog.user.fuln,
+    auth_name: blog.user.fuln || blog.user.usrn,
     blog_rtg:
       blog.blogRatings.length > 0
         ? blog.blogRatings.reduce((acc: any, rating: { blog_rtg: any }) => acc + rating.blog_rtg, 0) /

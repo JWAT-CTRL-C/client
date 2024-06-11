@@ -26,9 +26,9 @@ const Sidebar = () => {
       setActive(0);
     }
 
-    if (router.pathname.includes('create') || router.pathname.includes('edit')) {
-      setActive(-1);
-    }
+    // if (router.pathname.includes('create') || router.pathname.includes('edit')) {
+    //   setActive(-1);
+    // }
   }, [router.pathname]);
 
   const handleToPage = (link: string, index: number) => {
@@ -60,7 +60,7 @@ const Sidebar = () => {
           className={`my-5 cursor-pointer rounded-md p-4 `}
           onClick={() => {
             router.push('/auth');
-            removeUserAuth()
+            removeUserAuth();
           }}
           leftSection={<FaSignOutAlt size={20} />}></NavLink>
       </div>
