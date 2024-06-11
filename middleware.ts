@@ -1,38 +1,10 @@
-import { getToken } from 'next-auth/jwt';
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export default withAuth(
-  async function middleware(req) {
-    const token = await getToken({ req });
-    const isAuth = !!token;
-
-    const isAuthPage = req.nextUrl.pathname.startsWith('/auth');
-
-    if (isAuthPage) {
-      if (isAuth) {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-    } else {
-      if (!isAuth) {
-        let from = req.nextUrl.pathname;
-
-        if (req.nextUrl.search) {
-          from += req.nextUrl.search;
-        }
-
-        return NextResponse.redirect(new URL(`/auth?callbackUrl=${encodeURIComponent(from)}`, req.url));
-      }
-    }
-  },
-  {
-    callbacks: {
-      authorized: () => {
-        return true;
-      }
-    }
+export function middleware(request: NextRequest) {
+  if (request.url === '/') {
+    return NextResponse.redirect(new URL('/blogs', request.url));
   }
-);
+}
 
 export const config = {
   matcher: ['/((?!api|_next|.*\\..*).*)']

@@ -12,6 +12,8 @@ import { useIsomorphicLayoutEffect } from 'react-use';
 import { HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { theme } from '@/libs/theme';
 import { cn } from '@/libs/utils';
+import { AbilityContext } from '@/providers/Can';
+import ability from '@/libs/abilities/UserAbilities';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -36,7 +38,9 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
       <HydrationBoundary state={pageProps.dehydratedState}>
         <SessionProvider session={session}>
           <MantineProvider defaultColorScheme='auto' theme={theme}>
-            {getLayout(<Component {...pageProps} />)}
+            <AbilityContext.Provider value={ability()}>
+              {getLayout(<Component {...pageProps} />)}
+            </AbilityContext.Provider>
           </MantineProvider>
         </SessionProvider>
       </HydrationBoundary>
