@@ -20,11 +20,11 @@ export const convertIsotoDate = (isoString: string): string => {
   return `${day}/${month}/${year}`;
 };
 
-export const setUserAuth = (data: { accessToken: string; refreshToken: string; user_id: string }) => {
+export const setUserAuth = (data: { access_token: string; refresh_token: string; user_id: string }) => {
   Cookies.set('userAuth', JSON.stringify(data), { expires: 7 });
 };
 
-export const getUserAuth = () => {
+export const getUserAuth = (): LoginResponse => {
   const userAuth = Cookies.get('userAuth');
   return userAuth ? JSON.parse(userAuth) : null;
 };

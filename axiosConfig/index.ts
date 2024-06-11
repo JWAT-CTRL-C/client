@@ -19,10 +19,10 @@ axiosInstance.interceptors.request.use(
 
     if (userAuth) {
       const userId = userAuth.user_id;
-      let { accessToken } = userAuth;
+      let { access_token } = userAuth;
 
       // config.headers.Authorization = `Bearer ${accessToken}`;
-      if (isTokenExpired(accessToken)) {
+      if (isTokenExpired(access_token)) {
         try {
           let newToken = await refreshToken();
           // if (newToken) {
@@ -32,7 +32,7 @@ axiosInstance.interceptors.request.use(
           //   // Retry the original request
           // }
 
-          accessToken = newToken;
+          access_token = newToken;
         } catch (error) {
           console.error('Unable to refresh token:', error);
           removeUserAuth();
@@ -41,8 +41,8 @@ axiosInstance.interceptors.request.use(
         }
       }
 
-      if (accessToken) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
+      if (access_token) {
+        config.headers.Authorization = `Bearer ${access_token}`;
       }
       if (userId) {
         config.headers['x-user-id'] = userId.toString();

@@ -5,6 +5,6 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   user_id: string;
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
 };

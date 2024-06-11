@@ -11,7 +11,6 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     const response = await axios.post<LoginResponse>(`${baseURL}/auth/login`, credentials);
 
     const data = response.data;
-    Cookies.set('userAuth', JSON.stringify(data), { expires: 7 });
 
     setUserAuth(data);
 
@@ -31,9 +30,11 @@ export const refreshToken = async (): Promise<string> => {
       throw new Error('refreshToken : No refresh token available');
     }
 
-    const { refreshToken, user_id } = userAuth;
+    const { refresh_token, user_id } = userAuth;
+    console.log('userAuth', userAuth);
+
     const response = await axios.post<RefreshTokenResponse>(`${baseURL}/auth/refresh`, {
-      refresh_token: refreshToken,
+      refresh_token: refresh_token,
       user_id: user_id.toString()
     });
 
@@ -43,7 +44,7 @@ export const refreshToken = async (): Promise<string> => {
       user_id: userAuth.user_id,
       ...newAuth
     });
-    return newAuth.accessToken;
+    return newAuth.access_token;
   } catch (error: any) {
     console.error('Unable to refresh token:', error.response?.data?.message || error.message);
     removeUserAuth();
