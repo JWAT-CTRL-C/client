@@ -1,15 +1,22 @@
 import { BlogCardType } from '@/libs/types/blogCardType';
 import { convertIsotoDate } from '@/libs/utils';
 import { Avatar, Card, Flex, Group, Image, Rating, Text, Title } from '@mantine/core';
+import { useState } from 'react';
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   const defaultBackground =
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png';
 
+  const [imageSrc, setImageSrc] = useState(blog.blog_image || defaultBackground);
+
+  const handleImageError = () => {
+    setImageSrc(defaultBackground);
+  };
+
   return (
     <Card className='flex cursor-pointer justify-between' shadow='sm' padding='lg' radius='md' withBorder>
       <Card.Section>
-        <Image src={blog.blog_image || defaultBackground} height={30} alt='Norway' />
+        <Image height={30} src={imageSrc} alt={blog.blog_tle} onError={handleImageError} />
       </Card.Section>
 
       <Flex direction={'column'} mt='md' mb='xs' wrap='nowrap' gap='md'>
@@ -31,7 +38,7 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
       </Group>
 
       <Group>
-        <Rating defaultValue={blog.blog_rtg} readOnly />
+        <Rating defaultValue={blog.blog_rtg ?? 1} readOnly />
       </Group>
     </Card>
   );

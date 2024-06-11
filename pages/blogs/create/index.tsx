@@ -1,10 +1,35 @@
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { useUploadImage } from '@/libs/hooks/mutations/blogMutations';
+
 import { blogFormType } from '@/libs/types/blogFormType';
 import { workspacesType } from '@/libs/types/workspacesType';
+import { fetchBlogs } from '@/services/blogServices';
 import { Center, Flex, Group, Title } from '@mantine/core';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+
+export async function getServerSideProps() {
+  const queryClient = new QueryClient();
+
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: ['blogs'],
+      queryFn: fetchBlogs
+    });
+  } catch (error) {
+    console.error('Error prefetching blogs:', error);
+  }
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+}
 
 const CreateBlog = () => {
+  const { uploadImage, isPending, isError, errorMessage, imageUrl } = useUploadImage();
+
   // Use api to get workspaces belong to current user
   const workSpaceList: workspacesType[] = [
     {
@@ -75,8 +100,17 @@ const CreateBlog = () => {
     blog_src: firstSource
   };
 
-  const handleCreateBlog = (values: blogFormType) => {
+  const handleCreateBlog = async (values: blogFormType) => {
     console.log('handleCreateBlog:', values);
+    let imageUrl = '';
+
+    if (values.blog_img && typeof values.blog_img !== 'string') {
+      imageUrl = await uploadImage(values.blog_img);
+    } else if (typeof values.blog_img === 'string') {
+      imageUrl = values.blog_img;
+    }
+
+    console.log('Blog image URL:', imageUrl);
   };
   return (
     <Flex direction='column' gap={3}>
