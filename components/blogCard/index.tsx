@@ -2,10 +2,12 @@ import { BlogCardType } from '@/libs/types/blogCardType';
 import { convertIsotoDate } from '@/libs/utils';
 import { Avatar, Card, Flex, Group, Image, Rating, Text, Title, useMantineTheme } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   const theme = useMantineTheme();
+  const router = useRouter();
 
   const defaultBackground =
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png';
@@ -17,7 +19,13 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
   };
 
   return (
-    <Card className='flex cursor-pointer justify-between' shadow='sm' padding='lg' radius='md' withBorder>
+    <Card
+      onClick={() => router.push(`blogs/${blog.blog_id}`)}
+      className='flex cursor-pointer justify-between'
+      shadow='sm'
+      padding='lg'
+      radius='md'
+      withBorder>
       <Card.Section>
         <Image
           h={200}

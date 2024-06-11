@@ -40,3 +40,25 @@ export const createBlog = async (blogData: blogFormType): Promise<void> => {
     throw error;
   }
 };
+
+export const fetchBlogById = async (blog_id: string) => {
+  try {
+    const response = await axiosInstance.get(`/blogs/${blog_id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const fetchBlogsForCurrentUser = async () => {
+  try {
+    const response = await axiosInstance.get(`/blogs/for/user`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchBlogsForCurrentUser error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};

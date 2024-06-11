@@ -27,4 +27,6 @@ export type BlogResponse = {
   };
   blogComments: any[];
   blogRatings: any[];
+  workspace: any;
+  resource: any;
 };

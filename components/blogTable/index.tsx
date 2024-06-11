@@ -27,38 +27,55 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
 
-const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
+const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
   const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const theme = useMantineTheme();
   const router = useRouter();
 
+  // fix : dupliate select field
+  const allTagsSet = new Set<Tag>();
+
+  dataTable.forEach((blog) => {
+    blog.blog_tag.forEach((tag) => {
+      allTagsSet.add(tag);
+    });
+  });
+
+  const allTags = Array.from(allTagsSet);
+  const tagOptions = allTags.map((tag) => ({ value: tag.tag_id.toString(), label: tag.tag_name }));
   const columns: ColumnDef<blogTableType>[] = [
     {
       accessorKey: 'blog_id',
       header: 'Blog ID',
-      cell: ({ row }) => row.original.blog_id
+      cell: ({ row }) => (
+        <Text className='cursor-pointer' fw={500} onClick={() => handleToBLog(row.original.blog_id)}>
+          {row.original.blog_id}
+        </Text>
+      )
     },
     {
       accessorKey: 'blog_tle',
       header: 'Title',
-      cell: ({ row }) => row.original.blog_tle
+      cell: ({ row }) => row.original.blog_tle,
+      filterFn: (row, columnId, filterValue) => {
+        return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
+      }
     },
     {
       accessorKey: 'blog_cmt',
       header: 'Comments',
-      cell: ({ row }) => row.original.blog_cmt.length,
-      filterFn: (row, columnId, filterValue) => {
-        return row.original.blog_tle === filterValue;
-      }
+      cell: ({ row }) => row.original.blog_cmt.length
     },
     {
       accessorKey: 'blog_rtg',
       header: 'Rating',
       cell: ({ row }) =>
-        row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
-        row.original.blog_rtg.length
+        row.original.blog_rtg.length > 0
+          ? row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
+            row.original.blog_rtg.length
+          : 0
     },
     {
       accessorKey: 'crd_at',
@@ -121,7 +138,7 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
   ];
 
   const table = useReactTable({
-    data: data || [],
+    data: dataTable || [],
     columns,
     state: {
       columnFilters
@@ -131,15 +148,13 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
+
     columnResizeMode: 'onChange'
   });
 
   const handleSetFilterField = (value: string) => {
     setFilterField(value);
-    setColumnFilters((prev) => [
-      ...prev.filter((filter) => filter.id !== 'blog_tle'),
-      { id: 'blog_tle', value }
-    ]);
+    setColumnFilters([{ id: 'blog_tle', value }]);
   };
 
   const handleSetFilterByTag = (tag_id: string | null) => {
@@ -150,7 +165,7 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
         { id: 'blog_tag', value: '' }
       ]);
     } else {
-      const selectedTag = tags.find((tag) => tag.tag_id.toString() === tag_id);
+      const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
       setFilterByTag(selectedTag || null);
       const tagName = selectedTag ? selectedTag.tag_name : '';
       setColumnFilters((prev) => [
@@ -164,8 +179,13 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
     router.push(`/blogs/edit/${id}`);
   };
 
+  const handleToBLog = (id: string | number) => {
+    router.push(`/blogs/${id}`);
+  };
+
   return (
     <Group>
+      {}
       <Flex align={'center'} justify={'space-between'} className='w-full '>
         <Title>Your Blogs</Title>
         <Group>
@@ -175,14 +195,14 @@ const BlogTable = ({ data, tags }: { data: blogTableType[]; tags: Tag[] }) => {
             onChange={(event) => handleSetFilterField(event.currentTarget.value)}
             rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
           />
-          <Select
+          {/* <Select
             placeholder='Filter by tag...'
-            data={tags.map((tag) => ({ value: tag.tag_id.toString(), label: tag.tag_name }))}
+            data={tagOptions}
             clearable
             checkIconPosition='right'
             value={filterByTag ? filterByTag.tag_id.toString() : null}
             onChange={(value) => handleSetFilterByTag(value)}
-          />
+          /> */}
         </Group>
       </Flex>
       <Space h='xl' />

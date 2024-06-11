@@ -6,6 +6,7 @@ import { BlogCardType } from './types/blogCardType';
 import { BlogResponse } from './types/blogResponse';
 import { jwtDecode } from 'jwt-decode';
 import { cookies } from 'next/headers';
+import { blogTableType } from './types/blogTableType';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -54,3 +55,18 @@ export const isTokenExpired = (token: string): boolean => {
   const decodedToken: any = jwtDecode(token);
   return decodedToken.exp < Date.now() / 1000;
 };
+
+export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
+  return blogs.map((blog) => ({
+    blog_id: blog.blog_id,
+    blog_tle: blog.blog_tle,
+    blog_cont: blog.blog_cont,
+    crd_at: blog.crd_at,
+    upd_at: blog.upd_at,
+    blog_tag: blog.tags,
+    blog_cmt: blog.blogComments,
+    blog_rtg: blog.blogRatings,
+    blog_img_url: blog.blogImage?.blog_img_url,
+  }));
+};
+
