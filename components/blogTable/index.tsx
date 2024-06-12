@@ -1,3 +1,4 @@
+import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogsCurrentUserByTitle } from '@/libs/hooks/queries/blogQueries';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
@@ -34,6 +35,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   // const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
   const [tableValues, setTableValues] = useState<blogTableType[]>(dataTable);
   // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  // hook delete blog:
+  const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
   const theme = useMantineTheme();
   const router = useRouter();
 
@@ -44,7 +47,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   let displayData = filterField ? transformedBlogs : dataTable;
 
   // fix : dupliate select field
-  const allTagsSet = new Set<Tag>();
+  // const allTagsSet = new Set<Tag>();
 
   // dataTable.forEach((blog) => {
   //   blog.blog_tag.forEach((tag) => {
@@ -137,7 +140,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       id: 'delete',
       header: 'Delete',
       cell: ({ row }) => (
-        <Flex justify='center'>
+        <Flex justify='center' onClick={async () => await handleDeleteBlogPage(row.original.blog_id)}>
           <ActionIcon color='red'>
             <FaRegTrashAlt />
           </ActionIcon>
@@ -196,6 +199,10 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   const handleToBLog = (id: string | number) => {
     router.push(`/blogs/${id}`);
+  };
+
+  const handleDeleteBlogPage = async (blog_id: string) => {
+    await removeBlog(blog_id);
   };
 
   return (

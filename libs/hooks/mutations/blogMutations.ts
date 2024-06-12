@@ -1,5 +1,6 @@
 import { blogFormType } from '@/libs/types/blogFormType';
-import { createBlog, uploadImage } from '@/services/blogServices';
+import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
+import { createBlog, removeBlogById, uploadImage } from '@/services/blogServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -39,6 +40,29 @@ export const useCreateBlog = () => {
 
   return {
     createBlog: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    isError: mutation.isError,
+    errorMessage: mutation.error?.message || null
+  };
+};
+
+
+
+export const useRemoveBlogById = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<RemoveBlogResponse, Error, string>({
+    mutationFn: async (blog_id: string) => await removeBlogById(blog_id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['blogs-current-user'] });
+    },
+    onError: (error) => {
+      console.error('Error removing blog:', error);
+    }
+  });
+
+  return {
+    removeBlog: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null

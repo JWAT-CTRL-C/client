@@ -80,3 +80,14 @@ export const filterBlogsForCurrentUserByTitle = async (blog_tle: string) => {
     throw error;
   }
 };
+
+export const removeBlogById = async (blog_id: string) => {
+  try {
+    const response = await axiosInstance.delete(`/blogs/${blog_id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('removeBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
