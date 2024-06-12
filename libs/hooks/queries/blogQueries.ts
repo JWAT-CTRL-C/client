@@ -38,3 +38,13 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
     //enabled: !!debouncedTitle
   });
 };
+
+export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
+  const debouncedTitle = useDebounce(blog_tle, 300);
+
+  return useQuery<BlogResponse[], Error>({
+    queryKey: ['blogs-current-user', debouncedTitle],
+    queryFn: async () => await filterBlogsForCurrentUserByTitle(debouncedTitle)
+    //enabled: !!debouncedTitle
+  });
+};
