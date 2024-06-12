@@ -1,11 +1,13 @@
+import { useFetchBlogsCurrentUserByTitle } from '@/libs/hooks/queries/blogQueries';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
-import { convertIsotoDate } from '@/libs/utils';
+import { convertIsotoDate, transformBlogTableType } from '@/libs/utils';
 import {
   ActionIcon,
   Flex,
   Group,
   Input,
+  Loader,
   Select,
   Space,
   Table,
@@ -24,15 +26,23 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
-  const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  // const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
+  const [tableValues, setTableValues] = useState<blogTableType[]>(dataTable);
+  // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const theme = useMantineTheme();
   const router = useRouter();
+
+  // Call hook to fetch filtered blogs
+  const { data: filteredBlogs, isLoading, isError } = useFetchBlogsCurrentUserByTitle(filterField.trim());
+
+  let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
+  let displayData = filterField ? transformedBlogs : dataTable;
+  console.log(displayData);
 
   // fix : dupliate select field
   const allTagsSet = new Set<Tag>();
@@ -58,10 +68,10 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_tle',
       header: 'Title',
-      cell: ({ row }) => row.original.blog_tle,
-      filterFn: (row, columnId, filterValue) => {
-        return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
-      }
+      cell: ({ row }) => row.original.blog_tle
+      // filterFn: (row, columnId, filterValue) => {
+      //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
+      // }
     },
     {
       accessorKey: 'blog_cmt',
@@ -138,41 +148,47 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   ];
 
   const table = useReactTable({
-    data: dataTable || [],
+    data: tableValues,
     columns,
     state: {
-      columnFilters
+      // columnFilters
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
+    // onColumnFiltersChange: setColumnFilters,
 
     columnResizeMode: 'onChange'
   });
 
+  useEffect(() => {
+    let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
+    let displayData = filterField ? transformedBlogs : dataTable;
+    setTableValues(displayData);
+  }, [filterField, dataTable, tableValues]);
+
   const handleSetFilterField = (value: string) => {
     setFilterField(value);
-    setColumnFilters([{ id: 'blog_tle', value }]);
+    // setColumnFilters([{ id: 'blog_tle', value }]);
   };
 
   const handleSetFilterByTag = (tag_id: string | null) => {
-    if (tag_id === null) {
-      setFilterByTag(null);
-      setColumnFilters((prev) => [
-        ...prev.filter((filter) => filter.id !== 'blog_tag'),
-        { id: 'blog_tag', value: '' }
-      ]);
-    } else {
-      const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
-      setFilterByTag(selectedTag || null);
-      const tagName = selectedTag ? selectedTag.tag_name : '';
-      setColumnFilters((prev) => [
-        ...prev.filter((filter) => filter.id !== 'blog_tag'),
-        { id: 'blog_tag', value: tagName }
-      ]);
-    }
+    // if (tag_id === null) {
+    //   setFilterByTag(null);
+    //   setColumnFilters((prev) => [
+    //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
+    //     { id: 'blog_tag', value: '' }
+    //   ]);
+    // } else {
+    //   const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
+    //   setFilterByTag(selectedTag || null);
+    //   const tagName = selectedTag ? selectedTag.tag_name : '';
+    //   setColumnFilters((prev) => [
+    //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
+    //     { id: 'blog_tag', value: tagName }
+    //   ]);
+    // }
   };
 
   const handleToEditBlogPage = (id: string | number) => {
@@ -190,7 +206,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         <Title>Your Blogs</Title>
         <Group>
           <Input
-            placeholder='Search...'
+            placeholder='Filter title...'
             value={filterField}
             onChange={(event) => handleSetFilterField(event.currentTarget.value)}
             rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
@@ -220,9 +236,11 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.isPlaceholder ? null : (
+                    <div className='my-1'>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </div>
+                  )}
                 </Table.Th>
               ))}
             </Table.Tr>
@@ -232,9 +250,13 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           {table.getRowModel().rows.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className='text-center'>
-                <Text c={theme.primaryColor} fw={'bold'}>
-                  Not Found
-                </Text>
+                {tableValues.length === 0 && !isLoading && (
+                  <Text c={theme.primaryColor} fw={'bold'}>
+                    Not Found
+                  </Text>
+                )}
+
+                {isLoading && <Loader c={theme.primaryColor} />}
               </Table.Td>
             </Table.Tr>
           ) : (

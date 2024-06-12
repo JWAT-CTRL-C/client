@@ -1,6 +1,7 @@
 import axiosInstance from '@/axiosConfig';
 import { UploadImageResponse } from '@/libs/types/UploadImageResponse';
 import { blogFormType } from '@/libs/types/blogFormType';
+import { filterFalsyFields } from '@/libs/utils';
 
 export const fetchBlogs = async () => {
   try {
@@ -28,12 +29,18 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 export const createBlog = async (blogData: blogFormType): Promise<void> => {
   try {
-    const response = await axiosInstance.post('/blogs', {
+    const filteredBlogData = filterFalsyFields({
       blog_tle: blogData.blog_tle,
       blog_cont: blogData.blog_cont,
       tags: blogData.blog_tag,
-      blog_img_url: blogData.blog_img
+      blog_img_url: blogData.blog_img,
+      wksp_id: blogData.blog_wksp,
+      resrc_id: blogData.blog_src
     });
+
+    console.log(filteredBlogData);
+
+    const response = await axiosInstance.post('/blogs', filteredBlogData);
     return response.data;
   } catch (error: any) {
     console.error('create blog error:', error.response?.data?.message || error.message);
@@ -59,6 +66,17 @@ export const fetchBlogsForCurrentUser = async () => {
     return response.data;
   } catch (error: any) {
     console.error('fetchBlogsForCurrentUser error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const filterBlogsForCurrentUserByTitle = async (blog_tle: string) => {
+  try {
+    const response = await axiosInstance.get(`/blogs/filter/title?blog_tle=${blog_tle}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('filterBlogsForCurrentUserByTitle error:', error.response?.data?.message || error.message);
     throw error;
   }
 };
