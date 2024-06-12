@@ -46,14 +46,14 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   // fix : dupliate select field
   const allTagsSet = new Set<Tag>();
 
-  dataTable.forEach((blog) => {
-    blog.blog_tag.forEach((tag) => {
-      allTagsSet.add(tag);
-    });
-  });
+  // dataTable.forEach((blog) => {
+  //   blog.blog_tag.forEach((tag) => {
+  //     allTagsSet.add(tag);
+  //   });
+  // });
 
-  const allTags = Array.from(allTagsSet);
-  const tagOptions = allTags.map((tag) => ({ value: tag.tag_id.toString(), label: tag.tag_name }));
+  // const allTags = Array.from(allTagsSet);
+  // const tagOptions = allTags.map((tag) => ({ value: tag.tag_id.toString(), label: tag.tag_name }));
   const columns: ColumnDef<blogTableType>[] = [
     {
       accessorKey: 'blog_id',
