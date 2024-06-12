@@ -25,7 +25,7 @@ type BlogFormProps = {
 
 const initialValues: blogFormType = {
   blog_tle: '',
-  blog_tag: [] as string[],
+  blog_tag: [],
   blog_wksp: null,
   blog_img: null as File | null,
   blog_cont: '',
@@ -61,8 +61,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         return null;
       },
       blog_cont: (blog_cont) =>
-        blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null
-      // blog_img: (blog_img) => (blog_img === null ? 'Background image is required' : null)
+        blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null,
+      blog_img: (blog_img) => (blog_img === null ? 'Background image is required' : null)
     }
   });
 
@@ -79,9 +79,20 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   }
 
   const handleSubmit = (values: blogFormType) => {
-    handleSubmitForm(values);
-  };
+    // Lấy ID của workspace và source từ form values
+    const selectedWorkspace = workSpaceList.find((workspace) => workspace.wksp_name === values.blog_wksp);
+    const selectedSource = sourceList[indexSelectingField]?.find(
+      (source) => source.src_name === values.blog_src
+    );
 
+    const updatedValues = {
+      ...values,
+      blog_wksp: selectedWorkspace?.wksp_id || null,
+      blog_src: selectedSource?.src_id || null
+    };
+
+    handleSubmitForm(updatedValues as blogFormType);
+  };
   const handleSelectField = (value: string | null) => {
     value && form.setFieldValue('blog_wksp', value);
 
@@ -144,7 +155,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       <FileInput
         clearable
-        description='Optional'
+        withAsterisk
+        // description='Optional'
         rightSection={<FaFileImage />}
         label='Background Image'
         accept='image/*'

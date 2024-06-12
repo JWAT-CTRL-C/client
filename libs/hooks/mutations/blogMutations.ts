@@ -30,8 +30,7 @@ export const useCreateBlog = () => {
     mutationFn: createBlog,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['blogs'] });
-       router.push('/blogs');
-      console.log('Blog created successfully');
+      router.push('/blogs');
     },
     onError: (error) => {
       console.error('Error creating blog:', error);

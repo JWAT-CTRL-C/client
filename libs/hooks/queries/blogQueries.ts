@@ -1,6 +1,13 @@
 import { BlogResponse } from '@/libs/types/blogResponse';
-import { fetchBlogById, fetchBlogs, fetchBlogsForCurrentUser } from '@/services/blogServices';
+import {
+  fetchBlogById,
+  fetchBlogs,
+  fetchBlogsForCurrentUser,
+  filterBlogsForCurrentUserByTitle
+} from '@/services/blogServices';
+
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '../useDebounce';
 
 export const useFetchBlogs = () => {
   return useQuery({
@@ -22,5 +29,15 @@ export const useFetchBlogsCurrentUser = () => {
     queryKey: ['blogs-curent-user'],
     queryFn: async () => await fetchBlogsForCurrentUser()
     // enabled: !!getUserAuth()
+  });
+};
+
+export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
+  const debouncedTitle = useDebounce(blog_tle, 300);
+
+  return useQuery<BlogResponse[], Error>({
+    queryKey: ['blogs-current-user', debouncedTitle],
+    queryFn: async () => await filterBlogsForCurrentUserByTitle(debouncedTitle)
+    //enabled: !!debouncedTitle
   });
 };

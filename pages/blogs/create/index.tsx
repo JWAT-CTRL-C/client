@@ -4,6 +4,7 @@ import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutati
 
 import { blogFormType } from '@/libs/types/blogFormType';
 import { workspacesType } from '@/libs/types/workspacesType';
+import { filterFalsyFields } from '@/libs/utils';
 import { fetchBlogs } from '@/services/blogServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
@@ -83,13 +84,20 @@ const CreateBlog = () => {
   };
 
   const handleCreateBlog = async (values: blogFormType) => {
-    //console.log('handleCreateBlog:', values);
+    // console.log(values);
+
     let imageUrlResponse = '';
 
     if (values.blog_img && typeof values.blog_img !== 'string') {
       imageUrlResponse = await uploadImage(values.blog_img);
-      await createBlog({ ...values, blog_img: imageUrlResponse });
     }
+
+    const filteredValues = filterFalsyFields({
+      ...values,
+      blog_img: imageUrlResponse || values.blog_img
+    });
+
+    await createBlog(filteredValues as blogFormType);
   };
 
   if (isPendingCreateBlog)
