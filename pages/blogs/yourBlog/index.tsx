@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   try {
     await queryClient.prefetchQuery({
-      queryKey: ['blogs-curent-user'],
+      queryKey: ['blogs-current-user'],
       queryFn: async () => await fetchBlogsForCurrentUser()
     });
   } catch (error) {

@@ -100,14 +100,10 @@ const fakeDataBlogCards: BlogCardType[] = [
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ['blogs'],
-      queryFn: fetchBlogs
-    });
-  } catch (error) {
-    console.error('Error prefetching blogs:', error);
-  }
+  await queryClient.prefetchQuery({
+    queryKey: ['blogs'],
+    queryFn: fetchBlogs
+  });
 
   return {
     props: {
@@ -115,6 +111,7 @@ export async function getServerSideProps() {
     }
   };
 }
+
 const Blogs = () => {
   const { data: blogs, isLoading, isError } = useFetchBlogs();
 
