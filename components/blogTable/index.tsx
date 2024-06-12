@@ -42,7 +42,6 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
   let displayData = filterField ? transformedBlogs : dataTable;
-  console.log(displayData);
 
   // fix : dupliate select field
   const allTagsSet = new Set<Tag>();

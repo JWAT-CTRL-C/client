@@ -33,7 +33,6 @@ const BlogInfo = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data: blog, isLoading, isError } = useFetchBlogById(id as string);
-  console.log(blog);
 
   return (
     <Flex direction={'column'} gap={'lg'}>
