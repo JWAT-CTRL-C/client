@@ -1,10 +1,17 @@
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
+
 import { blogFormType } from '@/libs/types/blogFormType';
 import { workspacesType } from '@/libs/types/workspacesType';
-import { Center, Flex, Group, Title } from '@mantine/core';
+import { fetchBlogs } from '@/services/blogServices';
+import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 const CreateBlog = () => {
+  const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
+
   // Use api to get workspaces belong to current user
   const workSpaceList: workspacesType[] = [
     {
@@ -75,9 +82,21 @@ const CreateBlog = () => {
     blog_src: firstSource
   };
 
-  const handleCreateBlog = (values: blogFormType) => {
-    console.log('handleCreateBlog:', values);
+  const handleCreateBlog = async (values: blogFormType) => {
+    //console.log('handleCreateBlog:', values);
+    let imageUrlResponse = '';
+
+    if (values.blog_img && typeof values.blog_img !== 'string') {
+      imageUrlResponse = await uploadImage(values.blog_img);
+      await createBlog({ ...values, blog_img: imageUrlResponse });
+    }
   };
+
+  if (isPendingCreateBlog)
+    return (
+      <LoadingOverlay visible={isPendingCreateBlog} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+    );
+
   return (
     <Flex direction='column' gap={3}>
       <Center>
@@ -87,9 +106,9 @@ const CreateBlog = () => {
         {/* To use updateform please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
-          workSpaceList={workSpaceList}
-          isEditing
-          updateValues={updateValues}
+          workSpaceList={[]}
+          // isEditing
+          // updateValues={updateValues}
         />
       </Group>
     </Flex>

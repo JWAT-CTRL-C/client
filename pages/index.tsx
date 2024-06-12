@@ -2,7 +2,7 @@ import { Button, useMantineColorScheme } from '@mantine/core';
 import { signOut, useSession } from 'next-auth/react';
 
 export default function Home() {
-  const { data } = useSession();
+  // const { data } = useSession();
   const { toggleColorScheme } = useMantineColorScheme({ keepTransitions: true });
 
   return (
