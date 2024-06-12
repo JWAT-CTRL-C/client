@@ -1,10 +1,9 @@
+import { baseURL } from '@/axiosConfig';
 import { RefreshTokenResponse } from '@/libs/types/RefreshTokenResponse';
 import { LoginRequest, LoginResponse } from '@/libs/types/authType';
 import { getUserAuth, removeUserAuth, setUserAuth } from '@/libs/utils';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
-const baseURL = 'http://localhost:8080/api';
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   try {

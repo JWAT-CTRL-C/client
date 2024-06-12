@@ -11,6 +11,6 @@ export const sidebarConfig: SidebarConfig = {
     { link: '/workspaces', label: 'Home', icon: <FaHome size={20} /> },
     { link: '/workspaces/task', label: 'Task', icon: <FaTasks size={20} /> },
     { link: '/workspaces/history', label: 'History', icon: <FaHistory size={20} /> },
-    { link: '/workspaces/create', label: 'New workspaces', icon: <FaNetworkWired size={20} /> }
+    { link: '/workspaces/create', label: 'New workspace', icon: <FaNetworkWired size={20} /> }
   ]
 };

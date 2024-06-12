@@ -3,8 +3,9 @@ import Cookies from 'js-cookie';
 import { getUserAuth, setUserAuth, removeUserAuth, isTokenExpired } from '@/libs/utils';
 import { refreshToken } from '@/services/authenServices';
 
+export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: baseURL,
   // timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
