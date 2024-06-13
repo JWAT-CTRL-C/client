@@ -30,7 +30,7 @@ const AvatarComp = () => {
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
         <Indicator inline label='2' size={16} className='cursor-pointer'>
-          <Avatar src={user?.avatar || '/images/default_avatar.png'} alt="it's me" />
+          <Avatar src={user?.avatar || '/images/default-avatar.png'} alt="it's me" />
         </Indicator>
       </Menu.Target>
 
