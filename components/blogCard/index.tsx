@@ -1,5 +1,5 @@
 import { BlogCardType } from '@/libs/types/blogCardType';
-import { convertIsotoDate } from '@/libs/utils';
+import { convertIsoToDate } from '@/libs/utils';
 import { Avatar, Card, Flex, Group, Image, Rating, Text, Title, useMantineTheme } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
@@ -51,7 +51,7 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
         <Avatar size={'md'} src={blog.auth_img} alt="it's me" />
         <Group flex={1} align='center' wrap='nowrap' justify='space-between' className=''>
           <Text size='xs'>{blog.auth_name}</Text>
-          <Text size='xs'>{convertIsotoDate(blog.crd_at as string)}</Text>
+          <Text size='xs'>{convertIsoToDate(blog.crd_at as string)}</Text>
         </Group>
       </Group>
 

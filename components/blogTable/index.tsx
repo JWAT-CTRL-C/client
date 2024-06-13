@@ -1,6 +1,6 @@
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
-import { convertIsotoDate } from '@/libs/utils';
+import { convertIsoToDate } from '@/libs/utils';
 import {
   ActionIcon,
   Flex,
@@ -80,12 +80,12 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'crd_at',
       header: 'Created At',
-      cell: ({ row }) => convertIsotoDate(row.original.crd_at as string)
+      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
-      cell: ({ row }) => convertIsotoDate(row.original.upd_at as string)
+      cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',

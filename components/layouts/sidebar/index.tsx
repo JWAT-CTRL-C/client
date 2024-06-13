@@ -1,11 +1,11 @@
-import { Group, NavLink, Text } from '@mantine/core';
+import { NavLink } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaSignOutAlt, FaUserCog } from 'react-icons/fa';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { sidebarConfig } from './sidebarConfig';
 
-import Cookies from 'js-cookie';
 import { removeUserAuth } from '@/libs/utils';
+import ChangeInformation from '@/components/profile/ChangeInformation';
 
 const Sidebar = () => {
   const { blogConfig, workspaceConfig } = sidebarConfig;
@@ -50,10 +50,7 @@ const Sidebar = () => {
         ))}
       </div>
       <div className=''>
-        <NavLink
-          label={'Change account'}
-          className={`my-5 cursor-pointer rounded-md p-4 `}
-          leftSection={<FaUserCog size={20} />}></NavLink>
+        <ChangeInformation />
 
         <NavLink
           label={'Log out'}

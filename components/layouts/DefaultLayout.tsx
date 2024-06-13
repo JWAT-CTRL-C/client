@@ -1,8 +1,7 @@
 import React, { ReactNode, useEffect } from 'react';
 import Sidebar from './sidebar';
-import { AppShell, Burger, Container, Group } from '@mantine/core';
+import { AppShell, Burger, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { FaAviato } from 'react-icons/fa';
 import Header from './header';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {

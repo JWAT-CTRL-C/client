@@ -16,7 +16,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
     return data;
   } catch (error: any) {
     console.error('Error during login:', error);
-    throw new Error(error.response?.data?.message || 'Failed to login');
+    throw error || new Error(error.response?.data?.message || 'Failed to login');
   }
 };
 
