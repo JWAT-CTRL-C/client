@@ -1,38 +1,42 @@
-import { useToggle, upperFirst, useDisclosure } from '@mantine/hooks';
-import { useForm } from '@mantine/form';
-import isEmail from 'validator/lib/isEmail';
-import {
-  TextInput,
-  PasswordInput,
-  Text,
-  Paper,
-  Group,
-  PaperProps,
-  Button,
-  Divider,
-  Checkbox,
-  Anchor,
-  Stack
-} from '@mantine/core';
-import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
 import { GoogleButton } from '@/components/shared/GoogleButton';
 import { TwitterButton } from '@/components/shared/TwitterButton';
+import { useLogin } from '@/libs/hooks/mutations/useLogin';
+import {
+  Anchor,
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  Paper,
+  PaperProps,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { upperFirst, useToggle } from '@mantine/hooks';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import isEmail from 'validator/lib/isEmail';
 
 export function AuthenticationForm(props: PaperProps) {
   const [type, toggleType] = useToggle(['login', 'register']);
   const [isLoading, setIsLoading] = useState(false);
+  const { login: loginFunc, isPending, isError, errorMessage } = useLogin();
+  const router = useRouter();
+
   const form = useForm({
     initialValues: {
-      email: '',
+      username: '',
       name: '',
       password: '',
       terms: true
     },
     validate: {
-      email: (val) => (isEmail(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null)
+      username: (val) => (val.trim().length === 0 ? 'Invalid email' : null),
+      // password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null)
+      password: (val) => (val.trim().length === 0 ? 'Password is required' : null)
     }
   });
 
@@ -42,11 +46,14 @@ export function AuthenticationForm(props: PaperProps) {
     if (type === 'login') {
       try {
         setIsLoading(true);
-        await signIn('credentials', {
-          email: values.email,
-          password: values.password,
-          callbackUrl: searchParams.get('callbackUrl') || '/'
-        });
+
+        loginFunc({ usrn: values.username, pass: values.password });
+
+        // await signIn('credentials', {
+        //   email: values.email,
+        //   password: values.password,
+        //   callbackUrl: searchParams.get('callbackUrl') || '/'
+        // });
       } catch (e) {
         console.log(e);
       } finally {
@@ -68,7 +75,7 @@ export function AuthenticationForm(props: PaperProps) {
         <TwitterButton radius='xl'>Twitter</TwitterButton>
       </Group>
 
-      <Divider label='Or continue with email' labelPosition='center' my='lg' />
+      <Divider label='Or continue with username' labelPosition='center' my='lg' />
 
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <Stack>
@@ -83,12 +90,12 @@ export function AuthenticationForm(props: PaperProps) {
           )}
 
           <TextInput
-            key={form.key('email')}
+            key={form.key('username')}
             required
-            label='Email'
-            placeholder='example@synergy.dev'
+            label='username'
+            placeholder='example_synergy_dev'
             radius='md'
-            {...form.getInputProps('email')}
+            {...form.getInputProps('username')}
           />
 
           <PasswordInput
@@ -99,6 +106,12 @@ export function AuthenticationForm(props: PaperProps) {
             radius='md'
             {...form.getInputProps('password')}
           />
+
+          {errorMessage && (
+            <Text c={'red'} fz={'sm'}>
+              {errorMessage}
+            </Text>
+          )}
 
           {type === 'register' && (
             <Checkbox
@@ -122,7 +135,7 @@ export function AuthenticationForm(props: PaperProps) {
             size='xs'>
             {type === 'register' ? 'Already have an account? Login' : "Don't have an account? Register"}
           </Anchor>
-          <Button type='submit' radius='xl' loading={isLoading} disabled={isLoading}>
+          <Button type='submit' radius='xl' loading={isPending} disabled={isPending}>
             {upperFirst(type)}
           </Button>
         </Group>
