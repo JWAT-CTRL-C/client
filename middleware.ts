@@ -18,6 +18,9 @@ export default async function middleware(req: NextRequest) {
     if (!isAuth) {
       return NextResponse.redirect(new URL('/auth', req.url));
     }
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/blogs', req.url));
+    }
   }
 
   return NextResponse.next();

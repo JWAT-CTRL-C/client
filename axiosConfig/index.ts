@@ -7,17 +7,18 @@ const axiosInstance = axios.create({
   baseURL: baseURL,
   // timeout: 10000,
   headers: {
+    Accept: 'application/json',
     'Content-Type': 'application/json'
   }
 });
 
 // Request interceptor to add tokens to headers
 axiosInstance.interceptors.request.use(
-  async (config) => {
+  (config) => {
     const userAuth = getUserAuth();
-    console.warn('Request interceptor to add tokens to headers');
 
     if (userAuth) {
+      console.info('Request interceptor to add tokens to headers');
       const userId = userAuth.user_id;
       let { access_token } = userAuth;
 
@@ -30,19 +31,16 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 //Response interceptor to handle unauthorized errors and retry request
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.info('Response interceptor to handle token refresh');
-
     const originalRequest = error.config;
     if (error.response && error.response.status === 419 && !originalRequest._retry) {
+      console.info('Response interceptor to handle token refresh');
       originalRequest._retry = true;
       try {
         const newAccessToken = await refreshToken();
@@ -53,7 +51,6 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         console.error('Unable to refresh token:', refreshError);
         removeUserAuth();
-        window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }
