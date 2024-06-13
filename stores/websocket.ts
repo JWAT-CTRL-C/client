@@ -1,12 +1,23 @@
 import { create } from 'zustand';
 import { Socket, io } from 'socket.io-client';
 
-interface SocketState {
+export interface SocketState {
   notificationSocket: Socket;
 }
 
-const WsServer = process.env.NEXT_PUBLIC_WS_SERVER;
+export const WsServer = process.env.NEXT_PUBLIC_WS_SERVER;
 
-export const useSocketStore = create<SocketState>()(() => ({
+export const initSocketStore = (): SocketState => {
+  return {
+    notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
+  };
+};
+
+export const defaultInitState: SocketState = {
   notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
-}));
+};
+
+export const createSocketStore = (initState: SocketState = defaultInitState) =>
+  create<SocketState>()(() => ({
+    ...initState
+  }));

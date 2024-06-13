@@ -1,16 +1,13 @@
-import DefaultLayout from '@/components/layouts/DefaultLayout';
-import AuthLayout from '@/components/layouts/authLayout';
+import AuthLayout from '@/components/layouts/AuthLayout';
 import { AuthenticationForm } from '@/components/pages/auth/AuthenticationForm';
-import { Container } from '@mantine/core';
+import { NextPageWithLayout } from '../_app';
 
-export default function Auth() {
-  return (
-    <div className='flex-center h-dvh w-full'>
-      <AuthenticationForm />
-    </div>
-  );
-}
+const Auth: NextPageWithLayout = () => {
+  return <AuthenticationForm />;
+};
 
-Auth.getLayout = function getLayout(page: any) {
+Auth.getLayout = function getLayout(page: React.ReactElement) {
   return <AuthLayout>{page}</AuthLayout>;
 };
+
+export default Auth;
