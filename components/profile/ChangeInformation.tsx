@@ -12,7 +12,7 @@ import { Box, Button, Group, Image, LoadingOverlay, Modal, NavLink, Stack } from
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { IoCamera } from 'react-icons/io5';
-import { showErrorToast } from '@/components/shared/toast';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 interface IChangeInformationProps {}
 
@@ -25,7 +25,14 @@ function ChangeInformation({}: IChangeInformationProps) {
   const { uploadImage, isPending: isLoadingUpload } = useUploadImage();
 
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
-    uploadImage(acceptedFiles[0]);
+    uploadImage(acceptedFiles[0], {
+      onError: (error) => {
+        showErrorToast(error.message);
+      },
+      onSuccess: () => {
+        showSuccessToast('Change avatar successfully');
+      }
+    });
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -82,6 +89,10 @@ function ChangeInformation({}: IChangeInformationProps) {
           message.forEach((msg) => {
             form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
           });
+        },
+        onSuccess: () => {
+          close();
+          showSuccessToast('Profile updated successfully');
         }
       }
     );
