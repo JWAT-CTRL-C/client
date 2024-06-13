@@ -1,13 +1,12 @@
-import { sourceType } from './sourcesType';
+import { ResourceType } from './sourcesType';
 
 export type workspacesType = {
   wksp_id: string;
   wksp_name: string;
   wksp_desc: string;
   users: User[];
-  wksp_src: sourceType[] | [];
+  resources: ResourceType[] | [];
 };
-
 
 type User = {
   user_id: number;

@@ -59,7 +59,10 @@ const BlogInfo = () => {
 
       {blog?.blog_cont && (
         <TypographyStylesProvider>
-          <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
+          <article>
+            {' '}
+            <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
+          </article>
         </TypographyStylesProvider>
       )}
 

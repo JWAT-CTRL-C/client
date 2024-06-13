@@ -78,13 +78,13 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_cmt',
       header: 'Comments',
-      cell: ({ row }) => row.original.blog_cmt.length
+      cell: ({ row }) => row.original.blog_cmt?.length ?? 0
     },
     {
       accessorKey: 'blog_rtg',
       header: 'Rating',
       cell: ({ row }) =>
-        row.original.blog_rtg.length > 0
+        row.original.blog_rtg?.length > 0
           ? row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
             row.original.blog_rtg.length
           : 0
@@ -105,7 +105,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       cell: ({ row }) => {
         return (
           <Flex wrap={'wrap'} align='center' gap={'sm'}>
-            {row.original.blog_tag.map((tag: Tag) => (
+            {row.original.blog_tag?.map((tag: Tag) => (
               <Text c={theme.primaryColor} key={tag.tag_id} fw={400}>
                 {tag.tag_name}
               </Text>

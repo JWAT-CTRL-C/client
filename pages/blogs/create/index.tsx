@@ -15,8 +15,7 @@ const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   const { data: workSpaceList, isLoading, isError } = useFetchWorkspacesCurrentUser();
-  console.log(workSpaceList);
-  
+
   // Use api to get workspaces belong to current user
   // const workSpaceList: workspacesType[] = [
   //   {
@@ -92,20 +91,20 @@ const CreateBlog = () => {
   // };
 
   const handleCreateBlog = async (values: blogFormType) => {
-    // console.log(values);
+    console.log(values);
 
-    let imageUrlResponse = '';
+    // let imageUrlResponse = '';
 
-    if (values.blog_img && typeof values.blog_img !== 'string') {
-      imageUrlResponse = await uploadImage(values.blog_img);
-    }
+    // if (values.blog_img && typeof values.blog_img !== 'string') {
+    //   imageUrlResponse = await uploadImage(values.blog_img);
+    // }
 
-    const filteredValues = filterFalsyFields({
-      ...values,
-      blog_img: imageUrlResponse || values.blog_img
-    });
+    // const filteredValues = filterFalsyFields({
+    //   ...values,
+    //   blog_img: imageUrlResponse || values.blog_img
+    // });
 
-    await createBlog(filteredValues as blogFormType);
+    // await createBlog(filteredValues as blogFormType);
   };
 
   if (isPendingCreateBlog)
@@ -122,7 +121,7 @@ const CreateBlog = () => {
         {/* To use updateform please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
-          workSpaceList={workSpaceList}
+          workSpaceList={workSpaceList ? workSpaceList : []}
           // isEditing
           // updateValues={updateValues}
         />
