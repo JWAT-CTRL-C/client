@@ -57,7 +57,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         return null;
       },
       blog_src: (blog_src, values) => {
-        if (blog_src && blog_src.trim().length === 0) return 'Resource is required';
+        if (blog_src && blog_src?.trim()?.length === 0) return 'Resource is required';
 
         return null;
       },
@@ -65,6 +65,25 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null
     }
   });
+
+  useEffect(() => {
+    if (isEditing && updateValues) {
+      form.setValues(updateValues);
+      setSelectedSource(updateValues.blog_src ?? null);
+    }
+  }, [isEditing, updateValues]);
+
+  useEffect(() => {
+    if (form.values.blog_wksp) {
+      const selectedWorkspace = workSpaceList.find(
+        (workspace) => workspace.wksp_id === form.values.blog_wksp
+      );
+      const indexSelecting = selectedWorkspace
+        ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
+        : 0;
+      setIndexSelectingField(indexSelecting);
+    }
+  }, [form.values.blog_wksp, workSpaceList]);
 
   function handleClearForm() {
     form.setValues(initialValues);
@@ -91,6 +110,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
   const handleSourceField = (value: string | null) => {
     setSelectedSource(value);
+    form.setFieldValue('blog_src', value);
   };
 
   return (
@@ -124,7 +144,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
             );
           }
         }}
-        disabled={workSpaceList.length === 0}
+        disabled={workSpaceList.length === 0 || isEditing}
         label='Workspaces'
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
         {...form.getInputProps('blog_wksp')}
@@ -149,14 +169,16 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
               }))
             : []
         }
+        value={selectedSource}
         onChange={handleSourceField}
       />
 
       <FileInput
-        clearable
+        clearable={!isEditing}
         description='Optional'
         leftSection={<FaFileImage />}
         label='Background Image'
+        disabled={isEditing}
         accept='image/*'
         placeholder='Background Image...'
         {...form.getInputProps('blog_img')}
@@ -167,6 +189,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       {form.values.blog_img && (
         <Image
+          radius={'md'}
           src={
             typeof form.getValues().blog_img === 'string'
               ? form.getValues().blog_img

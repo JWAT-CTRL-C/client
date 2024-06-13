@@ -16,95 +16,23 @@ const CreateBlog = () => {
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   const { data: workSpaceList, isLoading, isError } = useFetchWorkspacesCurrentUser();
 
-  // Use api to get workspaces belong to current user
-  // const workSpaceList: workspacesType[] = [
-  //   {
-  //     wksp_id: 'ws1',
-  //     wksp_name: 'Workspace 1',
-  //     wksp_desc: 'Description for Workspace 1',
-  //     wksp_src: [
-  //       {
-  //         src_id: 'src1',
-  //         src_url: 'http://example.com/source1',
-  //         src_name: 'Source 1'
-  //       },
-  //       {
-  //         src_id: 'src2',
-  //         src_url: 'http://example.com/source2',
-  //         src_name: 'Source 2'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     wksp_id: 'ws2',
-  //     wksp_name: 'Workspace 2',
-  //     wksp_desc: 'Description for Workspace 2',
-  //     wksp_src: [
-  //       {
-  //         src_id: 'src3',
-  //         src_url: 'http://example.com/source3',
-  //         src_name: 'Source 3'
-  //       },
-  //       {
-  //         src_id: 'src4',
-  //         src_url: 'http://example.com/source4',
-  //         src_name: 'Source 4'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     wksp_id: 'ws3',
-  //     wksp_name: 'Workspace 3',
-  //     wksp_desc: 'Description for Workspace 3',
-  //     wksp_src: [
-  //       {
-  //         src_id: 'src5',
-  //         src_url: 'http://example.com/source5',
-  //         src_name: 'Source 5'
-  //       },
-  //       {
-  //         src_id: 'src6',
-  //         src_url: 'http://example.com/source6',
-  //         src_name: 'Source 6'
-  //       }
-  //     ]
-  //   }
-  // // ];
-  // const workSpaceListOnlyName = workSpaceList && workSpaceList.map((workSpace) => workSpace.wksp_name);
-  // const sourceList = workSpaceList && workSpaceList.map((workSpace) => workSpace.wksp_src);
-  // const workspaceValue = workSpaceList && workSpaceList.map((workspace) => workspace.wksp_name)[0];
-  // const indexSelecting =
-  //   workSpaceListOnlyName &&
-  //   workSpaceListOnlyName.findIndex((workspaceName) => workspaceName === workspaceValue);
 
-  // const firstSource =
-  //   indexSelecting !== -1 && sourceList && indexSelecting && sourceList[indexSelecting]
-  //     ? sourceList[indexSelecting][0].src_name
-  //     : '';
-  // const updateValues: blogFormType = {
-  //   blog_tle: 'dwqdwq',
-  //   blog_tag: ['apple', 'camera', 'def', 'workspaces'],
-  //   blog_wksp: workspaceValue,
-  //   blog_img: 'https://i1.sndcdn.com/avatars-000787434634-i9sqvl-t240x240.jpg',
-  //   blog_cont: '<b>Hello</b>!',
-  //   blog_src: firstSource
-  // };
 
   const handleCreateBlog = async (values: blogFormType) => {
-    console.log(values);
+    // console.log(values);
 
-    // let imageUrlResponse = '';
+    let imageUrlResponse = '';
 
-    // if (values.blog_img && typeof values.blog_img !== 'string') {
-    //   imageUrlResponse = await uploadImage(values.blog_img);
-    // }
+    if (values.blog_img && typeof values.blog_img !== 'string') {
+      imageUrlResponse = await uploadImage(values.blog_img);
+    }
 
-    // const filteredValues = filterFalsyFields({
-    //   ...values,
-    //   blog_img: imageUrlResponse || values.blog_img
-    // });
+    const filteredValues = filterFalsyFields({
+      ...values,
+      blog_img: imageUrlResponse || values.blog_img
+    });
 
-    // await createBlog(filteredValues as blogFormType);
+    await createBlog(filteredValues as blogFormType);
   };
 
   if (isPendingCreateBlog)

@@ -5,6 +5,7 @@ export type workspacesType = {
   wksp_name: string;
   wksp_desc: string;
   users: User[];
+  owner: Owner;
   resources: ResourceType[] | [];
 };
 
@@ -13,5 +14,10 @@ type User = {
   usrn: string;
   email: null;
   fuln: string;
+  role: string;
+};
+export type Owner = {
+  user_id: number;
+  usrn: string;
   role: string;
 };

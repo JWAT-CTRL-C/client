@@ -38,8 +38,6 @@ export const createBlog = async (blogData: blogFormType): Promise<void> => {
       resrc_id: blogData.blog_src
     });
 
-    console.log(filteredBlogData);
-
     const response = await axiosInstance.post('/blogs', filteredBlogData);
     return response.data;
   } catch (error: any) {
@@ -88,6 +86,23 @@ export const removeBlogById = async (blog_id: string) => {
     return response.data;
   } catch (error: any) {
     console.error('removeBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const updateBlog = async (blog_id: string, blogData: blogFormType): Promise<void> => {
+  try {
+    const filteredBlogData = filterFalsyFields({
+      blog_tle: blogData.blog_tle,
+      blog_cont: blogData.blog_cont,
+      tags: blogData.blog_tag,
+      resrc_id: blogData.blog_src
+    });
+
+    const response = await axiosInstance.patch(`/blogs/${blog_id}`, filteredBlogData);
+    return response.data;
+  } catch (error: any) {
+    console.error('update blog error:', error.response?.data?.message || error.message);
     throw error;
   }
 };
