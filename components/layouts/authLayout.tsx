@@ -3,9 +3,9 @@ import React, { ReactNode } from 'react';
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <Box>
-      <BackgroundImage src='/images/authBG.jpg' radius='sm'>
-        <Container>{children}</Container>
+    <Box className='flex-center h-dvh w-full'>
+      <BackgroundImage src='/images/authBG.jpg' bgsz='cover' h='100%'>
+        {children}
       </BackgroundImage>
     </Box>
   );
