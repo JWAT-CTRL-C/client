@@ -23,13 +23,12 @@ const LoadingPageTransition = ({ children }: { children: ReactNode }) => {
       router.events.off('routeChangeComplete', handleComplete);
       router.events.off('routeChangeError', handleComplete);
     };
-  }, [router]);
-
+  }, [router.pathname]);
   return (
-    <>
-      {children}
+    <div className='relative h-screen'>
       <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
-    </>
+      {children}
+    </div>
   );
 };
 
