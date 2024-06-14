@@ -1,12 +1,12 @@
-import { twMerge } from 'tailwind-merge';
-import { type ClassValue, clsx } from 'clsx';
-import { LoginResponse } from './types/authType';
+import { clsx, type ClassValue } from 'clsx';
 import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
+import { twMerge } from 'tailwind-merge';
+import { LoginResponse } from './types/authType';
 import { BlogCardType } from './types/blogCardType';
 import { BlogResponse } from './types/blogResponse';
-import { jwtDecode } from 'jwt-decode';
-import { cookies } from 'next/headers';
 import { blogTableType } from './types/blogTableType';
+import _ from 'lodash';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -69,3 +69,13 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
     blog_img_url: blog.blogImage?.blog_img_url
   }));
 };
+
+// check falsy
+export function filterFalsyFields<T extends object>(data: T): Partial<T> {
+  return _.omitBy(data, (value) => {
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+    return value === null || value === undefined || value === false || value === '';
+  });
+}

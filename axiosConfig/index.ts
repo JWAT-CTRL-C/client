@@ -18,7 +18,7 @@ axiosInstance.interceptors.request.use(
     const userAuth = getUserAuth();
 
     if (userAuth) {
-      console.info('Request interceptor to add tokens to headers');
+   
       const userId = userAuth.user_id;
       let { access_token } = userAuth;
 
@@ -40,16 +40,16 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (error.response && error.response.status === 419 && !originalRequest._retry) {
-      console.info('Response interceptor to handle token refresh');
+     
       originalRequest._retry = true;
       try {
         const newAccessToken = await refreshToken();
-        console.log('handle new token:', newAccessToken);
+     
 
         originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        console.error('Unable to refresh token:', refreshError);
+  
         removeUserAuth();
         return Promise.reject(refreshError);
       }

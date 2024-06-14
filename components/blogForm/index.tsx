@@ -25,7 +25,7 @@ type BlogFormProps = {
 
 const initialValues: blogFormType = {
   blog_tle: '',
-  blog_tag: [] as string[],
+  blog_tag: [],
   blog_wksp: null,
   blog_img: null as File | null,
   blog_cont: '',
@@ -33,9 +33,14 @@ const initialValues: blogFormType = {
 };
 
 const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
-  const workSpaceListOnlyName = workSpaceList.map((workSpace) => workSpace.wksp_name);
-  const sourceList = workSpaceList.map((workSpace) => workSpace.wksp_src);
-  const sourceListOnlyname = workSpaceList.map((source) => source.wksp_name);
+  const [indexSelectingField, setIndexSelectingField] = useState(0);
+  const [selectedSource, setSelectedSource] = useState<string | null>(null);
+
+  const workSpaceListOptions = workSpaceList?.map((workSpace) => ({
+    value: workSpace?.wksp_id,
+    label: workSpace?.wksp_name
+  }));
+  const sourceList = workSpaceList && workSpaceList?.map((workSpace) => workSpace?.resources);
 
   const form = useForm({
     initialValues: isEditing ? updateValues : initialValues,
@@ -43,54 +48,69 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     validate: {
       blog_tle: (blog_tle) => (blog_tle.trim().length === 0 ? 'Title is required' : null),
       blog_tag: (blog_tags) => {
-        // if (blog_tags.length === 0) return 'Tags are required';
-
         if (workSpaceList.length === 0 && blog_tags.includes('workspaces'))
           return "You don't belong to any workspace so remove it from tag field";
         return null;
       },
-      blog_wksp: (blog_wksp, values) => {
+      blog_wksp: (blog_wksp) => {
         if (blog_wksp && blog_wksp.trim().length === 0) return 'Workspace is required';
-
         return null;
       },
-
-      blog_src: (blog_src) => {
-        if (blog_src && blog_src.trim().length === 0) return 'Source is required';
+      blog_src: (blog_src, values) => {
+        if (blog_src && blog_src?.trim()?.length === 0) return 'Resource is required';
 
         return null;
       },
       blog_cont: (blog_cont) =>
         blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null
-      // blog_img: (blog_img) => (blog_img === null ? 'Background image is required' : null)
     }
   });
 
-  const [indexSelectingField, setIndexSelectingField] = useState(0);
+  useEffect(() => {
+    if (isEditing && updateValues) {
+      form.setValues(updateValues);
+      setSelectedSource(updateValues.blog_src ?? null);
+    }
+  }, [isEditing, updateValues]);
+
+  useEffect(() => {
+    if (form.values.blog_wksp) {
+      const selectedWorkspace = workSpaceList.find(
+        (workspace) => workspace.wksp_id === form.values.blog_wksp
+      );
+      const indexSelecting = selectedWorkspace
+        ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
+        : 0;
+      setIndexSelectingField(indexSelecting);
+    }
+  }, [form.values.blog_wksp, workSpaceList]);
 
   function handleClearForm() {
     form.setValues(initialValues);
-    // form.setFieldValue('blog_wksp', null);
-    // form.setFieldValue('blog_tle', '');
-    // form.setFieldValue('blog_tag', []);
-    // form.setFieldValue('blog_src', '');
-    // form.setFieldValue('blog_img', null);
-    // form.setFieldValue('blog_cont', '');
   }
 
   const handleSubmit = (values: blogFormType) => {
-    handleSubmitForm(values);
+    handleSubmitForm({ ...values, blog_src: selectedSource });
   };
 
   const handleSelectField = (value: string | null) => {
-    value && form.setFieldValue('blog_wksp', value);
+    const selectedWorkspace = workSpaceList.find((workspace) => workspace.wksp_id === value);
+    form.setFieldValue('blog_wksp', selectedWorkspace ? selectedWorkspace.wksp_id : null);
 
-    const indexSelecting = value && workSpaceListOnlyName.findIndex((wksp_name) => wksp_name === value);
+    const indexSelecting = selectedWorkspace
+      ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
+      : 0;
 
-    setIndexSelectingField(indexSelecting || 0);
+    setIndexSelectingField(indexSelecting);
 
-    if (value && !form.getValues().blog_tag.includes('workspaces'))
+    if (selectedWorkspace && !form.getValues().blog_tag.includes('workspaces')) {
       form.setFieldValue('blog_tag', [...form.getValues().blog_tag, 'workspaces']);
+    }
+  };
+
+  const handleSourceField = (value: string | null) => {
+    setSelectedSource(value);
+    form.setFieldValue('blog_src', value);
   };
 
   return (
@@ -109,11 +129,12 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         }}
       />
       <Select
-        data={workSpaceListOnlyName}
+        data={workSpaceListOptions}
         checkIconPosition='right'
         description='Optional'
         clearable
-        allowDeselect={false}
+        maxDropdownHeight={200}
+        //allowDeselect={false}
         onClear={() => {
           form.setFieldValue('blog_wksp', '');
           if (form.getValues().blog_tag.includes('workspaces')) {
@@ -123,30 +144,41 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
             );
           }
         }}
-        disabled={workSpaceList.length === 0}
+        disabled={workSpaceList.length === 0 || isEditing}
         label='Workspaces'
-        //clearable
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
         {...form.getInputProps('blog_wksp')}
         onChange={(blog_wksp) => handleSelectField(blog_wksp)}
       />
 
-      <Autocomplete
-        label='Source'
+      <Select
+        label='Resource'
         description='Optional'
-        placeholder='Source...'
-        disabled={workSpaceList.length === 0}
+        searchable
+        checkIconPosition='right'
+        clearable
+        nothingFoundMessage='Nothing found...'
+        placeholder={`${sourceList[indexSelectingField]?.length === 0 ? 'No resource to find' : 'Resource...'}`}
+        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0}
         data={
-          form.getValues().blog_wksp ? sourceList[indexSelectingField]?.map((source) => source.src_name) : []
+          form.getValues().blog_wksp
+            ? sourceList[indexSelectingField]?.map((source) => ({
+                value: source?.resrc_id,
+                label: source?.resrc_name,
+                disabled: source.blog ? true : false
+              }))
+            : []
         }
-        {...form.getInputProps('blog_src')}
+        value={selectedSource}
+        onChange={handleSourceField}
       />
 
       <FileInput
-        clearable
+        clearable={!isEditing}
         description='Optional'
-        rightSection={<FaFileImage />}
+        leftSection={<FaFileImage />}
         label='Background Image'
+        disabled={isEditing}
         accept='image/*'
         placeholder='Background Image...'
         {...form.getInputProps('blog_img')}
@@ -157,6 +189,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       {form.values.blog_img && (
         <Image
+          radius={'md'}
           src={
             typeof form.getValues().blog_img === 'string'
               ? form.getValues().blog_img

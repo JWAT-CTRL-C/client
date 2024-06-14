@@ -15,7 +15,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
     return data;
   } catch (error: any) {
-    console.error('Error during login:', error);
+
     throw error || new Error(error.response?.data?.message || 'Failed to login');
   }
 };
@@ -30,7 +30,7 @@ export const refreshToken = async (): Promise<string> => {
     }
 
     const { refresh_token, user_id } = userAuth;
-    console.log('userAuth', userAuth);
+
 
     const response = await axios.post<RefreshTokenResponse>(`${baseURL}/auth/refresh`, {
       refresh_token: refresh_token,

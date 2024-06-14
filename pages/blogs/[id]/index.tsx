@@ -2,38 +2,39 @@ import DefaultLayout from '@/components/layouts/DefaultLayout';
 import TagComp from '@/components/tag';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { fetchBlogById } from '@/services/blogServices';
-import { Flex, Group, Title, Text, TypographyStylesProvider, Rating } from '@mantine/core';
+import { Flex, Group, Title, Text, TypographyStylesProvider, Rating, LoadingOverlay } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.query;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const { id } = context.query;
 
-  const queryClient = new QueryClient();
+//   const queryClient = new QueryClient();
 
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ['blogs', id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    });
-  } catch (error) {
-    console.error('Error prefetching blogs:', error);
-  }
+//   try {
+//     await queryClient.prefetchQuery({
+//       queryKey: ['blogs', id as string],
+//       queryFn: async () => await fetchBlogById(id as string)
+//     });
+//   } catch (error) {
+//     console.error('Error prefetching blogs:', error);
+//   }
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient)
-    }
-  };
-};
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient)
+//     }
+//   };
+// };
 
 const BlogInfo = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data: blog, isLoading, isError } = useFetchBlogById(id as string);
-  console.log(blog);
+  if (isLoading)
+    return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
     <Flex direction={'column'} gap={'lg'}>
@@ -60,7 +61,10 @@ const BlogInfo = () => {
 
       {blog?.blog_cont && (
         <TypographyStylesProvider>
-          <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
+          <article>
+            {' '}
+            <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
+          </article>
         </TypographyStylesProvider>
       )}
 
