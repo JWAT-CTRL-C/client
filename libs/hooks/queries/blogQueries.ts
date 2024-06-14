@@ -16,7 +16,7 @@ export enum BlogQueryEnum {
 
 export const useFetchBlogs = () => {
   return useQuery({
-    queryKey: ['blogs'],
+    queryKey: [BlogQueryEnum.BLOGS],
     queryFn: async () => await fetchBlogs()
   });
 };

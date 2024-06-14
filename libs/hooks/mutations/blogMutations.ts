@@ -3,6 +3,7 @@ import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
 import { createBlog, removeBlogById, updateBlog, uploadImage } from '@/services/blogServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { BlogQueryEnum } from '../queries/blogQueries';
 
 export const useUploadImage = () => {
   const mutation = useMutation({
@@ -30,8 +31,9 @@ export const useCreateBlog = () => {
   const mutation = useMutation<void, Error, blogFormType>({
     mutationFn: createBlog,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['blogs', 'blogs-current-user'] });
-      router.push('/blogs');
+      await queryClient.invalidateQueries({
+        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
+      });
     },
     onError: (error) => {
       console.error('Error creating blog:', error);
@@ -52,7 +54,9 @@ export const useRemoveBlogById = () => {
   const mutation = useMutation<RemoveBlogResponse, Error, string>({
     mutationFn: async (blog_id: string) => await removeBlogById(blog_id),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['blogs-current-user'] });
+      await queryClient.invalidateQueries({
+        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
+      });
     },
     onError: (error) => {
       console.error('Error removing blog:', error);
@@ -74,8 +78,9 @@ export const useUpdateBlog = () => {
   const mutation = useMutation<void, Error, { blog_id: string; blogData: blogFormType }>({
     mutationFn: async ({ blog_id, blogData }) => await updateBlog(blog_id, blogData),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['blogs', 'blogs-current-user'] });
-      router.push('/blogs');
+      await queryClient.invalidateQueries({
+        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
+      });
     },
     onError: (error) => {
       console.error('Error updating blog:', error);
@@ -84,6 +89,7 @@ export const useUpdateBlog = () => {
 
   return {
     updateBlog: mutation.mutateAsync,
+    isSuccess: mutation.isSuccess,
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null

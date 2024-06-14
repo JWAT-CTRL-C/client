@@ -1,19 +1,14 @@
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
-import { useUpdateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
+import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import {
-  useFetchWorkspacesCurrentUser,
-  useFetchWorkspacesCurrentUserById
+  useFetchWorkspacesCurrentUser
 } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { fetchBlogById } from '@/services/blogServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
-import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import React from 'react';
 
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const { id } = context.query;
@@ -47,7 +42,7 @@ const EditBlog = () => {
   const { data: workSpaceList } = useFetchWorkspacesCurrentUser();
   //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
 
-  const { updateBlog, isPending: isPendingUpdateBlog } = useUpdateBlog();
+  const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();
 
   const updateValues: blogFormType = {
     blog_tle: blog?.blog_tle ?? '',
@@ -74,6 +69,10 @@ const EditBlog = () => {
       blog_id: router.query.id as string,
       blogData: filteredValues as blogFormType
     });
+
+    if (isSuccess) {
+      await router.push('yourBlog');
+    }
   };
 
   if (isPendingUpdateBlog || isLoading)

@@ -6,15 +6,14 @@ import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQue
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
+import { useRouter } from 'next/router';
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { data: workSpaceList, isLoading, isError } = useFetchWorkspacesCurrentUser();
-
+  const { data: workSpaceList, isLoading, isError, isSuccess } = useFetchWorkspacesCurrentUser();
+  const router = useRouter();
   const handleCreateBlog = async (values: blogFormType) => {
-
-
     let imageUrlResponse = '';
 
     if (values.blog_img && typeof values.blog_img !== 'string') {
@@ -27,6 +26,9 @@ const CreateBlog = () => {
     });
 
     await createBlog(filteredValues as blogFormType);
+    if (isSuccess) {
+      await router.push('blogs');
+    }
   };
 
   if (isPendingCreateBlog)
