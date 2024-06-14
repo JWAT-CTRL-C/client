@@ -26,7 +26,6 @@ export const useUploadImage = () => {
 };
 
 export const useCreateBlog = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const mutation = useMutation<void, Error, blogFormType>({
     mutationFn: createBlog,
@@ -55,7 +54,7 @@ export const useRemoveBlogById = () => {
     mutationFn: async (blog_id: string) => await removeBlogById(blog_id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
+        queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
       });
     },
     onError: (error) => {

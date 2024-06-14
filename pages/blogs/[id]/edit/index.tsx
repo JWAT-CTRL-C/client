@@ -2,9 +2,7 @@ import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
-import {
-  useFetchWorkspacesCurrentUser
-} from '@/libs/hooks/queries/workspaceQueries';
+import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
@@ -65,14 +63,15 @@ const EditBlog = () => {
       // blog_img: imageUrlResponse || values.blog_img
     });
 
-    await updateBlog({
-      blog_id: router.query.id as string,
-      blogData: filteredValues as blogFormType
-    });
-
-    if (isSuccess) {
-      await router.push('yourBlog');
-    }
+    await updateBlog(
+      {
+        blog_id: router.query.id as string,
+        blogData: filteredValues as blogFormType
+      },
+      {
+        onSuccess: async () => await router.push('/blogs/yourBlog')
+      }
+    );
   };
 
   if (isPendingUpdateBlog || isLoading)

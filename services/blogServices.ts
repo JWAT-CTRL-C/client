@@ -18,13 +18,17 @@ export const uploadImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await axiosInstance.post('/blogs/upload-image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
-
-  return response.data.data.url;
+  try {
+    const response = await axiosInstance.post('/blogs/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data.data.url;
+  } catch (error: any) {
+    console.error('uploadImage error:', error.response?.data?.message || error.message);
+    throw error;
+  }
 };
 
 export const createBlog = async (blogData: blogFormType): Promise<void> => {

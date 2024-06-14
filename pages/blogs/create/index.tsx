@@ -25,13 +25,12 @@ const CreateBlog = () => {
       blog_img: imageUrlResponse || values.blog_img
     });
 
-    await createBlog(filteredValues as blogFormType);
-    if (isSuccess) {
-      await router.push('blogs');
-    }
+    await createBlog(filteredValues as blogFormType, {
+      onSuccess: async () => await router.push('/blogs')
+    });
   };
 
-  if (isPendingCreateBlog)
+  if (isPendingCreateBlog || IspendingImage)
     return (
       <LoadingOverlay
         visible={isPendingCreateBlog || IspendingImage}

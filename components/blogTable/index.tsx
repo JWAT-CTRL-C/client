@@ -10,6 +10,7 @@ import {
   Group,
   Input,
   Loader,
+  LoadingOverlay,
   Select,
   Space,
   Table,
@@ -204,6 +205,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const handleDeleteBlogPage = async (blog_id: string) => {
     await removeBlog(blog_id);
   };
+
+  if (isPending)
+    return <LoadingOverlay visible={isPending} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
     <Group>
