@@ -9,6 +9,11 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '../useDebounce';
 
+export enum BlogQueryEnum {
+  BLOGS = 'blogs',
+  BLOGS_CURRENT_USER = 'blogs-current-user'
+}
+
 export const useFetchBlogs = () => {
   return useQuery({
     queryKey: ['blogs'],
@@ -18,13 +23,13 @@ export const useFetchBlogs = () => {
 
 export const useFetchBlogById = (blog_id: string) => {
   return useQuery<void, Error, BlogResponse>({
-    queryKey: ['blogs', blog_id],
+    queryKey: [BlogQueryEnum.BLOGS, blog_id],
     queryFn: async () => await fetchBlogById(blog_id)
   });
 };
 export const useFetchBlogsCurrentUser = () => {
   return useQuery<void, Error, BlogResponse[]>({
-    queryKey: ['blogs-current-user'],
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
     queryFn: async () => await fetchBlogsForCurrentUser()
   });
 };
@@ -33,7 +38,7 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
   const debouncedTitle = useDebounce(blog_tle, 300);
 
   return useQuery<BlogResponse[], Error>({
-    queryKey: ['blogs-current-user', debouncedTitle],
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, debouncedTitle],
     queryFn: async () => await filterBlogsForCurrentUserByTitle(debouncedTitle)
     //enabled: !!debouncedTitle
   });

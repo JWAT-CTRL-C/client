@@ -127,7 +127,6 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         <Flex
           justify='center'
           onClick={() => {
-            console.log(row.original.blog_id);
             handleToEditBlogPage(row.original.blog_id);
           }}>
           <ActionIcon>
@@ -195,7 +194,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   };
 
   const handleToEditBlogPage = (id: string | number) => {
-    router.push(`/blogs/edit/${id}`);
+    router.push(`/blogs/${id}/edit`);
   };
 
   const handleToBLog = (id: string | number) => {

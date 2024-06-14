@@ -28,7 +28,11 @@ const Sidebar = () => {
     const sidebarStatePath = sidebarState.map((state) => state.link);
 
     if (!sidebarStatePath.includes(router.pathname)) {
-      setActive(-1);
+      if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
+        setActive(0);
+      } else {
+        setActive(-1);
+      }
     }
   }, [router.pathname]);
 

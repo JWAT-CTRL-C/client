@@ -7,42 +7,32 @@ import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { transformBlogTableType } from '@/libs/utils';
 import { fetchBlogsForCurrentUser } from '@/services/blogServices';
-import { Flex } from '@mantine/core';
+import { Flex, LoadingOverlay } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  const queryClient = new QueryClient();
+// export const getServerSideProps: GetServerSideProps = async () => {
+//   const queryClient = new QueryClient();
 
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ['blogs-current-user'],
-      queryFn: async () => await fetchBlogsForCurrentUser()
-    });
-  } catch (error) {
-    console.error('Error prefetching blogs:', error);
-  }
+//   try {
+//     await queryClient.prefetchQuery({
+//       queryKey: ['blogs-current-user'],
+//       queryFn: async () => await fetchBlogsForCurrentUser()
+//     });
+//   } catch (error) {
+//     console.error('Error prefetching blogs:', error);
+//   }
 
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient)
-    }
-  };
-};
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient)
+//     }
+//   };
+// };
 const YourBlog = () => {
-  // const fakeTags: Tag[] = [
-  //   { tag_id: 1, tag_name: 'React', crd_at: '2024-06-05T23:26:40.692Z', upd_at: '2024-06-05T23:26:40.692Z' },
-  //   {
-  //     tag_id: 2,
-  //     tag_name: 'Angular',
-  //     crd_at: '2024-06-05T23:26:40.692Z',
-  //     upd_at: '2024-06-05T23:26:40.692Z'
-  //   },
-  //   { tag_id: 3, tag_name: 'Vue', crd_at: '2024-06-05T23:26:40.692Z', upd_at: '2024-06-05T23:26:40.692Z' },
-  //   { tag_id: 4, tag_name: 'Svelte', crd_at: '2024-06-05T23:26:40.692Z', upd_at: '2024-06-05T23:26:40.692Z' }
-  // ];
-
   const { data: blogs, isLoading, isError } = useFetchBlogsCurrentUser();
+  if (isLoading)
+    return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
     <Flex>

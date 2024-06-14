@@ -1,25 +1,19 @@
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
 import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
 
 import { blogFormType } from '@/libs/types/blogFormType';
-import { workspacesType } from '@/libs/types/workspacesType';
 import { filterFalsyFields } from '@/libs/utils';
-import { fetchBlogs } from '@/services/blogServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   const { data: workSpaceList, isLoading, isError } = useFetchWorkspacesCurrentUser();
 
-
-
   const handleCreateBlog = async (values: blogFormType) => {
-    // console.log(values);
+
 
     let imageUrlResponse = '';
 
@@ -37,7 +31,11 @@ const CreateBlog = () => {
 
   if (isPendingCreateBlog)
     return (
-      <LoadingOverlay visible={isPendingCreateBlog} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+      <LoadingOverlay
+        visible={isPendingCreateBlog || IspendingImage}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
     );
 
   return (

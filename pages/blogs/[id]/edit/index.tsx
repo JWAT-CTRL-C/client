@@ -8,17 +8,46 @@ import {
 } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { Center, Flex, Group, Title } from '@mantine/core';
+import { fetchBlogById } from '@/services/blogServices';
+import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
 
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const { id } = context.query;
+
+//   const queryClient = new QueryClient();
+
+//   try {
+//     await queryClient.prefetchQuery({
+//       queryKey: ['blogs', id as string],
+//       queryFn: async () => await fetchBlogById(id as string)
+//     });
+
+//     await queryClient.prefetchQuery({
+//       queryKey: ['workspaces-current-user'],
+//       queryFn: () => useFetchWorkspacesCurrentUser()
+//     });
+//   } catch (error) {
+//     console.error('Error prefetching blogs:', error);
+//   }
+
+//   return {
+//     props: {
+//       dehydratedState: dehydrate(queryClient)
+//     }
+//   };
+// };
+
 const EditBlog = () => {
   const router = useRouter();
-  const { data: blog } = useFetchBlogById(router.query.id as string);
+  const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
   const { data: workSpaceList } = useFetchWorkspacesCurrentUser();
-  const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
 
-  const { updateBlog, isPending: isPendingCreateBlog } = useUpdateBlog();
+  const { updateBlog, isPending: isPendingUpdateBlog } = useUpdateBlog();
 
   const updateValues: blogFormType = {
     blog_tle: blog?.blog_tle ?? '',
@@ -30,15 +59,15 @@ const EditBlog = () => {
   };
 
   const handleEdit = async (values: blogFormType) => {
-    let imageUrlResponse = '';
+    // let imageUrlResponse = '';
 
-    if (values.blog_img && typeof values.blog_img !== 'string') {
-      imageUrlResponse = await uploadImage(values.blog_img);
-    }
+    // if (values.blog_img && typeof values.blog_img !== 'string') {
+    //   imageUrlResponse = await uploadImage(values.blog_img);
+    // }
 
     const filteredValues = filterFalsyFields({
-      ...values,
-      blog_img: imageUrlResponse || values.blog_img
+      ...values
+      // blog_img: imageUrlResponse || values.blog_img
     });
 
     await updateBlog({
@@ -46,6 +75,16 @@ const EditBlog = () => {
       blogData: filteredValues as blogFormType
     });
   };
+
+  if (isPendingUpdateBlog || isLoading)
+    return (
+      <LoadingOverlay
+        visible={isPendingUpdateBlog || isLoading}
+        zIndex={1000}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
+    );
+
   return (
     <Flex direction='column' gap={3}>
       <Center>
