@@ -27,7 +27,9 @@ type AppPropsWithLayout = AppProps & {
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 export default function App({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () => new QueryClient({ defaultOptions: { queries: { retry: true, refetchOnWindowFocus: false } } })
+  );
   const getLayout = Component.getLayout ?? ((page) => page);
 
   useIsomorphicLayoutEffect(() => {

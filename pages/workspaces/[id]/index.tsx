@@ -1,28 +1,34 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import BlogList from '@/components/workspaces/blogs/blogList';
-import EditWorkspaceModal from '@/components/workspaces/editModal';
 import NotificationList from '@/components/workspaces/notifications/notificationList';
 import SourceList from '@/components/workspaces/sources/sourceList';
-import { Button, Stack, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { getUserAuth } from '@/libs/utils';
+import { Stack, Text, Tooltip } from '@mantine/core';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FaEdit } from 'react-icons/fa';
-const fakeData = {};
 export default function Page() {
   const router = useRouter();
-  const [opened,{toggle}] = useDisclosure(false);
+  const { workspace } = useFetchWorkspaceById(router.query.id as string);
+  const user_id = getUserAuth().user_id;
   return (
-    <div className='container'>
-      <div className='grid'>
-        <Tooltip label='Edit workspace' color='gray'>
-          <Button className='mr-4 justify-self-end' variant='transparent' onClick={toggle}>
-            <FaEdit size={16} />
-          </Button>
-        </Tooltip>
-        <EditWorkspaceModal opened={opened} handleClose={toggle} />
+    <div className='px-20 py-5'>
+      <div className='grid gap-3'>
+        <div className='border-b pb-4'>
+          <h1 className='py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
+          <Text size='md'>{workspace?.wksp_desc}</Text>
+        </div>
+        {parseInt(user_id) === workspace?.owner.user_id && (
+          <Tooltip label='Edit workspace' color='black'>
+            <Link className='mr-4 justify-self-end' href={`/workspaces/${router.query.id}/edit`}>
+              <FaEdit size={16} />
+            </Link>
+          </Tooltip>
+        )}
       </div>
       <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
-        <SourceList />
+        <SourceList resources={workspace?.resources} />
         <BlogList />
         <NotificationList />
       </Stack>

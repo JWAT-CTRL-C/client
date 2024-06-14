@@ -69,3 +69,10 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
     blog_img_url: blog.blogImage?.blog_img_url
   }));
 };
+
+export const pushHash = (hash: string = '') => {
+  window.location.hash = hash;
+};
+export const getHash = () => {
+  return window.location.hash.slice(1);
+};

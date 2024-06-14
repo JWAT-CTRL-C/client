@@ -1,6 +1,15 @@
 import axiosInstance from '@/axiosConfig';
 import { User, UserForm } from '@/libs/types/userType';
 
+export type USER_TYPE = {
+  user_id: number;
+  usrn: string;
+  fuln: string;
+  avatar: string;
+  email: string;
+  phone: string;
+  role: 'HM' | 'PM' | 'EM' | 'MA';
+};
 export const fetchUserById = async (user_id: string): Promise<User> => {
   return new Promise((resolve, reject) => {
     axiosInstance
@@ -32,5 +41,14 @@ export const updateUser = async (user: UserForm): Promise<User> => {
       .patch(`/users/${user.user_id}`, user)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
+  });
+};
+
+export const getAllUsers = () => {
+  return new Promise<USER_TYPE[]>((resolve, reject) => {
+    axiosInstance
+      .get<USER_TYPE[]>('/users/all')
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
   });
 };

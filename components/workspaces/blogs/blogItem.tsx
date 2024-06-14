@@ -1,7 +1,7 @@
 export default function BlogItem() {
-    return (
-        <div className="w-full">
-            <p>Blog</p>
-        </div>
-    );
+  return (
+    <div className='w-full'>
+      <div>Blog</div>
+    </div>
+  );
 }

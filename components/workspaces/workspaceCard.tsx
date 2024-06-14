@@ -1,6 +1,6 @@
 import { WorkspaceCardProps, WorkspaceCardPropsExpand } from '@/libs/types/workspace';
 import { Avatar, Card, Group, Image, Text, Tooltip } from '@mantine/core';
-import colors from '@/assets/json/color_background_theme.json'
+import colors from '@/assets/json/color_background_theme.json';
 export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpand }) {
   const { wksp_name, wksp_desc, wksp_id, users, index } = value;
   return (
@@ -15,7 +15,7 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
       <Card.Section>
         <Image
           h={110}
-          fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040?text=${wksp_name}`}
+          fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040?text=${wksp_name.toUpperCase()}`}
         />
       </Card.Section>
 
@@ -30,9 +30,12 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
         {users?.map((user, index) => {
           if (index > 3) return null;
           return (
-            <Tooltip label={user.usrn} withArrow>
+            <Tooltip label={user.usrn} withArrow key={user.user_id}>
               <Avatar
-                src={`https://placehold.co/50x50/${colors.backgroundWorkspaceTheme[index]}/f2f2f2?text=${user.user_id}`}
+                src={
+                  user.avatar ??
+                  `https://placehold.co/50x50/${colors.backgroundWorkspaceTheme[Math.floor(Math.random() * colors.backgroundWorkspaceTheme.length)]}/f2f2f2?text=${user.fuln?.substring(0, 1)}`
+                }
                 radius='xl'
                 size='sm'
               />

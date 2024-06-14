@@ -11,7 +11,7 @@ export default function EditWorkspaceModal({ opened, handleClose }: WorkspaceEdi
   const iconStyle = { width: rem(12), height: rem(12) };
   return (
     <Modal opened={opened} onClose={handleClose} closeOnClickOutside={false} size='lg' centered>
-      <Tabs defaultValue='general' mih={500}>
+      <Tabs defaultValue='general' mih={560}>
         <Tabs.List>
           <Tabs.Tab value='general' leftSection={<FaCog style={iconStyle} />}>
             General

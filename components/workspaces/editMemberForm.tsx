@@ -1,39 +1,94 @@
 import {
-  ActionIcon,
   Badge,
   Button,
-  CopyButton,
   Divider,
-  List,
   Loader,
-  MultiSelect,
-  rem,
   Table as MTable,
-  Tooltip,
-  ComboboxItem
+  ComboboxItem,
+  useMantineColorScheme,
+  Select
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useDebouncedCallback } from '@mantine/hooks';
-import { useState } from 'react';
-import { FaCheck, FaRegCopy, FaTimes, FaUserPlus } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { FaEdit, FaTimes, FaUserPlus } from 'react-icons/fa';
 import _ from 'lodash';
-import { WorkspaceMemberInputType, WorkspaceMemberType } from '@/libs/types/workspace';
-import { createColumnHelper, flexRender, getCoreRowModel, Table, useReactTable } from '@tanstack/react-table';
-import { cn } from '@/libs/utils';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useGetAllUsers } from '@/libs/hooks/queries/userQueries';
+import { useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
+import { useRouter } from 'next/router';
+import { useRouter as useNavRouter } from 'next/navigation';
+import { USER_TYPE } from '@/services/userServices';
+import {
+  useAddMemberToWorkspace,
+  useFranchiseWorkspace,
+  useRemoveMemberFromWorkspace
+} from '@/libs/hooks/mutations/workspaceMutations';
+import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { toast } from 'react-toastify';
+import { AxiosError, isAxiosError } from 'axios';
+import PopoverConfirm from '../popoverConfirm';
+import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
 
-export function WpsMemberTable({ className, member }: { className: string; member: WorkspaceMemberType[] }) {
+export function WpsMemberTable({
+  className,
+  member,
+  wksp_id
+}: {
+  className: string;
+  member: WORKSPACE_MEMBER;
+  wksp_id: string;
+}) {
+  const theme = useMantineColorScheme();
+  const navRouter = useNavRouter();
   // table config
   const memeberAttribute = {
     HM: { color: 'red', roleName: 'Head Master' },
+    MA: { color: 'red', roleName: 'Head Master' },
     PM: { color: 'orange', roleName: 'Project Manager' },
     EM: { color: 'rgba(255, 255, 255, 0)', roleName: 'Employee' }
   };
-  const handleDeleteMember = (user_id: number) => {
-    console.log(user_id);
+  // Remove member
+  const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
+    toast.success(data.message);
   };
-  const columnHelper = createColumnHelper<WorkspaceMemberType>();
+  const handleRemoveMemberFail = (err: Error | AxiosError) => {
+    if (isAxiosError(err)) {
+      toast.error(err.response?.data.message);
+    } else {
+      toast.error(err.message);
+    }
+  };
+  const { removeMember } = useRemoveMemberFromWorkspace(handleRemoveMemberSuccess, handleRemoveMemberFail);
+  const handleDeleteMember = (user_id: number) => {
+    removeMember({ wksp_id, user_id });
+  };
+  const handleConfirmRemoveMember = (user_id: number) => {
+    handleDeleteMember(user_id);
+  };
+
+  // Franchise
+  const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
+    toast.success(data.message);
+    navRouter.replace(`/workspaces/${wksp_id}`);
+  };
+  const handleFranchiseMemberFail = (err: Error | AxiosError) => {
+    if (isAxiosError(err)) {
+      toast.error(err.response?.data.message);
+    } else {
+      toast.error(err.message);
+    }
+  };
+  const { franchise } = useFranchiseWorkspace(handleFranchiseMemberSuccess, handleFranchiseMemberFail);
+  const handleFranchise = (user_id: number) => {
+    franchise({ wksp_id, user_id });
+  };
+  const handleConfirmFranchiseMember = (user_id: number) => {
+    handleFranchise(user_id);
+  };
+
+  const columnHelper = createColumnHelper<USER_TYPE>();
   const columns = [
-    columnHelper.accessor('usr_id', {
+    columnHelper.accessor('user_id', {
       cell: (info) => <span>{info.getValue()}</span>,
       header: 'ID',
       id: 'usr_id'
@@ -54,33 +109,48 @@ export function WpsMemberTable({ className, member }: { className: string; membe
       header: 'Role'
     }),
     columnHelper.accessor('role', {
+      id: 'franchies',
+      header: 'Franchise',
+      cell: (info) => {
+        return info.getValue() !== 'EM' && info.row.original.user_id !== member.owner.user_id ? (
+          <PopoverConfirm
+            key={info.row.original.user_id}
+            title={`Franchise to ${info.row.original.fuln}?`}
+            handleConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
+            <Button variant='subtle' color='orange'>
+              <FaEdit size={15} />
+            </Button>
+          </PopoverConfirm>
+        ) : null;
+      }
+    }),
+    columnHelper.accessor('role', {
       id: 'actions',
       header: 'Remove',
       cell: (info) => {
         return (
-          <>
-            {info.getValue() !== 'HM' && (
-              <Button
-                onClick={() => handleDeleteMember(info.row.original.usr_id)}
-                variant='transparent'
-                color='red'>
-                <FaTimes size={15} />
-              </Button>
-            )}
-          </>
+          <PopoverConfirm
+            key={info.row.original.user_id}
+            title='Remove Member'
+            handleConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
+            <Button variant='subtle' color='red'>
+              <FaTimes size={15} />
+            </Button>
+          </PopoverConfirm>
         );
       }
     })
   ];
   const table = useReactTable({
-    data: member,
+    data: member.users,
     columns,
     getCoreRowModel: getCoreRowModel()
   });
+
   return (
-    <MTable.ScrollContainer className={className} minWidth={100} h={300}>
+    <MTable.ScrollContainer className={className} minWidth={100} h={350}>
       <MTable highlightOnHover stickyHeader stickyHeaderOffset={0}>
-        <MTable.Thead>
+        <MTable.Thead bg={theme.colorScheme === 'dark' ? 'dark.6' : 'gray.1'}>
           {table.getHeaderGroups().map((headerGroup) => (
             <MTable.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -110,97 +180,64 @@ export function WpsMemberTable({ className, member }: { className: string; membe
 }
 
 export default function EditWorkspaceMemberForm() {
-  const members: WorkspaceMemberType[] = [
-    {
-      usr_id: 1,
-      usrn: 'john',
-      fuln: 'John Doe',
-      role: 'HM'
-    },
-    {
-      usr_id: 2,
-      usrn: 'jane',
-      fuln: 'Jane Smith',
-      role: 'PM'
-    },
-    {
-      usr_id: 3,
-      usrn: 'bob',
-      fuln: 'Bob Johnson',
-      role: 'EM'
-    },
-    {
-      usr_id: 4,
-      usrn: 'sarah',
-      fuln: 'Sarah Lee',
-      role: 'EM'
-    },
-    {
-      usr_id: 5,
-      usrn: 'mike',
-      fuln: 'Mike Wilson',
-      role: 'EM'
-    },
-    {
-      usr_id: 6,
-      usrn: 'lisa',
-      fuln: 'Lisa Chen',
-      role: 'EM'
-    }
-  ];
-  const [data, setData] = useState<ComboboxItem[]>([
-    { value: "0", label: 'Head Master' },
-    { value: "1", label: 'Project Manager' },
-    { value: "2", label: 'Employee' }
-  ]);
+  const router = useRouter();
+  const { users } = useGetAllUsers();
+  const { members } = useGetWorkspaceMember(router.query.id as string);
+  const [data, setData] = useState<ComboboxItem[]>([]);
+  useEffect(() => {
+    const dropDownData = (users ?? []).map((user) => ({
+      value: user.user_id.toString(),
+      label: `${user.fuln} #${user.user_id}`
+    }));
+    setData(dropDownData);
+  }, [users]);
   const form = useForm({
+    mode: 'uncontrolled',
     initialValues: {
-      values: []
+      user: ''
     }
   });
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSearch = useDebouncedCallback(async (query: string) => {
-    // setLoading(true);
-    // setData([]);
-    console.log('debounce', query);
-    // setLoading(false);
-  }, 1000);
-
-  const handleSearchChange = (value: string) => {
-    console.log('search', value);
-    if (value.length > 0) {
-      const trimmedValue = value.trim();
-      //   setSearch(trimmedValue);
-      handleSearch(trimmedValue);
-    }
+  const handleAddMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
+    toast.success(data.message);
+    form.reset();
   };
+  const handleAddMemberFail = (err: Error | AxiosError) => {
+    if (isAxiosError(err)) {
+      toast.error(err.response?.data.message);
+    } else {
+      toast.error(err.message);
+    }
+    form.reset();
+  };
+  const { addMember } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
-    console.log('submit', value);
+    addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user) });
   };
 
   return (
-    <div>
-      <form className='p-5' onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-        <h1 className='text-center text-2xl font-semibold'>Edit Workspace's Members</h1>
-        <MultiSelect
+    <div className='max-h-[90vh] px-[8%]'>
+      <form className='py-3' onSubmit={form.onSubmit(handleSubmit)}>
+        <h1 className='text-center text-2xl font-semibold uppercase'>Edit Workspace's Members</h1>
+        <Select
           leftSection={<FaUserPlus />}
-          rightSection={loading && <Loader size={20} />}
           mt='lg'
           label='Invite Members'
           data={data}
           searchable
-          onSearchChange={(value) => handleSearchChange(value)}
-          {...form.getInputProps('values')}
+          {...form.getInputProps('user')}
         />
-        <Button type='submit' fullWidth mt='lg'>
+        <Button type='submit' mt='lg'>
           Save
         </Button>
       </form>
       <Divider my='xs' label='Members list' labelPosition='left' />
       <div className='max-h-96 overflow-y-auto '>
-        <WpsMemberTable className='max-h-96' member={members} />
+        <WpsMemberTable
+          className='max-h-96'
+          member={members ?? ({} as WORKSPACE_MEMBER)}
+          wksp_id={router.query.id as string}
+        />
       </div>
     </div>
   );
