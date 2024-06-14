@@ -32,6 +32,7 @@
     "@tiptap/starter-kit": "^2.4.0",
     "axios": "^1.7.2",
     "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
     "next": "14.2.3",
     "react": "18.2",

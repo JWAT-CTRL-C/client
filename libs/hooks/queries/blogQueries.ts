@@ -7,7 +7,8 @@ import {
 } from '@/services/blogServices';
 
 import { useQuery } from '@tanstack/react-query';
-import { useDebounce } from '../useDebounce';
+
+import { useDebouncedValue } from '@mantine/hooks';
 
 export enum BlogQueryEnum {
   BLOGS = 'blogs',
@@ -35,11 +36,11 @@ export const useFetchBlogsCurrentUser = () => {
 };
 
 export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
-  const debouncedTitle = useDebounce(blog_tle, 300);
+  const [debounced] = useDebouncedValue(blog_tle, 300);
 
   return useQuery<BlogResponse[], Error>({
-    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, debouncedTitle],
-    queryFn: async () => await filterBlogsForCurrentUserByTitle(debouncedTitle)
-    //enabled: !!debouncedTitle
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, debounced],
+    queryFn: async () => await filterBlogsForCurrentUserByTitle(debounced)
+    //enabled: !!debounced
   });
 };

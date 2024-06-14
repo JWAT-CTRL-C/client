@@ -31,6 +31,8 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
+import TextColumn from './textColumn';
+import IconColumn from './iconColumn';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -64,9 +66,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       accessorKey: 'blog_id',
       header: 'Blog ID',
       cell: ({ row }) => (
-        <Text className='cursor-pointer' fw={500} onClick={() => handleToBLog(row.original.blog_id)}>
+        <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
           {row.original.blog_id}
-        </Text>
+        </TextColumn>
       )
     },
     {
@@ -125,15 +127,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       id: 'edit',
       header: 'Edit',
       cell: ({ row, cell, column }) => (
-        <Flex
-          justify='center'
-          onClick={() => {
-            handleToEditBlogPage(row.original.blog_id);
-          }}>
-          <ActionIcon>
-            <FaRegEdit />
-          </ActionIcon>
-        </Flex>
+        <IconColumn blog_id={row.original.blog_id} onClick={handleToEditBlogPage}>
+          <FaRegEdit />
+        </IconColumn>
       )
     },
 
@@ -141,11 +137,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       id: 'delete',
       header: 'Delete',
       cell: ({ row }) => (
-        <Flex justify='center' onClick={async () => await handleDeleteBlogPage(row.original.blog_id)}>
-          <ActionIcon color='red'>
-            <FaRegTrashAlt />
-          </ActionIcon>
-        </Flex>
+        <IconColumn isRed={true} blog_id={row.original.blog_id} onClick={handleDeleteBlogPage}>
+          <FaRegTrashAlt />
+        </IconColumn>
       )
     }
   ];
@@ -176,23 +170,23 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     // setColumnFilters([{ id: 'blog_tle', value }]);
   };
 
-  const handleSetFilterByTag = (tag_id: string | null) => {
-    // if (tag_id === null) {
-    //   setFilterByTag(null);
-    //   setColumnFilters((prev) => [
-    //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
-    //     { id: 'blog_tag', value: '' }
-    //   ]);
-    // } else {
-    //   const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
-    //   setFilterByTag(selectedTag || null);
-    //   const tagName = selectedTag ? selectedTag.tag_name : '';
-    //   setColumnFilters((prev) => [
-    //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
-    //     { id: 'blog_tag', value: tagName }
-    //   ]);
-    // }
-  };
+  // const handleSetFilterByTag = (tag_id: string | null) => {
+  //   // if (tag_id === null) {
+  //   //   setFilterByTag(null);
+  //   //   setColumnFilters((prev) => [
+  //   //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
+  //   //     { id: 'blog_tag', value: '' }
+  //   //   ]);
+  //   // } else {
+  //   //   const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
+  //   //   setFilterByTag(selectedTag || null);
+  //   //   const tagName = selectedTag ? selectedTag.tag_name : '';
+  //   //   setColumnFilters((prev) => [
+  //   //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
+  //   //     { id: 'blog_tag', value: tagName }
+  //   //   ]);
+  //   // }
+  // };
 
   const handleToEditBlogPage = (id: string | number) => {
     router.push(`/blogs/${id}/edit`);
