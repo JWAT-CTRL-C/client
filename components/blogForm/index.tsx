@@ -16,6 +16,8 @@ import TextEditor from './textEditor';
 import { workspacesType } from '@/libs/types/workspacesType';
 import { useEffect, useState } from 'react';
 
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
+
 type BlogFormProps = {
   updateValues?: blogFormType;
   handleSubmitForm: (values: blogFormType) => void;
@@ -62,7 +64,14 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         return null;
       },
       blog_cont: (blog_cont) =>
-        blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null
+        blog_cont.trim().length === 0 || blog_cont === '<p></p>' ? 'Content is required' : null,
+
+      blog_img: (blog_img) => {
+        if (blog_img && typeof blog_img !== 'string' && blog_img.size > MAX_IMAGE_SIZE) {
+          return `Image size should be less than ${MAX_IMAGE_SIZE / (1024 * 1024)} MB`;
+        }
+        return null;
+      }
     }
   });
 
@@ -74,16 +83,16 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   }, [isEditing, updateValues]);
 
   useEffect(() => {
-    if (form.values.blog_wksp) {
+    if (form.getValues().blog_wksp) {
       const selectedWorkspace = workSpaceList.find(
-        (workspace) => workspace.wksp_id === form.values.blog_wksp
+        (workspace) => workspace.wksp_id === form.getValues().blog_wksp
       );
       const indexSelecting = selectedWorkspace
         ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
         : 0;
       setIndexSelectingField(indexSelecting);
     }
-  }, [form.values.blog_wksp, workSpaceList]);
+  }, [form.getValues().blog_wksp, workSpaceList]);
 
   function handleClearForm() {
     form.setValues(initialValues);
