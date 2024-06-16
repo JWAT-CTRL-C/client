@@ -18,10 +18,7 @@ const CommnetInput = ({ onComment, loading = false }: { onComment: Function; loa
     setValue(''), setError('');
   };
   return (
-    <Card className='flex-column flex gap-3 '       shadow='sm'
-    padding='lg'
-    radius='md'
-    withBorder>
+    <Card className='flex-column flex gap-3 ' shadow='sm' padding='lg' radius='md' withBorder>
       <Flex align='center' gap={7}>
         <Avatar src={user?.avatar || '/images/default-avatar.png'} alt="it's me" />
         <Text size='lg' fw={500}>
