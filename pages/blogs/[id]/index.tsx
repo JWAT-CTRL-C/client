@@ -13,7 +13,8 @@ import {
   Divider,
   Image,
   BackgroundImage,
-  Box
+  Box,
+  Spoiler
 } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
@@ -22,6 +23,9 @@ import React from 'react';
 import { upperFirst } from '@mantine/hooks';
 import { convertIsoToDate } from '@/libs/utils';
 import { FaRegArrowAltCircleUp, FaRegCommentAlt, FaUserTie } from 'react-icons/fa';
+import CommnetInput from '@/components/commnet/commentInput';
+import { generateFakeBlogComments } from '@/components/commnet/fakeComment';
+import CommentCard from '@/components/commnet/commentCard';
 
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const { id } = context.query;
@@ -52,22 +56,27 @@ const BlogInfo = () => {
   if (isLoading)
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
+  const fakeBlogComments = generateFakeBlogComments(10);
+  const handleCommentBlog = (comment: string) => {
+    console.log(comment);
+  };
+
   return (
     <Flex direction={'column'} gap={'xl'} justify={'center'} className='w-full'>
       <BackgroundImage
-        className='flex h-60 items-center justify-center object-cover object-center opacity-70'
+        className='flex min-h-60 items-center justify-center object-cover object-center opacity-70'
         radius='md'
-        src={blog?.blogImage?.blog_img_url ?? defaultImage}>
-        <Text
-          size='lg'
-          className='text-7xl'
-          ta='center'
-          fw={900}
-          variant='gradient'
-          gradient={{ from: 'blue', to: 'grape', deg: 204 }}>
-          {upperFirst(blog?.blog_tle as string)}
-        </Text>
-      </BackgroundImage>
+        src={blog?.blogImage?.blog_img_url ?? defaultImage}></BackgroundImage>
+
+      <Text
+        size='lg'
+        className='text-5xl'
+        ta='center'
+        fw={900}
+        variant='gradient'
+        gradient={{ from: 'blue', to: 'grape', deg: 204 }}>
+        {upperFirst(blog?.blog_tle as string)}
+      </Text>
 
       <Flex justify={'space-between'}>
         <Flex align='center' className='text-lg'>
@@ -80,13 +89,13 @@ const BlogInfo = () => {
       </Flex>
       <Divider />
 
-      {blog?.tags ||
-        (blog?.tags.length !== 0 && (
-          <Flex direction={'column'} gap={'md'} wrap={'wrap'}>
-            <Title order={2}>Tags :</Title>
-            <Flex gap={'sm'}>{blog?.tags.map((tag) => <TagComp key={tag.tag_id} tag={tag.tag_name} />)}</Flex>
-          </Flex>
-        ))}
+      {blog?.tags.length !== 0 && (
+        <Flex direction={'column'} gap={'md'} wrap={'wrap'}>
+          <Title order={2}>Tags :</Title>
+          <Flex gap={'sm'}>{blog?.tags.map((tag) => <TagComp key={tag.tag_id} tag={tag.tag_name} />)}</Flex>
+        </Flex>
+      )}
+
       {blog?.workspace && (
         <Flex align={'center'}>
           <Text fw={'bold'}>Workspace : </Text>
@@ -100,15 +109,18 @@ const BlogInfo = () => {
           <Text>{blog?.resource?.resrc_name}</Text>
         </Flex>
       )}
-      {blog?.tags || blog?.workspace || (blog?.resource && <Divider />)}
+      {blog?.tags.length !== 0 || blog?.workspace || (blog?.resource && <Divider />)}
 
-      {blog?.blog_cont && (
-        <TypographyStylesProvider flex={1}>
-          <article>
-            <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
-          </article>
-        </TypographyStylesProvider>
-      )}
+      <Spoiler maxHeight={200} showLabel='Show more' hideLabel='Hide' transitionDuration={0}>
+        {blog?.blog_cont && (
+          <TypographyStylesProvider flex={1}>
+            <article>
+              <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
+            </article>
+          </TypographyStylesProvider>
+        )}
+      </Spoiler>
+
       <Divider />
 
       <Flex align={'center'} justify='space-between'>
@@ -120,9 +132,16 @@ const BlogInfo = () => {
         </Flex>
       </Flex>
       <Divider />
+      <CommnetInput onComment={handleCommentBlog} />
+      <Divider />
       <Text size='lg' fw={'bold'}>
         COMMENTS :
       </Text>
+      <Flex direction={'column'} gap={20}>
+        {fakeBlogComments.map((comment) => (
+          <CommentCard key={comment.blog_cmt_id} comment={comment} />
+        ))}
+      </Flex>
     </Flex>
   );
 };
