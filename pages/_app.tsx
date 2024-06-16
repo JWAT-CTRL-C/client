@@ -16,6 +16,7 @@ import { MantineProvider } from '@mantine/core';
 import { HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import type { AppProps } from 'next/app';
+import LoadingPageTransition from '@/components/loadingPageTransition';
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -41,7 +42,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
       <HydrationBoundary state={pageProps.dehydratedState}>
         <MantineProvider defaultColorScheme='auto' theme={theme}>
           <SocketStoreProvider>
-            {getLayout(<Component {...pageProps} />)}
+            <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
             <ToastContainer />
           </SocketStoreProvider>
         </MantineProvider>

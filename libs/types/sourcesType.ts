@@ -1,6 +1,10 @@
-export type sourceType = {
-  src_id: string;
-  src_name: string;
+import { BlogResponse } from "./blogResponse";
 
-  src_url: string;
+export type ResourceType = {
+  resrc_id:   string;
+  resrc_name: string;
+  resrc_url:  string;
+  crd_at:     Date;
+  upd_at: Date;
+  blog : BlogResponse
 };

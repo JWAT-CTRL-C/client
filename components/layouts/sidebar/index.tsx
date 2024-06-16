@@ -14,7 +14,7 @@ const Sidebar = () => {
   const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');
 
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState<number | null>(0);
   useEffect(() => {
     if (isBlog) {
       setSidebarState(blogConfig);
@@ -25,10 +25,15 @@ const Sidebar = () => {
     if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
       setActive(0);
     }
+    const sidebarStatePath = sidebarState.map((state) => state.link);
 
-    // if (router.pathname.includes('create') || router.pathname.includes('edit')) {
-    //   setActive(-1);
-    // }
+    if (!sidebarStatePath.includes(router.pathname)) {
+      if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
+        setActive(0);
+      } else {
+        setActive(null);
+      }
+    }
   }, [router.pathname]);
 
   const handleToPage = (link: string, index: number) => {

@@ -19,7 +19,7 @@ const Header = () => {
   }, [router.pathname]);
 
   const handleTabChange = (value: string | null) => {
-    console.log(value);
+   
 
     setActiveTab(value);
     if (value) {

@@ -8,8 +8,9 @@ export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const isAuthPage = pathname.startsWith('/auth');
+  const isMainPage = pathname === '/';
 
-  if (isAuthPage) {
+  if (isAuthPage || isMainPage) {
     if (isAuth) {
       return NextResponse.redirect(new URL('/blogs', req.url));
     }
