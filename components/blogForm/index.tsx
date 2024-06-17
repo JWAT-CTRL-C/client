@@ -13,14 +13,14 @@ import {
 import { useForm } from '@mantine/form';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
-import { workspacesType } from '@/libs/types/workspacesType';
 import { useEffect, useState } from 'react';
+import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 
 type BlogFormProps = {
   updateValues?: blogFormType;
   handleSubmitForm: (values: blogFormType) => void;
   isEditing?: boolean;
-  workSpaceList: workspacesType[];
+  workSpaceList: WORKSPACES_RESPONSE[];
 };
 
 const initialValues: blogFormType = {
