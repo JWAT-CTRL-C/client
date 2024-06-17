@@ -10,7 +10,8 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setLoader(true);
-  });
+  }, []);
+
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   return !loader ? (

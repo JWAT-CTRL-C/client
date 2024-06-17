@@ -22,7 +22,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
-    queryFn: async () => await getSpecificWorkspace(wksp_id)
+    queryFn: async () => await getSpecificWorkspace(wksp_id),
+    retry: 1
   });
   return {
     props: {
@@ -50,7 +51,7 @@ export default function Page() {
               <h1 className='py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
               <Text size='md'>{workspace?.wksp_desc}</Text>
             </div>
-            {parseInt(user_id ?? '') === (workspace?.owner?.user_id ?? null) && (
+            {parseInt(user_id.toString() ?? '') === (workspace?.owner?.user_id ?? null) && (
               <Tooltip label='Edit workspace' color='black'>
                 <Link className='mr-4 justify-self-end' href={`/workspaces/${router.query.id}/edit`}>
                   <FaEdit size={16} />

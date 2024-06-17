@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
+import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
@@ -11,7 +11,7 @@ import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { data: workSpaceList, isLoading, isError, isSuccess } = useFetchWorkspacesCurrentUser();
+  const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
   const router = useRouter();
   const handleCreateBlog = async (values: blogFormType) => {
     let imageUrlResponse = '';
@@ -48,7 +48,7 @@ const CreateBlog = () => {
         {/* To use updateform please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
-          workSpaceList={workSpaceList ? workSpaceList : []}
+          workSpaceList={workspaces ? workspaces : []}
           // isEditing
           // updateValues={updateValues}
         />

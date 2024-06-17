@@ -7,17 +7,15 @@ export interface SocketState {
 
 export const WsServer = process.env.NEXT_PUBLIC_WS_SERVER;
 
-export const initSocketStore = (): SocketState => {
-  return {
-    notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
-  };
-};
-
-export const defaultInitState: SocketState = {
+export const initSocketStore = (): SocketState => ({
   notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
-};
+});
 
-export const createSocketStore = (initState: SocketState = defaultInitState) =>
+// export const defaultInitState: SocketState = {
+//   notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
+// };
+
+export const createSocketStore = (initState: SocketState) =>
   create<SocketState>()(() => ({
     ...initState
   }));

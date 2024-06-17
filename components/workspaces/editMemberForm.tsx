@@ -225,7 +225,7 @@ export default function EditWorkspaceMemberForm({
   return (
     <div className='max-h-[90vh] px-[8%]'>
       <form className='py-3' onSubmit={form.onSubmit(handleSubmit)}>
-        <h1 className='text-center text-2xl font-semibold uppercase'>Edit Workspace's Members</h1>
+        <h1 className='text-center text-2xl font-semibold uppercase'>Edit Workspace&apos;s Members</h1>
         <Select
           leftSection={<FaUserPlus />}
           mt='lg'
