@@ -140,6 +140,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       console.log(form.values.blog_wksp);
     }
     setPrevTag([]);
+
     form.setFieldValue('blog_tag', []);
   };
 
@@ -154,7 +155,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Tag...'
         {...form.getInputProps('blog_tag')}
         onChange={(blog_tag) => {
-          setPrevTag([...prevTag, ...blog_tag]);
+          setPrevTag([...prevTag, ...blog_tag, 'to remove wksp']);
           form.setFieldValue('blog_tag', blog_tag);
         }}
         onClear={handleClearTagField}
