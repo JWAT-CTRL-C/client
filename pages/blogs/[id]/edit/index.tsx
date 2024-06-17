@@ -6,13 +6,15 @@ import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { BlogQueryEnum, useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
-import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { fetchBlogById } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
+import { getWorkspacesByUser } from '@/services/workspaceServices';
+import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -31,8 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryFn: () => fetchUserById('me')
     }),
     queryClient.prefetchQuery({
-      queryKey: ['workspaces-current-user'],
-      queryFn: () => useFetchWorkspacesCurrentUser()
+      queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
+      queryFn: async () => await getWorkspacesByUser()
     })
   ]);
 
@@ -46,7 +48,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const EditBlog = () => {
   const router = useRouter();
   const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
-  const { data: workSpaceList } = useFetchWorkspacesCurrentUser();
+  const { workspaces: workSpaceList } = useFetchWorkspacesByUser();
   //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
 
   const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();

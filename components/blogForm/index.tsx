@@ -13,8 +13,8 @@ import {
 import { useForm } from '@mantine/form';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
-import { workspacesType } from '@/libs/types/workspacesType';
 import { useEffect, useState } from 'react';
+import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -22,7 +22,7 @@ type BlogFormProps = {
   updateValues?: blogFormType;
   handleSubmitForm: (values: blogFormType) => void;
   isEditing?: boolean;
-  workSpaceList: workspacesType[];
+  workSpaceList: WORKSPACES_RESPONSE[];
 };
 
 const initialValues: blogFormType = {

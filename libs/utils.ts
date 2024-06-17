@@ -80,6 +80,12 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
   }));
 };
 
+export const pushHash = (hash: string = '') => {
+  window.location.hash = hash;
+};
+export const getHash = () => {
+  return window.location.hash.slice(1);
+};
 // check falsy
 export function filterFalsyFields<T extends object>(data: T): Partial<T> {
   return _.omitBy(data, (value) => {
