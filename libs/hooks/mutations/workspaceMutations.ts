@@ -22,12 +22,11 @@ export const useCreateWorkspace = (
   handleOnError: (error: Error | AxiosError) => void
 ) => {
   const queryClient = useQueryClient();
-
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (wksp_data: CREATE_WORKSPACE_REQUEST) => await createWorkspace(wksp_data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] });
       handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] });
     },
     onError: (error) => {
       handleOnError(error);
@@ -41,15 +40,15 @@ export const useCreateWorkspace = (
 };
 
 export const useUpdateWorkspace = (
-  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => void,
+  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => { wksp_id: string },
   handleOnError: (error: Error | AxiosError) => void
 ) => {
   const queryClient = useQueryClient();
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (wksp_data: UPDATE_WORKSPACE_REQUEST) => await updateWorkspace(wksp_data),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [GET_SPECIFIC_WORKSPACE_KEY] });
-      handleOnSuccess(data);
+      const { wksp_id } = handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id] });
     },
     onError: (error) => {
       handleOnError(error);
@@ -65,10 +64,13 @@ export const useDeleteWorkspace = (
   handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => void,
   handleOnError: (error: Error | AxiosError) => void
 ) => {
+  const queryClient = useQueryClient();
+
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (wksp_id: string) => await deleteWorkspace(wksp_id),
     onSuccess: (data) => {
       handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] });
     },
     onError: (error) => {
       handleOnError(error);
@@ -81,7 +83,7 @@ export const useDeleteWorkspace = (
   };
 };
 export const useAddMemberToWorkspace = (
-  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => void,
+  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => { wksp_id: string },
   handleOnError: (error: Error | AxiosError) => void
 ) => {
   const queryClient = useQueryClient();
@@ -89,8 +91,8 @@ export const useAddMemberToWorkspace = (
     mutationFn: async ({ wksp_id, user_id }: { wksp_id: string; user_id: number }) =>
       await addMemberToWorkspace(wksp_id, user_id),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [GET_WORKSPACE_MEMBERS_KEY] });
-      handleOnSuccess(data);
+      const { wksp_id } = handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id] });
     },
     onError: (error) => {
       handleOnError(error);
@@ -103,7 +105,7 @@ export const useAddMemberToWorkspace = (
   };
 };
 export const useRemoveMemberFromWorkspace = (
-  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => void,
+  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => { wksp_id: string },
   handleOnError: (error: Error | AxiosError) => void
 ) => {
   const queryClient = useQueryClient();
@@ -112,8 +114,8 @@ export const useRemoveMemberFromWorkspace = (
     mutationFn: async ({ wksp_id, user_id }: { wksp_id: string; user_id: number }) =>
       await removeMemberFromWorkspace(wksp_id, user_id),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [GET_WORKSPACE_MEMBERS_KEY] });
-      handleOnSuccess(data);
+      const { wksp_id } = handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id] });
     },
     onError: (error) => {
       handleOnError(error);
@@ -126,7 +128,7 @@ export const useRemoveMemberFromWorkspace = (
   };
 };
 export const useFranchiseWorkspace = (
-  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => void,
+  handleOnSuccess: (data: GENERAL_RESPONSE_TYPE) => { wksp_id: string },
   handleOnError: (error: Error | AxiosError) => void
 ) => {
   const queryClient = useQueryClient();
@@ -134,8 +136,8 @@ export const useFranchiseWorkspace = (
     mutationFn: async ({ wksp_id, user_id }: { wksp_id: string; user_id: number }) =>
       await franchiseWorkspace(wksp_id, user_id),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [GET_SPECIFIC_WORKSPACE_KEY] });
-      handleOnSuccess(data);
+      const { wksp_id } = handleOnSuccess(data);
+      queryClient.invalidateQueries({ queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id] });
     },
     onError: (error) => {
       handleOnError(error);

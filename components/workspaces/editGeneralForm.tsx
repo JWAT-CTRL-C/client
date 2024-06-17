@@ -1,47 +1,70 @@
 import { Button, ButtonGroup, Divider, Group, Text, Textarea, TextInput, Tooltip } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa';
 import AddResourceForm from './addResourceForm';
 import { ResourceItemType } from '@/libs/types/workspace';
-import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
-import { useRouter } from 'next/router';
-import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
 import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
 import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
+import EditResourceForm from './editResourceForm';
+import { useDeleteResource } from '@/libs/hooks/mutations/resourceMutations';
+import { showErrorToast, showSuccessToast } from '../shared/toast';
+import PopoverConfirm from '../popoverConfirm';
 
-const ResourceItem = ({
-  item,
-  handleRemove,
-  handleEdit
-}: {
-  item: ResourceItemType;
-  handleRemove: () => void;
-  handleEdit: () => void;
-}) => {
+const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: string }) => {
+  const [opened, { toggle }] = useDisclosure(false);
+  const handleSuccess = () => {
+    showSuccessToast('Resource is deleted successfully');
+    return { wksp_id: wksp_id };
+  };
+  const handleFail = () => {
+    showErrorToast('Fail to remove resource');
+  };
+  const { deleteResource, isPending } = useDeleteResource(handleSuccess, handleFail);
+  const handleEditResource = () => {
+    toggle();
+  };
+  const handleRemoveResource = () => {
+    deleteResource({ wksp_id, resrc_id: item.resrc_id });
+  };
   return (
-    <div className='w-80% radius-md grid grid-cols-9 p-3 shadow-md md:grid-cols-11 dark:bg-card'>
-      <div className='col-span-7 mt-3 px-5 md:col-span-10 '>
-        <div className='border-b  pb-3'>{item.resrc_name}</div>
-        <div className='py-2 text-sm text-gray-500'>{item.resrc_url}</div>
+    <div className='grid min-w-full grid-cols-9 rounded-lg p-1 shadow-md md:min-w-[80%] md:grid-cols-11 md:p-3 dark:bg-card'>
+      <div className='col-span-6 mt-3 truncate px-4 sm:px-5 md:col-span-9 lg:col-span-10 xl:px-5 2xl:px-6'>
+        <Text truncate='end' className='border-b pb-3'>
+          {item.resrc_name}
+        </Text>
+        <Text truncate='end' className='py-2 text-sm text-gray-500'>
+          {item.resrc_url}
+        </Text>
       </div>
 
-      <ButtonGroup orientation='vertical' className='col-span-1'>
+      <ButtonGroup orientation='vertical' className={`col-span-3 md:col-span-2 lg:col-span-1`}>
         <Tooltip label='Edit'>
-          <Button variant='subtle' className='w-[30%] p-0' color='gray' onClick={handleEdit}>
+          <Button variant='subtle' className='w-[30%] p-0' color='gray' onClick={() => handleEditResource()}>
             <FaEdit />
           </Button>
         </Tooltip>
-        <Tooltip label='Remove'>
-          <Button variant='subtle' className='w-[30%] p-0' color='red' onClick={handleRemove}>
+        <EditResourceForm data={item} opened={opened} handleClose={toggle} />
+        <PopoverConfirm
+          key={item.resrc_id}
+          title={`Remove resource: ${item.resrc_name}`}
+          onConfirm={() => handleRemoveResource()}
+          size={350}
+          disabled={isPending}>
+          <Button
+            variant='subtle'
+            loading={isPending}
+            disabled={isPending}
+            className='w-[30%] p-0'
+            color='red'>
             <FaTrash />
           </Button>
-        </Tooltip>
+        </PopoverConfirm>
       </ButtonGroup>
     </div>
   );
@@ -55,7 +78,6 @@ export default function EditGeneralWorkspaceForm({
   resources: RESOURCE_TYPE[];
 }) {
   const [opened, { toggle }] = useDisclosure(false);
-  const router = useRouter();
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -70,18 +92,19 @@ export default function EditGeneralWorkspaceForm({
         value.length > 150 || value.length === 0 ? 'Invalid workspace name' : null
     }
   });
-  useEffect(() => {
-    if (workspace !== undefined) {
-      form.setValues({
-        wksp_id: workspace?.wksp_id,
-        wksp_name: workspace?.wksp_name,
-        wksp_desc: workspace?.wksp_desc ?? ''
-      });
-    }
-  }, [workspace]);
+  // useEffect(() => {
+  //   if (workspace !== undefined) {
+  //     form.setValues({
+  //       wksp_id: workspace?.wksp_id,
+  //       wksp_name: workspace?.wksp_name,
+  //       wksp_desc: workspace?.wksp_desc ?? ''
+  //     });
+  //   }
+  // }, [workspace]);
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
     form.reset();
+    return { wksp_id: workspace?.wksp_id };
   };
   const handleFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
@@ -133,10 +156,10 @@ export default function EditGeneralWorkspaceForm({
         <AddResourceForm opened={opened} handleClose={toggle} />
       </div>
       <div className='grid justify-items-center'>
-        <div className='w-[90%] '>
+        <div className='w-[90%]'>
           {resources.map((item, index) => (
             <div key={`fg-${index}`} className='px-6 pt-2'>
-              <ResourceItem key={index} item={item} handleRemove={() => {}} handleEdit={() => {}} />
+              <ResourceItem key={index} item={item} wksp_id={workspace?.wksp_id} />
               {index + 1 !== resources.length && <Divider my='sm' />}
             </div>
           ))}

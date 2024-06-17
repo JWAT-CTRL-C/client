@@ -10,7 +10,7 @@ import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
   GET_SPECIFIC_WORKSPACE_KEY,
   GET_WORKSPACE_MEMBERS_KEY
-} from './../../constants/queryKeys/workspace';
+} from '@/libs/constants/queryKeys/workspace';
 import { useQuery } from '@tanstack/react-query';
 
 export const useFetchWorkspacesByUser = () => {
@@ -31,7 +31,7 @@ export const useFetchWorkspaceById = (wksp_id: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp_id,
     initialData: {} as SPECIFIC_WORKSPACE_RESPONSE,
-    queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
+    queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
     queryFn: async () => await getSpecificWorkspace(wksp_id)
   });
 
@@ -47,7 +47,7 @@ export const useGetWorkspaceMember = (wksp: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp,
     initialData: {} as WORKSPACE_MEMBER,
-    queryKey: [GET_WORKSPACE_MEMBERS_KEY],
+    queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp],
     queryFn: async () => await getWorkspaceMembers(wksp)
   });
 
