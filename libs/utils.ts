@@ -22,16 +22,26 @@ export const convertIsoToDate = (isoString: string): string => {
 };
 
 export const setUserAuth = (data: { access_token: string; refresh_token: string; user_id: string }) => {
-  Cookies.set('userAuth', JSON.stringify(data), { expires: 7 });
+  // Cookies.set('userAuth', JSON.stringify(data), { expires: 7 });
+  Cookies.set('user_id', data.user_id, { expires: 7 });
+  Cookies.set('access_token', data.access_token, { expires: 7 });
+  Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
 };
 
-export const getUserAuth = (): LoginResponse => {
-  const userAuth = Cookies.get('userAuth');
-  return userAuth ? JSON.parse(userAuth) : null;
+export const getUserAuth = (): Partial<LoginResponse> => {
+  // const userAuth = Cookies.get('userAuth');
+  // return userAuth ? JSON.parse(userAuth) : null;
+  const user_id = Cookies.get('user_id');
+  const access_token = Cookies.get('access_token');
+  const refresh_token = Cookies.get('refresh_token');
+  return { user_id, access_token, refresh_token };
 };
 
 export const removeUserAuth = () => {
-  Cookies.remove('userAuth');
+  // Cookies.remove('userAuth');
+  Cookies.remove('user_id');
+  Cookies.remove('access_token');
+  Cookies.remove('refresh_token');
 };
 export const transformBlogData = (blogs: BlogResponse[]): BlogCardType[] => {
   return blogs.map((blog) => ({

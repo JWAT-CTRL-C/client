@@ -1,4 +1,4 @@
-import axiosInstance from '@/axiosConfig';
+import api from '@/libs/api';
 import { User, UserForm } from '@/libs/types/userType';
 
 export type USER_TYPE = {
@@ -12,7 +12,7 @@ export type USER_TYPE = {
 };
 export const fetchUserById = async (user_id: string): Promise<User> => {
   return new Promise((resolve, reject) => {
-    axiosInstance
+    api
       .get(`/users/${user_id}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
@@ -24,7 +24,7 @@ export const uploadImage = async (file: File): Promise<string> => {
   formData.append('file', file);
 
   return new Promise((resolve, reject) => {
-    axiosInstance
+    api
       .post('/users/upload-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -37,7 +37,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 export const updateUser = async (user: UserForm): Promise<User> => {
   return new Promise((resolve, reject) => {
-    axiosInstance
+    api
       .patch(`/users/${user.user_id}`, user)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));

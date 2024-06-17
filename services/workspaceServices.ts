@@ -1,4 +1,4 @@
-import axiosInstance from '@/axiosConfig';
+import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import _ from 'lodash';
 import { USER_TYPE } from './userServices';
@@ -46,7 +46,7 @@ export type WORKSPACE_MEMBER = {
 
 export const getWorkspacesByUser = () => {
   return new Promise<WORKSPACES_RESPONSE[]>((resolve, reject) => {
-    axiosInstance
+    api
       .get<WORKSPACES_RESPONSE[]>('/workspaces/me')
       .then((res) => {
         resolve(res.data);
@@ -59,7 +59,7 @@ export const getWorkspacesByUser = () => {
 
 export const getSpecificWorkspace = (wksp_id: string) => {
   return new Promise<SPECIFIC_WORKSPACE_RESPONSE>((resolve, reject) => {
-    axiosInstance
+    api
       .get<SPECIFIC_WORKSPACE_RESPONSE>(`/workspaces/${wksp_id}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -67,7 +67,7 @@ export const getSpecificWorkspace = (wksp_id: string) => {
 };
 export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .post<GENERAL_RESPONSE_TYPE>('/workspaces', wkspData)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -77,7 +77,7 @@ export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
 export const updateWorkspace = (wkspData: UPDATE_WORKSPACE_REQUEST) => {
   console.log(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'));
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .patch<GENERAL_RESPONSE_TYPE>(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'))
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -86,7 +86,7 @@ export const updateWorkspace = (wkspData: UPDATE_WORKSPACE_REQUEST) => {
 
 export const deleteWorkspace = (wksp_id: string) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .delete<GENERAL_RESPONSE_TYPE>(`/workspaces/${wksp_id}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -94,7 +94,7 @@ export const deleteWorkspace = (wksp_id: string) => {
 };
 export const addMemberToWorkspace = (wksp_id: string, user_id: number) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .post<GENERAL_RESPONSE_TYPE>(`/workspaces/${wksp_id}/member`, { user_id })
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -103,7 +103,7 @@ export const addMemberToWorkspace = (wksp_id: string, user_id: number) => {
 
 export const removeMemberFromWorkspace = (wksp_id: string, user_id: number) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .delete<GENERAL_RESPONSE_TYPE>(`/workspaces/${wksp_id}/member/${user_id}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -111,7 +111,7 @@ export const removeMemberFromWorkspace = (wksp_id: string, user_id: number) => {
 };
 export const franchiseWorkspace = (wksp_id: string, new_owner_id: number) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
-    axiosInstance
+    api
       .post<GENERAL_RESPONSE_TYPE>(`/workspaces/${wksp_id}/franchise`, { user_id: new_owner_id })
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
@@ -119,7 +119,7 @@ export const franchiseWorkspace = (wksp_id: string, new_owner_id: number) => {
 };
 export const getWorkspaceMembers = (wksp_id: string) => {
   return new Promise<WORKSPACE_MEMBER>((resolve, reject) => {
-    axiosInstance
+    api
       .get<WORKSPACE_MEMBER>(`/workspaces/${wksp_id}/member`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));

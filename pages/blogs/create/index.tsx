@@ -1,15 +1,15 @@
+import { useRouter } from 'next/router';
+
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
-
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { useRouter } from 'next/router';
 
 const CreateBlog = () => {
-  const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   const { data: workSpaceList, isLoading, isError, isSuccess } = useFetchWorkspacesCurrentUser();
   const router = useRouter();
@@ -30,10 +30,10 @@ const CreateBlog = () => {
     });
   };
 
-  if (isPendingCreateBlog || IspendingImage)
+  if (isPendingCreateBlog || isPendingImage)
     return (
       <LoadingOverlay
-        visible={isPendingCreateBlog || IspendingImage}
+        visible={isPendingCreateBlog || isPendingImage}
         zIndex={1000}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />

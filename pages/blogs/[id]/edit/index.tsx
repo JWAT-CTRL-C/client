@@ -1,38 +1,47 @@
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { setContext } from '@/libs/api';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { BlogQueryEnum, useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
+import { fetchBlogById } from '@/services/blogServices';
+import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { useRouter } from 'next/router';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const { id } = context.query;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
 
-//   const queryClient = new QueryClient();
+  const { id } = context.query;
 
-//   try {
-//     await queryClient.prefetchQuery({
-//       queryKey: ['blogs', id as string],
-//       queryFn: async () => await fetchBlogById(id as string)
-//     });
+  const queryClient = new QueryClient();
 
-//     await queryClient.prefetchQuery({
-//       queryKey: ['workspaces-current-user'],
-//       queryFn: () => useFetchWorkspacesCurrentUser()
-//     });
-//   } catch (error) {
-//     console.error('Error prefetching blogs:', error);
-//   }
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [BlogQueryEnum.BLOGS, id as string],
+      queryFn: async () => await fetchBlogById(id as string)
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['myInfo'],
+      queryFn: () => fetchUserById('me')
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['workspaces-current-user'],
+      queryFn: () => useFetchWorkspacesCurrentUser()
+    })
+  ]);
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient)
-//     }
-//   };
-// };
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const EditBlog = () => {
   const router = useRouter();

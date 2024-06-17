@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export default async function middleware(req: NextRequest) {
-  const userAuthCookie = req.cookies.get('userAuth');
-  const userAuth = userAuthCookie ? JSON.parse(userAuthCookie.value) : null;
-  const isAuth = !!userAuth;
+  const accessTokenCookie = req.cookies.get('access_token');
+  const accessToken = accessTokenCookie ? accessTokenCookie.value : null;
+  const isAuth = !!accessToken;
 
   const { pathname } = req.nextUrl;
 
   const isAuthPage = pathname.startsWith('/auth');
   const isMainPage = pathname === '/';
 
-  if (isAuthPage || isMainPage) {
+  if (isAuthPage) {
     if (isAuth) {
       return NextResponse.redirect(new URL('/blogs', req.url));
     }
@@ -18,7 +18,7 @@ export default async function middleware(req: NextRequest) {
     if (!isAuth) {
       return NextResponse.redirect(new URL('/auth', req.url));
     }
-    if (pathname === '/') {
+    if (isMainPage && isAuth) {
       return NextResponse.redirect(new URL('/blogs', req.url));
     }
   }

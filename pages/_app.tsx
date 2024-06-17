@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import { useIsomorphicLayoutEffect } from 'react-use';
 
 import { theme } from '@/libs/theme';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { cn } from '@/libs/utils';
 import { SocketStoreProvider } from '@/providers/SocketProvider';
 import { MantineProvider } from '@mantine/core';
@@ -27,9 +28,21 @@ type AppPropsWithLayout = AppProps & {
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
-export default function App({ Component, pageProps: { session, ...pageProps } }: AppPropsWithLayout) {
+export default function App({
+  Component,
+  pageProps: { session, dehydratedState, ...pageProps }
+}: AppPropsWithLayout) {
   const [queryClient] = useState(
-    () => new QueryClient({ defaultOptions: { queries: { retry: true, refetchOnWindowFocus: false } } })
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+            staleTime: 1000 * 60 * 10
+          }
+        }
+      })
   );
   const getLayout = Component.getLayout ?? ((page) => page);
 
@@ -39,7 +52,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
 
   return (
     <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={pageProps.dehydratedState}>
+      <HydrationBoundary state={dehydratedState}>
         <MantineProvider defaultColorScheme='auto' theme={theme}>
           <SocketStoreProvider>
             <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
@@ -47,6 +60,7 @@ export default function App({ Component, pageProps: { session, ...pageProps } }:
           </SocketStoreProvider>
         </MantineProvider>
       </HydrationBoundary>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
