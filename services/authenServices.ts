@@ -1,9 +1,8 @@
-import { baseURL } from '@/axiosConfig';
+import { baseURL } from '@/libs/api';
 import { RefreshTokenResponse } from '@/libs/types/RefreshTokenResponse';
 import { LoginRequest, LoginResponse } from '@/libs/types/authType';
 import { getUserAuth, removeUserAuth, setUserAuth } from '@/libs/utils';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   try {
@@ -15,7 +14,6 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
     return data;
   } catch (error: any) {
-
     throw error || new Error(error.response?.data?.message || 'Failed to login');
   }
 };
@@ -30,7 +28,6 @@ export const refreshToken = async (): Promise<string> => {
     }
 
     const { refresh_token, user_id } = userAuth;
-
 
     const response = await axios.post<RefreshTokenResponse>(`${baseURL}/auth/refresh`, {
       refresh_token: refresh_token,
@@ -47,7 +44,6 @@ export const refreshToken = async (): Promise<string> => {
   } catch (error: any) {
     console.error('Unable to refresh token:', error.response?.data?.message || error.message);
     removeUserAuth();
-    //signOut();
     throw error;
   }
 };
