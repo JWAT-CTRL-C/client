@@ -16,6 +16,7 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
         <Image
           h={110}
           fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040?text=${wksp_name.toUpperCase()}`}
+          alt='Workspace Image'
         />
       </Card.Section>
 

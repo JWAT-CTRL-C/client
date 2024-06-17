@@ -121,6 +121,7 @@ function ChangeInformation({}: IChangeInformationProps) {
                 src={user?.avatar || '/images/default-avatar.png'}
                 radius='9999px'
                 className='size-28 cursor-pointer object-cover'
+                alt='avatar'
                 mb='md'
               />
 

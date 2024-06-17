@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { workspaces: workSpaceList, isError } = useFetchWorkspacesByUser();
+  const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
   const router = useRouter();
 
   const handleCreateBlog = async (values: blogFormType) => {
@@ -56,7 +56,7 @@ const CreateBlog = () => {
         {/* To use updateform please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
-          workSpaceList={workSpaceList ? workSpaceList : []}
+          workSpaceList={workspaces ? workspaces : []}
           // isEditing
           // updateValues={updateValues}
         />

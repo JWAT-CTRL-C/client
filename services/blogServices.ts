@@ -9,7 +9,6 @@ export const fetchBlogs = async () => {
 
     return response.data;
   } catch (error: any) {
-    console.log(error);
     console.error('fetchBlogs error:', error.response?.data?.message || error.message);
     throw error;
   }
