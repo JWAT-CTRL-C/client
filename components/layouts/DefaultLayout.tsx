@@ -16,7 +16,8 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened }
       }}
-      padding='md'>
+      padding='md'
+      className='relative'>
       <AppShell.Header>
         <Group h='100%' px='md' wrap='nowrap'>
           <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom='sm' size='sm' />
