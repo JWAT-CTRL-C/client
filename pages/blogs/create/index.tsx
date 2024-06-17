@@ -13,6 +13,9 @@ const CreateBlog = () => {
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   const { data: workSpaceList, isLoading, isError, isSuccess } = useFetchWorkspacesCurrentUser();
   const router = useRouter();
+
+  console.log(workSpaceList);
+
   const handleCreateBlog = async (values: blogFormType) => {
     let imageUrlResponse = '';
 

@@ -1,5 +1,5 @@
-import { blogCommentType } from "@/libs/types/blogCommentType";
-import { User } from "@/libs/types/userType";
+import { blogCommentType } from '@/libs/types/blogCommentType';
+import { User } from '@/libs/types/userType';
 
 // Generate fake User data
 const generateFakeUser = (): User => ({
@@ -9,7 +9,7 @@ const generateFakeUser = (): User => ({
   avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
   email: `user${Math.floor(Math.random() * 1000)}@example.com`,
   phone: `+123456789${Math.floor(Math.random() * 10)}`,
-  role: 'user',
+  role: 'user'
 });
 
 // Generate fake blog comment data
@@ -18,16 +18,12 @@ const generateFakeBlogComment = (): blogCommentType => ({
   blog_cmnt_ctn: 'This is a sample comment content',
   crd_at: new Date().toISOString(),
   upd_at: new Date().toISOString(),
-  user: generateFakeUser(),
+  user: generateFakeUser()
 });
 
 // Generate an array of fake blog comments
 const generateFakeBlogComments = (count: number): blogCommentType[] => {
   return Array.from({ length: count }, generateFakeBlogComment);
 };
-
-// Example usage
-const fakeBlogComments = generateFakeBlogComments(5);
-console.log(fakeBlogComments);
 
 export { generateFakeUser, generateFakeBlogComment, generateFakeBlogComments };
