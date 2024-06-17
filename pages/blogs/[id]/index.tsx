@@ -1,22 +1,3 @@
-import DefaultLayout from '@/components/layouts/DefaultLayout';
-import TagComp from '@/components/tag';
-import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
-import { fetchBlogById } from '@/services/blogServices';
-import {
-  Flex,
-  Group,
-  Title,
-  Text,
-  TypographyStylesProvider,
-  Rating,
-  LoadingOverlay,
-  Divider,
-  Image,
-  BackgroundImage,
-  Box,
-  Spoiler
-} from '@mantine/core';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -27,26 +8,39 @@ import CommnetInput from '@/components/commnet/commentInput';
 import { generateFakeBlogComments } from '@/components/commnet/fakeComment';
 import CommentCard from '@/components/commnet/commentCard';
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const { id } = context.query;
+import DefaultLayout from '@/components/layouts/DefaultLayout';
+import TagComp from '@/components/tag';
+import { setContext } from '@/libs/api';
+import { BlogQueryEnum, useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { fetchBlogById } from '@/services/blogServices';
+import { fetchUserById } from '@/services/userServices';
+import { BackgroundImage, Divider, Flex, LoadingOverlay, Rating, Spoiler, Text, Title, TypographyStylesProvider } from '@mantine/core';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
-//   const queryClient = new QueryClient();
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
 
-//   try {
-//     await queryClient.prefetchQuery({
-//       queryKey: ['blogs', id as string],
-//       queryFn: async () => await fetchBlogById(id as string)
-//     });
-//   } catch (error) {
-//     console.error('Error prefetching blogs:', error);
-//   }
+  const { id } = context.query;
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient)
-//     }
-//   };
-// };
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [BlogQueryEnum.BLOGS, id as string],
+      queryFn: async () => await fetchBlogById(id as string)
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['myInfo'],
+      queryFn: () => fetchUserById('me')
+    })
+  ]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const BlogInfo = () => {
   const router = useRouter();

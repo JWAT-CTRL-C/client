@@ -1,34 +1,37 @@
-import BlogTable from '@/components/blogTable';
-import DefaultLayout from '@/components/layouts/DefaultLayout';
-import { useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
-import { blogCommentType } from '@/libs/types/blogCommentType';
-import { blogRatingType } from '@/libs/types/blogRatingType';
-import { blogTableType } from '@/libs/types/blogTableType';
-import { Tag } from '@/libs/types/tagType';
-import { transformBlogTableType } from '@/libs/utils';
-import { fetchBlogsForCurrentUser } from '@/services/blogServices';
-import { Flex, LoadingOverlay } from '@mantine/core';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 
-// export const getServerSideProps: GetServerSideProps = async () => {
-//   const queryClient = new QueryClient();
+import BlogTable from '@/components/blogTable';
+import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { setContext } from '@/libs/api';
+import { BlogQueryEnum, useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
+import { transformBlogTableType } from '@/libs/utils';
+import { fetchBlogsForCurrentUser } from '@/services/blogServices';
+import { fetchUserById } from '@/services/userServices';
+import { Flex, LoadingOverlay } from '@mantine/core';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
-//   try {
-//     await queryClient.prefetchQuery({
-//       queryKey: ['blogs-current-user'],
-//       queryFn: async () => await fetchBlogsForCurrentUser()
-//     });
-//   } catch (error) {
-//     console.error('Error prefetching blogs:', error);
-//   }
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient)
-//     }
-//   };
-// };
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
+      queryFn: async () => await fetchBlogsForCurrentUser()
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['myInfo'],
+      queryFn: () => fetchUserById('me')
+    })
+  ]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 const YourBlog = () => {
   const { data: blogs, isLoading, isError } = useFetchBlogsCurrentUser();
   if (isLoading)

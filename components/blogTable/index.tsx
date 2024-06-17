@@ -1,9 +1,12 @@
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
+
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogsCurrentUserByTitle } from '@/libs/hooks/queries/blogQueries';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
-
 import {
   ActionIcon,
   Flex,
@@ -28,11 +31,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
-import TextColumn from './textColumn';
+
 import IconColumn from './iconColumn';
+import TextColumn from './textColumn';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -205,7 +206,6 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   return (
     <Group>
-      {}
       <Flex align={'center'} justify={'space-between'} className='w-full '>
         <Title>Your Blogs</Title>
         <Group>

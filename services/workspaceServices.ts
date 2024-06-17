@@ -1,8 +1,8 @@
-import axiosInstance from '@/axiosConfig';
+import api from '@/libs/api';
 
 export const fetchWorkspacesForCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get(`/workspaces/me`);
+    const response = await api.get(`/workspaces/me`);
 
     return response.data;
   } catch (error: any) {
@@ -13,7 +13,7 @@ export const fetchWorkspacesForCurrentUser = async () => {
 
 export const fetchOneWorkSpace = async (wksp_id: string) => {
   try {
-    const response = await axiosInstance.get(`/workspaces/${wksp_id}`);
+    const response = await api.get(`/workspaces/${wksp_id}`);
 
     return response.data;
   } catch (error: any) {
