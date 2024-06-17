@@ -9,11 +9,9 @@ import {
 import { useQuery } from '@tanstack/react-query';
 
 import { useDebouncedValue } from '@mantine/hooks';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
-export enum BlogQueryEnum {
-  BLOGS = 'blogs',
-  BLOGS_CURRENT_USER = 'blogs-current-user'
-}
+
 
 export const useFetchBlogs = () => {
   return useQuery({

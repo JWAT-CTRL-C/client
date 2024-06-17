@@ -11,11 +11,22 @@ import CommentCard from '@/components/commnet/commentCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import TagComp from '@/components/tag';
 import { setContext } from '@/libs/api';
-import { BlogQueryEnum, useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { fetchBlogById } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
-import { BackgroundImage, Divider, Flex, LoadingOverlay, Rating, Spoiler, Text, Title, TypographyStylesProvider } from '@mantine/core';
+import {
+  BackgroundImage,
+  Divider,
+  Flex,
+  LoadingOverlay,
+  Rating,
+  Spoiler,
+  Text,
+  Title,
+  TypographyStylesProvider
+} from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -92,14 +103,14 @@ const BlogInfo = () => {
 
       {blog?.workspace && (
         <Flex align={'center'}>
-          <Text fw={'bold'}>Workspace : </Text>
+          <Text fw={'bold'}>Workspace : &nbsp; &nbsp; </Text>
           <Text>{blog?.workspace?.wksp_name}</Text>
         </Flex>
       )}
 
       {blog?.resource && (
         <Flex align={'center'}>
-          <Text fw={'bold'}>Resource :</Text>
+          <Text fw={'bold'}>Resource : &nbsp; &nbsp; </Text>
           <Text>{blog?.resource?.resrc_name}</Text>
         </Flex>
       )}

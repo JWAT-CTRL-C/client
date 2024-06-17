@@ -3,12 +3,13 @@ import { GetServerSideProps } from 'next';
 import BlogTable from '@/components/blogTable';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import { BlogQueryEnum, useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
+import {  useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
 import { transformBlogTableType } from '@/libs/utils';
 import { fetchBlogsForCurrentUser } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);

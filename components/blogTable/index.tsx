@@ -34,6 +34,7 @@ import {
 
 import IconColumn from './iconColumn';
 import TextColumn from './textColumn';
+import { toast } from 'react-toastify';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -198,7 +199,14 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   };
 
   const handleDeleteBlogPage = async (blog_id: string) => {
-    await removeBlog(blog_id);
+    await removeBlog(blog_id, {
+      onSuccess: async () => {
+        toast.success('Delete blog successfully!');
+      },
+      onError: async (err) => {
+        toast.error(err.message);
+      }
+    });
   };
 
   if (isPending)
@@ -206,7 +214,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   return (
     <Group>
-      <Flex align={'center'} justify={'space-between'} className='w-full '>
+      <Flex align={'center'} justify={'space-between'} className='w-full'>
         <Title>Your Blogs</Title>
         <Group>
           <Input

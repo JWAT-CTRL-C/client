@@ -3,18 +3,17 @@ import { useRouter } from 'next/router';
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchWorkspacesCurrentUser } from '@/libs/hooks/queries/workspaceQueries';
+import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
+import { toast } from 'react-toastify';
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { data: workSpaceList, isLoading, isError, isSuccess } = useFetchWorkspacesCurrentUser();
+  const { workspaces: workSpaceList, isError } = useFetchWorkspacesByUser();
   const router = useRouter();
-
-  console.log(workSpaceList);
 
   const handleCreateBlog = async (values: blogFormType) => {
     let imageUrlResponse = '';
@@ -23,13 +22,19 @@ const CreateBlog = () => {
       imageUrlResponse = await uploadImage(values.blog_img);
     }
 
-    const filteredValues = filterFalsyFields({
+    const filteredValues = {
       ...values,
       blog_img: imageUrlResponse || values.blog_img
-    });
+    };
 
     await createBlog(filteredValues as blogFormType, {
-      onSuccess: async () => await router.push('/blogs')
+      onSuccess: async () => {
+        toast.success('Create blog successfully!');
+        await router.push('/blogs');
+      },
+      onError: async (err) => {
+        toast.error(err.message);
+      }
     });
   };
 
