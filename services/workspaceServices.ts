@@ -2,6 +2,7 @@ import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import _ from 'lodash';
 import { USER_TYPE } from './userServices';
+import { ResourceType } from '@/libs/types/sourcesType';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -11,20 +12,15 @@ export type WORKSPACES_RESPONSE = {
   wksp_id: string;
   wksp_name: string;
   wksp_desc: string;
-  users: {
-    user_id: number;
-    usrn: string;
-    email: string | null;
-    fuln: string | null;
-    role: string;
-    avatar: string | null;
-  }[];
+  users: USER_TYPE[];
+  owner: USER_TYPE;
+  resources: ResourceType[] | [];
 };
 export type SPECIFIC_WORKSPACE_RESPONSE = {
   wksp_id: string;
   wksp_name: string;
   wksp_desc: string;
-  users: Partial<USER_TYPE> &
+  users: Partial<USER_TYPE>[] &
     {
       fuln: string | null;
       email: string | null;

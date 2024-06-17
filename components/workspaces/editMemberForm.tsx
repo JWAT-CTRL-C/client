@@ -146,7 +146,6 @@ export function WpsMemberTable({
     columns,
     getCoreRowModel: getCoreRowModel()
   });
-
   return (
     <MTable.ScrollContainer className={className} minWidth={100} h={350}>
       <MTable highlightOnHover stickyHeader stickyHeaderOffset={0}>
@@ -164,25 +163,33 @@ export function WpsMemberTable({
           ))}
         </MTable.Thead>
         <MTable.Tbody>
-          {table.getRowModel().rows.map((row) => (
-            <MTable.Tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <MTable.Td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </MTable.Td>
-              ))}
-            </MTable.Tr>
-          ))}
+          {_.isEmpty(member.users) ? (
+            <></>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <MTable.Tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <MTable.Td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </MTable.Td>
+                ))}
+              </MTable.Tr>
+            ))
+          )}
         </MTable.Tbody>
       </MTable>
     </MTable.ScrollContainer>
   );
 }
 
-export default function EditWorkspaceMemberForm() {
+export default function EditWorkspaceMemberForm({
+  users,
+  members
+}: {
+  users: USER_TYPE[];
+  members: WORKSPACE_MEMBER;
+}) {
   const router = useRouter();
-  const { users } = useGetAllUsers();
-  const { members } = useGetWorkspaceMember(router.query.id as string);
   const [data, setData] = useState<ComboboxItem[]>([]);
   useEffect(() => {
     const dropDownData = (users ?? []).map((user) => ({
@@ -194,13 +201,15 @@ export default function EditWorkspaceMemberForm() {
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      user: ''
+      user: null
+    },
+    validate: {
+      user: (value) => (value === '' ? 'User is required' : null)
     }
   });
 
   const handleAddMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
-    form.reset();
   };
   const handleAddMemberFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
@@ -208,13 +217,11 @@ export default function EditWorkspaceMemberForm() {
     } else {
       toast.error(err.message);
     }
-    form.reset();
   };
   const { addMember } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
-    addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user) });
+    addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });
   };
-
   return (
     <div className='max-h-[90vh] px-[8%]'>
       <form className='py-3' onSubmit={form.onSubmit(handleSubmit)}>
@@ -225,6 +232,7 @@ export default function EditWorkspaceMemberForm() {
           label='Invite Members'
           data={data}
           searchable
+          withAsterisk
           {...form.getInputProps('user')}
         />
         <Button type='submit' mt='lg'>

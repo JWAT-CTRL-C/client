@@ -12,7 +12,8 @@ import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
-import { UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
+import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
+import { RESOURCE_TYPE } from '@/services/resourceServices';
 
 const ResourceItem = ({
   item,
@@ -46,12 +47,15 @@ const ResourceItem = ({
   );
 };
 
-export default function EditGeneralWorkspaceForm() {
+export default function EditGeneralWorkspaceForm({
+  workspace,
+  resources
+}: {
+  workspace: SPECIFIC_WORKSPACE_RESPONSE;
+  resources: RESOURCE_TYPE[];
+}) {
   const [opened, { toggle }] = useDisclosure(false);
   const router = useRouter();
-  const mkp_id = router.query.id as string;
-  const { workspace } = useFetchWorkspaceById(mkp_id);
-  const { resources } = useGetAllResourcesByWorkspace(mkp_id);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {

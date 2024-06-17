@@ -116,7 +116,7 @@ function ChangeInformation({}: IChangeInformationProps) {
         <form onSubmit={form.onSubmit(handleSave)}>
           <Box mx='auto' style={{ maxWidth: 400 }}>
             <div className='flex-center relative h-full w-full shrink-0 overflow-hidden' {...getRootProps()}>
-              <input {...getInputProps()} className='cursor-pointer' />
+              <input {...getInputProps()} className='cursor-pointer' value={''} />
               <Image
                 src={user?.avatar || '/images/default-avatar.png'}
                 radius='9999px'

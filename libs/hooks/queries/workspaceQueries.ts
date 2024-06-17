@@ -2,7 +2,9 @@ import {
   CREATE_WORKSPACE_REQUEST,
   getSpecificWorkspace,
   getWorkspaceMembers,
-  getWorkspacesByUser
+  getWorkspacesByUser,
+  SPECIFIC_WORKSPACE_RESPONSE,
+  WORKSPACE_MEMBER
 } from '@/services/workspaceServices';
 import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
@@ -28,6 +30,7 @@ export const useFetchWorkspacesByUser = () => {
 export const useFetchWorkspaceById = (wksp_id: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp_id,
+    initialData: {} as SPECIFIC_WORKSPACE_RESPONSE,
     queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
     queryFn: async () => await getSpecificWorkspace(wksp_id)
   });
@@ -43,6 +46,7 @@ export const useFetchWorkspaceById = (wksp_id: string) => {
 export const useGetWorkspaceMember = (wksp: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp,
+    initialData: {} as WORKSPACE_MEMBER,
     queryKey: [GET_WORKSPACE_MEMBERS_KEY],
     queryFn: async () => await getWorkspaceMembers(wksp)
   });

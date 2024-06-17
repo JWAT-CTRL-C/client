@@ -46,7 +46,7 @@ export const updateUser = async (user: UserForm): Promise<User> => {
 
 export const getAllUsers = () => {
   return new Promise<USER_TYPE[]>((resolve, reject) => {
-    axiosInstance
+    api
       .get<USER_TYPE[]>('/users/all')
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
