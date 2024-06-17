@@ -1,28 +1,38 @@
-import BlogCard from '@/components/blogCard';
-import DefaultLayout from '@/components/layouts/DefaultLayout';
-import { useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
-import { BlogCardType } from '@/libs/types/blogCardType';
-import { transformBlogData } from '@/libs/utils';
-import { fetchBlogs } from '@/services/blogServices';
-import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
-import { dehydrate, HydrationBoundary, QueryClient, useQuery } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
 import React from 'react';
 
-// export async function getServerSideProps() {
-//   const queryClient = new QueryClient();
+import BlogCard from '@/components/blogCard';
+import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { setContext } from '@/libs/api';
+import { BlogQueryEnum, useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
+import { transformBlogData } from '@/libs/utils';
+import { fetchBlogs } from '@/services/blogServices';
+import { fetchUserById } from '@/services/userServices';
+import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
-//   await queryClient.prefetchQuery({
-//     queryKey: ['blogs'],
-//     queryFn: fetchBlogs
-//   });
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient)
-//     }
-//   };
-// }
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    queryClient.prefetchQuery({
+      queryKey: [BlogQueryEnum.BLOGS],
+      queryFn: fetchBlogs
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['myInfo'],
+      queryFn: () => fetchUserById('me')
+    })
+  ]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const Blogs = () => {
   const { data: blogs, isLoading, isError } = useFetchBlogs();

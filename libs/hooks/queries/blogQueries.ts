@@ -40,7 +40,7 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
 
   return useQuery<BlogResponse[], Error>({
     queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, debounced],
-    queryFn: async () => await filterBlogsForCurrentUserByTitle(debounced)
-    //enabled: !!debounced
+    queryFn: async () => await filterBlogsForCurrentUserByTitle(debounced),
+    enabled: !!debounced
   });
 };

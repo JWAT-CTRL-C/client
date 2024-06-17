@@ -1,18 +1,18 @@
 import { useCallback, useEffect } from 'react';
+import { FileWithPath, useDropzone } from 'react-dropzone';
 import { FaUserCog } from 'react-icons/fa';
+import { IoCamera } from 'react-icons/io5';
 import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
 
 import { FloatingLabelInput } from '@/components/shared/FloatingLabelInput';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useUpdateUser, useUploadImage } from '@/libs/hooks/mutations/userMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { ErrorResponseType } from '@/libs/types';
-import { FileWithPath, useDropzone } from 'react-dropzone';
 import { Box, Button, Group, Image, LoadingOverlay, Modal, NavLink, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { IoCamera } from 'react-icons/io5';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 interface IChangeInformationProps {}
 
@@ -84,11 +84,15 @@ function ChangeInformation({}: IChangeInformationProps) {
       {
         onError: (error) => {
           const errorResponse = error as ErrorResponseType;
-          const message = errorResponse.response.data.message as string[];
+          const message = errorResponse.response.data.message;
 
-          message.forEach((msg) => {
-            form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
-          });
+          if (typeof message === 'string') {
+            showErrorToast(message);
+          } else {
+            message.forEach((msg) => {
+              form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
+            });
+          }
         },
         onSuccess: () => {
           close();
