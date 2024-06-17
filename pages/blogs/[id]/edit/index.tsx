@@ -26,15 +26,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
+      queryFn: async () => await fetchBlogById(id as string),
+      retry: 1
     }),
     queryClient.prefetchQuery({
       queryKey: ['myInfo'],
-      queryFn: () => fetchUserById('me')
+      queryFn: () => fetchUserById('me'),
+      retry: 1
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-      queryFn: async () => await getWorkspacesByUser()
+      queryFn: async () => await getWorkspacesByUser(),
+      retry: 1
     })
   ]);
 

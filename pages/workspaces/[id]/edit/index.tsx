@@ -29,19 +29,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
-      queryFn: async () => await getSpecificWorkspace(wksp_id)
+      queryFn: async () => await getSpecificWorkspace(wksp_id),
+      retry: 1
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_RESOURCES_KEY],
-      queryFn: async () => await getAllResources(wksp_id)
+      queryFn: async () => await getAllResources(wksp_id),
+      retry: 1
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_USERS_KEY],
-      queryFn: async () => await getAllUsers()
+      queryFn: async () => await getAllUsers(),
+      retry: 1
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_WORKSPACE_MEMBERS_KEY],
-      queryFn: async () => await getWorkspaceMembers(wksp_id)
+      queryFn: async () => await getWorkspaceMembers(wksp_id),
+      retry: 1
     })
   ]);
   return {
@@ -64,7 +68,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   useEffect(() => {
     const { user_id } = getUserAuth();
     if (!_.isEmpty(workspace)) {
-      if (workspace.owner.user_id !== parseInt(user_id ?? '')) {
+      if (workspace.owner.user_id !== parseInt(user_id.toString() ?? '')) {
         router.replace('https://youtu.be/watch_popup?v=Ts2Nv8z0lo4');
       }
     }

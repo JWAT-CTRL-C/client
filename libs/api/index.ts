@@ -71,14 +71,15 @@ api.interceptors.request.use((config) => {
 //Response interceptor to handle unauthorized errors and retry request
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  async (error: AxiosError) => {
     if (
       error.response &&
       error.response.status === 419 &&
-      !error.response.config?.url?.includes('auth/refresh') &&
-      !error.response.config?.url?.includes('auth')
+      error.response.config &&
+      !error.response.config.url?.includes('auth/refresh') &&
+      !error.response.config.url?.includes('auth')
     ) {
-      return refreshToken(error);
+      return await refreshToken(error);
     }
     return Promise.reject(error);
   }
@@ -104,7 +105,7 @@ const refreshToken = async (oError: AxiosError) => {
     const retryOriginalRequest = new Promise((resolve) => {
       addSubscriber((token: string) => {
         response!.config.headers['Authorization'] = `Bearer ${token}`;
-        resolve(axios(response!.config));
+        resolve(api(response!.config));
       });
     });
 
@@ -117,14 +118,14 @@ const refreshToken = async (oError: AxiosError) => {
       // check if this is server or not
       if (!isServer()) {
         const userAuth = getUserAuth();
-        const response = await axios.post<RefreshTokenResponse>(`${baseURL}/auth/refresh`, {
+        const response = await api.post<RefreshTokenResponse>('/auth/refresh', {
           refresh_token: userAuth.refresh_token,
-          user_id: userAuth.user_id
+          user_id: +userAuth.user_id
         });
         data = response.data;
 
         setUserAuth({
-          user_id: userAuth.user_id!,
+          user_id: userAuth.user_id as string,
           ...data
         });
       } else {
@@ -139,9 +140,9 @@ const refreshToken = async (oError: AxiosError) => {
           if (user_id_cookie && refresh_token_cookie) {
             const user_id = user_id_cookie.split('=')[1];
             const refresh_token = refresh_token_cookie.split('=')[1];
-            const response = await axios.post<RefreshTokenResponse>(`${baseURL}/auth/refresh`, {
+            const response = await api.post<RefreshTokenResponse>('/auth/refresh', {
               refresh_token: refresh_token,
-              user_id: user_id
+              user_id: +user_id
             });
             data = response.data;
             context.res.setHeader('Set-Cookie', [
@@ -163,7 +164,12 @@ const refreshToken = async (oError: AxiosError) => {
       removeUserAuth();
       Router.push('/auth');
     }
-    if (isServer()) {
+    if (isServer() && context.res && !context.res.headersSent && !context.req.url?.includes('/auth')) {
+      context.res.setHeader('Set-Cookie', [
+        `user_id=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`,
+        `access_token=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`,
+        `refresh_token=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`
+      ]);
       context.res.setHeader('location', '/auth');
       context.res.statusCode = 302;
       context.res.end();
