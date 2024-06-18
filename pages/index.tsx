@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   await queryClient.prefetchQuery({
     queryKey: [MY_INFO_KEY],
-    queryFn: () => fetchUserById('me')
+    queryFn: async () => await fetchUserById('me')
   });
 
   return {

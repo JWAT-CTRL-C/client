@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
     queryClient.prefetchQuery({
       queryKey: [MY_INFO_KEY],
-      queryFn: () => fetchUserById('me')
+      queryFn: async () => await fetchUserById('me')
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],

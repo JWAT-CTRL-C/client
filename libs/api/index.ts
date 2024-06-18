@@ -5,9 +5,7 @@ import Router from 'next/router';
 import { RefreshTokenResponse } from '@/libs/types/RefreshTokenResponse';
 import { getUserAuth, removeUserAuth, setUserAuth } from '@/libs/utils';
 
-const isServer = () => {
-  return typeof window === 'undefined';
-};
+const isServer = () => typeof window === 'undefined';
 
 let context = <GetServerSidePropsContext>{};
 
@@ -27,63 +25,57 @@ const api = axios.create({
 });
 
 // Request interceptor to add tokens to headers
-api.interceptors.request.use(
-  (config) => {
-    if (isServer()) {
-      if (context.req.headers.cookie) {
-        const cookies = context.req.headers.cookie;
-        const user_id_cookie = cookies
-          .split(';')
-          .find((cookie: string) => cookie.trim().startsWith('user_id='));
-        if (user_id_cookie) {
-          const user_id = user_id_cookie.split('=')[1];
-          config.headers['x-user-id'] = user_id;
-        }
-        const access_token_cookie = cookies
-          .split(';')
-          .find((cookie: string) => cookie.trim().startsWith('access_token='));
-        if (access_token_cookie) {
-          const access_token = access_token_cookie.split('=')[1];
-          config.headers['Authorization'] = `Bearer ${access_token}`;
-        }
+api.interceptors.request.use((config) => {
+  if (isServer()) {
+    if (context.req.headers.cookie) {
+      const cookies = context.req.headers.cookie;
+      const user_id_cookie = cookies
+        .split(';')
+        .find((cookie: string) => cookie.trim().startsWith('user_id='));
+      if (user_id_cookie) {
+        const user_id = user_id_cookie.split('=')[1];
+        config.headers['x-user-id'] = user_id;
       }
-
-      if (context?.req?.cookies) config.headers.Cookie = `gid=${context.req.cookies.gid};`;
-    } else {
-      const userAuth = getUserAuth();
-
-      if (userAuth) {
-        const userId = userAuth.user_id;
-        let { access_token } = userAuth;
-
-        if (access_token) {
-          config.headers['Authorization'] = `Bearer ${access_token}`;
-        }
-        if (userId) {
-          config.headers['x-user-id'] = userId.toString();
-        }
+      const access_token_cookie = cookies
+        .split(';')
+        .find((cookie: string) => cookie.trim().startsWith('access_token='));
+      if (access_token_cookie) {
+        const access_token = access_token_cookie.split('=')[1];
+        config.headers['Authorization'] = `Bearer ${access_token}`;
       }
     }
 
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+    if (context?.req?.cookies) config.headers.Cookie = `gid=${context.req.cookies.gid};`;
+  } else {
+    const userAuth = getUserAuth();
+
+    if (userAuth) {
+      const userId = userAuth.user_id;
+      let { access_token } = userAuth;
+
+      if (access_token) {
+        config.headers['Authorization'] = `Bearer ${access_token}`;
+      }
+      if (userId) {
+        config.headers['x-user-id'] = userId.toString();
+      }
+    }
+  }
+
+  return config;
+});
 
 //Response interceptor to handle unauthorized errors and retry request
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalConfig = error.config;
-
     if (
       error.response &&
       error.response.status === 419 &&
-      originalConfig &&
-      !originalConfig.url?.includes('auth/refresh') &&
-      !originalConfig.url?.includes('auth')
+      error.response.config &&
+      !error.response.config.url?.includes('auth')
     ) {
-      return await refreshToken(error);
+      return refreshToken(error);
     }
     return Promise.reject(error);
   }
@@ -170,11 +162,11 @@ const refreshToken = async (error: AxiosError) => {
         });
       }
 
-      // when new token arrives, retry old requests
+      // when new token arrives, retry old requests with new token
       onAccessTokenFetched(data.access_token, +_user_id);
     }
 
-    return await retryOriginalRequest;
+    return retryOriginalRequest;
   } catch (error) {
     // on error go to login page
     if (!isServer() && !Router.asPath.includes('/auth')) {
