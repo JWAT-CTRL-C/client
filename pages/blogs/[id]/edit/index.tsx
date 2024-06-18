@@ -15,6 +15,7 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
 import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -26,18 +27,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string),
-      retry: 1
+      queryFn: async () => await fetchBlogById(id as string)
     }),
     queryClient.prefetchQuery({
-      queryKey: ['myInfo'],
-      queryFn: () => fetchUserById('me'),
-      retry: 1
+      queryKey: [MY_INFO_KEY],
+      queryFn: () => fetchUserById('me')
     }),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-      queryFn: async () => await getWorkspacesByUser(),
-      retry: 1
+      queryFn: async () => await getWorkspacesByUser()
     })
   ]);
 

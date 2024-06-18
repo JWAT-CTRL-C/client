@@ -1,3 +1,4 @@
+import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { User, UserForm } from '@/libs/types/userType';
 import { uploadImage, updateUser } from '@/services/userServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +8,7 @@ export const useUploadImage = () => {
   const mutation = useMutation({
     mutationFn: uploadImage,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['myInfo'] });
+      await queryClient.invalidateQueries({ queryKey: [MY_INFO_KEY] });
     }
   });
 
@@ -24,7 +25,7 @@ export const useUpdateUser = () => {
   const mutation = useMutation<User, Error, UserForm>({
     mutationFn: updateUser,
     onSuccess: async (_data, variable) => {
-      await queryClient.invalidateQueries({ queryKey: ['myInfo'] });
+      await queryClient.invalidateQueries({ queryKey: [MY_INFO_KEY] });
       await queryClient.invalidateQueries({ queryKey: ['user', variable.user_id] });
     }
   });

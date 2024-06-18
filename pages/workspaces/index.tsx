@@ -17,8 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-    queryFn: async () => await getWorkspacesByUser(),
-    retry: 1
+    queryFn: async () => await getWorkspacesByUser()
   });
   return {
     props: {

@@ -10,6 +10,7 @@ export function FloatingLabelInput({
   value,
   defaultValue,
   onChange,
+  required,
   ...props
 }: IFloatingLabelInputProps) {
   const [focused, setFocused] = useState(false);
@@ -20,7 +21,7 @@ export function FloatingLabelInput({
     <TextInput
       label={label || 'Floating label input'}
       placeholder={placeholder || 'Placeholder'}
-      required
+      required={required}
       classNames={classes}
       value={value}
       defaultValue={defaultValue}

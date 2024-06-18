@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchUserById, getAllUsers, USER_TYPE } from '@/services/userServices';
-import { GET_ALL_USERS_KEY } from '@/libs/constants/queryKeys/user';
+import { GET_ALL_USERS_KEY, MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 
 export const useMyInfo = () => {
   const { data, isError, isFetching, isPending } = useQuery({
-    queryKey: ['myInfo'],
+    queryKey: [MY_INFO_KEY],
     queryFn: () => fetchUserById('me')
   });
 

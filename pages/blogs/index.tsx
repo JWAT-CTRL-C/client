@@ -10,6 +10,7 @@ import { fetchBlogs } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -19,13 +20,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   await Promise.all([
     queryClient.prefetchQuery({
       queryKey: [BlogQueryEnum.BLOGS],
-      queryFn: fetchBlogs,
-      retry: 1
+      queryFn: fetchBlogs
     }),
     queryClient.prefetchQuery({
-      queryKey: ['myInfo'],
-      queryFn: () => fetchUserById('me'),
-      retry: 1
+      queryKey: [MY_INFO_KEY],
+      queryFn: () => fetchUserById('me')
     })
   ]);
 
