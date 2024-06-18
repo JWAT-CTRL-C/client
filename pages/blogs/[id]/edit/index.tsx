@@ -17,6 +17,7 @@ import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -86,11 +87,12 @@ const EditBlog = () => {
       },
       {
         onSuccess: async () => {
-          toast.success('Update blog successfully!');
+          showSuccessToast('Update blog successfully!');
+
           await router.push('/blogs/yourBlog');
         },
         onError: async (err) => {
-          toast.error(err.message);
+          showErrorToast(err.message);
         }
       }
     );

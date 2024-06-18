@@ -35,6 +35,7 @@ import {
 import IconColumn from './iconColumn';
 import TextColumn from './textColumn';
 import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '../shared/toast';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -201,10 +202,12 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const handleDeleteBlogPage = async (blog_id: string) => {
     await removeBlog(blog_id, {
       onSuccess: async () => {
-        toast.success('Delete blog successfully!');
+        showSuccessToast('Delete blog successfully!');
+     
       },
       onError: async (err) => {
-        toast.error(err.message);
+        showErrorToast(err.message);
+        
       }
     });
   };

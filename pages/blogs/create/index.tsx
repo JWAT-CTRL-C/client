@@ -8,6 +8,7 @@ import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
@@ -29,11 +30,12 @@ const CreateBlog = () => {
 
     await createBlog(filteredValues as blogFormType, {
       onSuccess: async () => {
-        toast.success('Create blog successfully!');
+        showSuccessToast('Create blog successfully!');
+
         await router.push('/blogs');
       },
       onError: async (err) => {
-        toast.error(err.message);
+        showErrorToast(err.message);
       }
     });
   };
