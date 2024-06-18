@@ -1,9 +1,9 @@
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
 import { createBlog, removeBlogById, updateBlog, uploadImage } from '@/services/blogServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { BlogQueryEnum } from '../queries/blogQueries';
 
 export const useUploadImage = () => {
   const mutation = useMutation({
@@ -30,9 +30,14 @@ export const useCreateBlog = () => {
   const mutation = useMutation<void, Error, blogFormType>({
     mutationFn: createBlog,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
-      });
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
+        })
+      ]);
     },
     onError: (error) => {
       console.error('Error creating blog:', error);

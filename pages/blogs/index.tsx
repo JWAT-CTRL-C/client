@@ -4,12 +4,13 @@ import React from 'react';
 import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import { BlogQueryEnum, useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
+import {  useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
 import { transformBlogData } from '@/libs/utils';
 import { fetchBlogs } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
