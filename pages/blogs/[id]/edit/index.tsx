@@ -5,7 +5,7 @@ import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
-import { BlogQueryEnum, useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { fetchBlogById } from '@/services/blogServices';
@@ -16,6 +16,8 @@ import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/works
 import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -81,7 +83,14 @@ const EditBlog = () => {
         blogData: filteredValues as blogFormType
       },
       {
-        onSuccess: async () => await router.push('/blogs/yourBlog')
+        onSuccess: async () => {
+          showSuccessToast('Update blog successfully!');
+
+          await router.push('/blogs/yourBlog');
+        },
+        onError: async (err) => {
+          showErrorToast(err.message);
+        }
       }
     );
   };

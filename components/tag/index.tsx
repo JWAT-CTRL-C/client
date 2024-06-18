@@ -1,7 +1,7 @@
 import { Badge } from '@mantine/core';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-const TagComp = ({ tag }: { tag: string }) => {
+const TagComp = ({ tag }: { tag: ReactNode }) => {
   return (
     <Badge variant='outline' size='sm'>
       {tag}
