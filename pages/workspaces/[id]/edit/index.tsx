@@ -28,11 +28,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   await Promise.all([
     queryClient.prefetchQuery({
-      queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
+      queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
       queryFn: async () => await getSpecificWorkspace(wksp_id)
     }),
     queryClient.prefetchQuery({
-      queryKey: [GET_ALL_RESOURCES_KEY],
+      queryKey: [GET_ALL_RESOURCES_KEY + wksp_id],
       queryFn: async () => await getAllResources(wksp_id)
     }),
     queryClient.prefetchQuery({
@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryFn: async () => await getAllUsers()
     }),
     queryClient.prefetchQuery({
-      queryKey: [GET_WORKSPACE_MEMBERS_KEY],
+      queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id],
       queryFn: async () => await getWorkspaceMembers(wksp_id)
     })
   ]);

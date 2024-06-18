@@ -6,20 +6,36 @@ const PopoverConfirm = ({
   title,
   confirmLable,
   cancelLable,
-  handleConfirm
+  disabled = false,
+  size = 200,
+  onConfirm
 }: {
   children: ReactNode;
   title?: string;
   confirmLable?: string;
   cancelLable?: string;
-  handleConfirm: () => void;
+  disabled?: boolean;
+  size?: number;
+  onConfirm: () => void;
 }) => {
   const [opened, { close, open }] = useDisclosure(false);
   const handleCancel = () => {
     close();
   };
+
+  const handleConfirm = () => {
+    onConfirm();
+    close();
+  };
   return (
-    <Popover width={200} position='top' withArrow shadow='lg' opened={opened} radius='md'>
+    <Popover
+      width={size}
+      position='top'
+      withArrow
+      shadow='lg'
+      opened={opened}
+      radius='md'
+      disabled={disabled}>
       <Popover.Target>
         {React.cloneElement(React.Children.only(children) as React.ReactElement, { onClick: open })}
       </Popover.Target>
@@ -27,7 +43,7 @@ const PopoverConfirm = ({
         <div className='px-4 py-2'>
           <Text ta='center'>{title ?? 'Confirm'}</Text>
           <Group mt='md' justify='center'>
-            <Button onClick={() => handleConfirm()} variant='filled' color='green'>
+            <Button onClick={() => onConfirm()} variant='filled' color='green'>
               {confirmLable ?? 'Yes'}
             </Button>
             <Button onClick={() => handleCancel()} variant='outline' color='red'>

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 export const useGetAllResourcesByWorkspace = (wksp_id: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp_id,
-    queryKey: [GET_ALL_RESOURCES_KEY],
+    queryKey: [GET_ALL_RESOURCES_KEY + wksp_id],
     queryFn: async () => await getAllResources(wksp_id)
   });
 
@@ -18,7 +18,7 @@ export const useGetAllResourcesByWorkspace = (wksp_id: string) => {
 };
 export const useGetSpecificResource = (wksp_id: string, resrc_id: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
-    queryKey: [GET_SPECIFIC_RESOURCE_KEY],
+    queryKey: [GET_SPECIFIC_RESOURCE_KEY + resrc_id],
     queryFn: async () => await getSpecificResource(wksp_id, resrc_id)
   });
   return {
