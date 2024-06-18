@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const wksp_id = context.query.id as string;
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
-    queryKey: [GET_SPECIFIC_WORKSPACE_KEY],
+    queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
     queryFn: async () => await getSpecificWorkspace(wksp_id),
     retry: 1
   });

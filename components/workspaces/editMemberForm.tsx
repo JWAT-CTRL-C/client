@@ -50,6 +50,7 @@ export function WpsMemberTable({
   // Remove member
   const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
+    return { wksp_id };
   };
   const handleRemoveMemberFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
@@ -70,6 +71,7 @@ export function WpsMemberTable({
   const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
     navRouter.replace(`/workspaces/${wksp_id}`);
+    return { wksp_id };
   };
   const handleFranchiseMemberFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
@@ -116,7 +118,7 @@ export function WpsMemberTable({
           <PopoverConfirm
             key={info.row.original.user_id}
             title={`Franchise to ${info.row.original.fuln}?`}
-            handleConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
+            onConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
             <Button variant='subtle' color='orange'>
               <FaEdit size={15} />
             </Button>
@@ -128,16 +130,16 @@ export function WpsMemberTable({
       id: 'actions',
       header: 'Remove',
       cell: (info) => {
-        return (
+        return info.row.original.user_id !== member.owner.user_id ? (
           <PopoverConfirm
             key={info.row.original.user_id}
             title='Remove Member'
-            handleConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
+            onConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
             <Button variant='subtle' color='red'>
               <FaTimes size={15} />
             </Button>
           </PopoverConfirm>
-        );
+        ) : null;
       }
     })
   ];
@@ -191,13 +193,18 @@ export default function EditWorkspaceMemberForm({
 }) {
   const router = useRouter();
   const [data, setData] = useState<ComboboxItem[]>([]);
+  useEffect(() => {}, [users]);
+
   useEffect(() => {
-    const dropDownData = (users ?? []).map((user) => ({
+    const listUserData = users.filter(
+      (user) => !members.users.map((member) => member.user_id).includes(user.user_id)
+    );
+    const dropDownData = listUserData.map((user) => ({
       value: user.user_id.toString(),
       label: `${user.fuln} #${user.user_id}`
     }));
     setData(dropDownData);
-  }, [users]);
+  }, [members]);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -210,6 +217,8 @@ export default function EditWorkspaceMemberForm({
 
   const handleAddMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
+    form.reset();
+    return { wksp_id: router.query.id?.toString() ?? '' };
   };
   const handleAddMemberFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
@@ -233,14 +242,15 @@ export default function EditWorkspaceMemberForm({
           data={data}
           searchable
           withAsterisk
+          nothingFoundMessage='No member available'
           {...form.getInputProps('user')}
         />
-        <Button type='submit' mt='lg'>
+        <Button type='submit' mt='lg' disabled={_.isEmpty(data)}>
           Save
         </Button>
       </form>
       <Divider my='xs' label='Members list' labelPosition='left' />
-      <div className='max-h-96 overflow-y-auto '>
+      <div className='max-h-96 overflow-y-auto'>
         <WpsMemberTable
           className='max-h-96'
           member={members ?? ({} as WORKSPACE_MEMBER)}
