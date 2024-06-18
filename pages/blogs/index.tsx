@@ -4,7 +4,7 @@ import React from 'react';
 import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import {  useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
+import { useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
 import { transformBlogData } from '@/libs/utils';
 import { fetchBlogs } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
