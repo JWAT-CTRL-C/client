@@ -1,39 +1,31 @@
-import { getToken } from 'next-auth/jwt';
-import { withAuth } from 'next-auth/middleware';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export default withAuth(
-  async function middleware(req) {
-    const token = await getToken({ req });
-    const isAuth = !!token;
+export default async function middleware(req: NextRequest) {
+  const accessTokenCookie = req.cookies.get('access_token');
+  const accessToken = accessTokenCookie ? accessTokenCookie.value : null;
+  const isAuth = !!accessToken;
 
-    const isAuthPage = req.nextUrl.pathname.startsWith('/auth');
+  const { pathname } = req.nextUrl;
 
-    if (isAuthPage) {
-      if (isAuth) {
-        return NextResponse.redirect(new URL('/', req.url));
-      }
-    } else {
-      if (!isAuth) {
-        let from = req.nextUrl.pathname;
+  const isAuthPage = pathname.startsWith('/auth');
+  const isMainPage = pathname === '/';
 
-        if (req.nextUrl.search) {
-          from += req.nextUrl.search;
-        }
-
-        return NextResponse.redirect(new URL(`/auth?callbackUrl=${encodeURIComponent(from)}`, req.url));
-      }
+  if (isAuthPage) {
+    if (isAuth) {
+      return NextResponse.redirect(new URL('/blogs', req.url));
     }
-  },
-  {
-    callbacks: {
-      authorized: () => {
-        return true;
-      }
+  } else {
+    if (!isAuth) {
+      return NextResponse.redirect(new URL('/auth', req.url));
+    }
+    if (isMainPage && isAuth) {
+      return NextResponse.redirect(new URL('/blogs', req.url));
     }
   }
-);
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)']
+  matcher: ['/','/((?!api|_next|.*\\..*).*)']
 };

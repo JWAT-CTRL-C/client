@@ -1,131 +1,68 @@
-import { useToggle, upperFirst, useDisclosure } from '@mantine/hooks';
-import { useForm } from '@mantine/form';
-import isEmail from 'validator/lib/isEmail';
-import {
-  TextInput,
-  PasswordInput,
-  Text,
-  Paper,
-  Group,
-  PaperProps,
-  Button,
-  Divider,
-  Checkbox,
-  Anchor,
-  Stack
-} from '@mantine/core';
-import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
-import { GoogleButton } from '@/components/shared/GoogleButton';
-import { TwitterButton } from '@/components/shared/TwitterButton';
+import { useRouter } from 'next/router';
 
-export function AuthenticationForm(props: PaperProps) {
-  const [type, toggleType] = useToggle(['login', 'register']);
-  const [isLoading, setIsLoading] = useState(false);
+import { useLogin } from '@/libs/hooks/mutations/useLogin';
+import { ErrorResponseType } from '@/libs/types';
+import { Button, Paper, PasswordInput, TextInput, Title } from '@mantine/core';
+import { useForm } from '@mantine/form';
+
+export function AuthenticationForm() {
+  const { login: loginFunc, isPending } = useLogin();
+  const router = useRouter();
+
   const form = useForm({
     initialValues: {
-      email: '',
-      name: '',
-      password: '',
-      terms: true
+      username: '',
+      password: ''
     },
     validate: {
-      email: (val) => (isEmail(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null)
+      username: (val) => (val.trim().length === 0 ? 'Invalid email' : null),
+      password: (val) => (val.trim().length === 0 ? 'Password is required' : null)
     }
   });
 
-  const searchParams = useSearchParams();
-
   const handleSubmit = async (values: typeof form.values) => {
-    if (type === 'login') {
-      try {
-        setIsLoading(true);
-        await signIn('credentials', {
-          email: values.email,
-          password: values.password,
-          callbackUrl: searchParams.get('callbackUrl') || '/'
-        });
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
+    loginFunc(
+      { usrn: values.username, pass: values.password },
+      {
+        onSuccess() {
+          router.push('/blogs');
+        },
+        onError(error) {
+          switch ((error as ErrorResponseType).response.status) {
+            case 401:
+              form.setErrors({ password: 'Password is incorrect' });
+              break;
+            case 404:
+              form.setErrors({ username: 'Username is not found' });
+          }
+        }
       }
-    } else {
-      // Register user
-    }
+    );
   };
 
   return (
-    <Paper radius='md' p='xl' withBorder {...props}>
-      <Text size='lg' fw={500}>
-        Welcome to Synergy, {type} with
-      </Text>
-
-      <Group grow mb='md' mt='md'>
-        <GoogleButton radius='xl'>Google</GoogleButton>
-        <TwitterButton radius='xl'>Twitter</TwitterButton>
-      </Group>
-
-      <Divider label='Or continue with email' labelPosition='center' my='lg' />
+    <Paper
+      className='h-full min-h-[900px] max-w-[450px] pt-[80px] max-md:sm:max-w-full'
+      radius={0}
+      p={30}
+      pt={60}>
+      <Title order={2} className='' ta='center' mt='md' mb={50}>
+        Welcome back to Synergy!
+      </Title>
 
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Stack>
-          {type === 'register' && (
-            <TextInput
-              key={form.key('name')}
-              label='Name'
-              placeholder='Your name'
-              radius='md'
-              {...form.getInputProps('name')}
-            />
-          )}
+        <TextInput label='Username' placeholder='Synergy' size='md' {...form.getInputProps('username')} />
+        <PasswordInput
+          label='Password'
+          placeholder='*********'
+          mt='md'
+          size='md'
+          {...form.getInputProps('password')}
+        />
 
-          <TextInput
-            key={form.key('email')}
-            required
-            label='Email'
-            placeholder='example@synergy.dev'
-            radius='md'
-            {...form.getInputProps('email')}
-          />
-
-          <PasswordInput
-            key={form.key('password')}
-            required
-            label='Password'
-            placeholder='Your password'
-            radius='md'
-            {...form.getInputProps('password')}
-          />
-
-          {type === 'register' && (
-            <Checkbox
-              key={form.key('terms')}
-              className='select-none'
-              label='I accept terms and conditions'
-              {...form.getInputProps('terms', { type: 'checkbox' })}
-            />
-          )}
-        </Stack>
-
-        <Group justify='space-between' mt='xl'>
-          <Anchor
-            component='button'
-            type='button'
-            c='dimmed'
-            onClick={() => {
-              toggleType();
-              form.reset();
-            }}
-            size='xs'>
-            {type === 'register' ? 'Already have an account? Login' : "Don't have an account? Register"}
-          </Anchor>
-          <Button type='submit' radius='xl' loading={isLoading} disabled={isLoading}>
-            {upperFirst(type)}
-          </Button>
-        </Group>
+        <Button type='submit' fullWidth mt='xl' size='md' loading={isPending}>
+          Login
+        </Button>
       </form>
     </Paper>
   );

@@ -1,9 +1,13 @@
 import { AuthenticationForm } from '@/components/pages/auth/AuthenticationForm';
+import { NextPageWithLayout } from '../_app';
+import AuthLayout from '@/components/layouts/authLayout';
 
-export default function Auth() {
-  return (
-    <div className='flex-center h-dvh w-full'>
-      <AuthenticationForm />
-    </div>
-  );
-}
+const Auth: NextPageWithLayout = () => {
+  return <AuthenticationForm />;
+};
+
+Auth.getLayout = function getLayout(page: React.ReactElement) {
+  return <AuthLayout>{page}</AuthLayout>;
+};
+
+export default Auth;
