@@ -10,13 +10,12 @@ import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useUpdateUser, useUploadImage } from '@/libs/hooks/mutations/userMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { ErrorResponseType } from '@/libs/types';
-import { Box, Button, Group, Image, LoadingOverlay, Modal, NavLink, Stack } from '@mantine/core';
+import { Box, Button, CloseButton, Group, Image, LoadingOverlay, Modal, NavLink, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
+import { UserForm } from '@/libs/types/userType';
 
-interface IChangeInformationProps {}
-
-function ChangeInformation({}: IChangeInformationProps) {
+function ChangeInformation() {
   const [opened, { open, close }] = useDisclosure(false);
 
   const { user, isPending } = useMyInfo();
@@ -53,15 +52,22 @@ function ChangeInformation({}: IChangeInformationProps) {
     }
   });
 
-  const form = useForm({
+  const form = useForm<Omit<UserForm, 'user_id'>>({
     initialValues: {
       fuln: '',
-      email: '',
-      phone: ''
+      email: null,
+      phone: null
+    },
+    transformValues(values) {
+      return {
+        ...values,
+        email: values.email?.trim() || null,
+        phone: values.phone?.trim() || null
+      };
     },
     validate: {
-      email: (val) => (isEmail(val) ? null : 'Invalid email format'),
-      phone: (val) => (isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format')
+      email: (val) => (!val ? null : isEmail(val) ? null : 'Invalid email format'),
+      phone: (val) => (!val ? null : isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format')
     }
   });
 
@@ -73,7 +79,7 @@ function ChangeInformation({}: IChangeInformationProps) {
         phone: user.phone
       });
     }
-  }, [user]);
+  }, [user, opened]);
 
   const isChanged =
     form.values.fuln === user?.fuln && form.values.email === user?.email && form.values.phone === user?.phone;
@@ -136,18 +142,40 @@ function ChangeInformation({}: IChangeInformationProps) {
                 label='Full Name'
                 name='fullName'
                 placeholder='Enter your full name'
+                required
+                rightSection={
+                  <CloseButton
+                    aria-label='Clear input'
+                    onClick={() => form.setValues({ fuln: '' })}
+                    style={{ display: form.getValues().fuln ? undefined : 'none' }}
+                  />
+                }
                 {...form.getInputProps('fuln')}
               />
               <FloatingLabelInput
                 label='Email'
                 name='email'
                 placeholder='Enter your email'
+                rightSection={
+                  <CloseButton
+                    aria-label='Clear input'
+                    onClick={() => form.setValues({ email: '' })}
+                    style={{ display: form.getValues().email ? undefined : 'none' }}
+                  />
+                }
                 {...form.getInputProps('email')}
               />
               <FloatingLabelInput
                 label='Phone Number'
                 name='phoneNumber'
                 placeholder='Enter your phone number'
+                rightSection={
+                  <CloseButton
+                    aria-label='Clear input'
+                    onClick={() => form.setValues({ phone: '' })}
+                    style={{ display: form.getValues().phone ? undefined : 'none' }}
+                  />
+                }
                 {...form.getInputProps('phone')}
               />
               {/* <PasswordInput label='Change Password' name='password' placeholder='Enter a new password' /> */}

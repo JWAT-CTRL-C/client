@@ -1,15 +1,13 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import Router from 'next/router';
 
 import { RefreshTokenResponse } from '@/libs/types/RefreshTokenResponse';
 import { getUserAuth, removeUserAuth, setUserAuth } from '@/libs/utils';
 
-const isServer = () => {
-  return typeof window === 'undefined';
-};
+const isServer = () => typeof window === 'undefined';
 
-let context = <GetServerSidePropsContext>{};
+let context: GetServerSidePropsContext | null = null;
 
 export const setContext = (_context: GetServerSidePropsContext) => {
   context = _context;
@@ -19,7 +17,7 @@ export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: baseURL,
-  // timeout: 10000,
+  timeout: 30000,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
@@ -28,156 +26,178 @@ const api = axios.create({
 
 // Request interceptor to add tokens to headers
 api.interceptors.request.use((config) => {
-  if (isServer() && context?.req?.cookies) {
-    config.headers.Cookie = `gid=${context.req.cookies.gid};`;
-  }
+  if (isServer() && context) {
+    // Server-side: Access cookies from context.req.headers.cookie
+    const cookies = context.req.headers.cookie || '';
+    const user_id = getCookieValue(cookies, 'user_id');
+    const access_token = getCookieValue(cookies, 'access_token');
 
-  if (!isServer()) {
+    if (user_id) config.headers['x-user-id'] = user_id;
+    if (access_token) config.headers['Authorization'] = `Bearer ${access_token}`;
+  } else if (!isServer()) {
+    // Client-side: Access tokens from browser cookies
     const userAuth = getUserAuth();
 
     if (userAuth) {
-      const userId = userAuth.user_id;
-      let { access_token } = userAuth;
-
-      if (access_token) {
-        config.headers.Authorization = `Bearer ${access_token}`;
-      }
-      if (userId) {
-        config.headers['x-user-id'] = userId.toString();
-      }
-    }
-  } else {
-    if (context.req.headers.cookie) {
-      const cookies = context.req.headers.cookie;
-      const user_id_cookie = cookies
-        .split(';')
-        .find((cookie: string) => cookie.trim().startsWith('user_id='));
-      if (user_id_cookie) {
-        const user_id = user_id_cookie.split('=')[1];
-        config.headers['x-user-id'] = user_id;
-      }
-      const access_token_cookie = cookies
-        .split(';')
-        .find((cookie: string) => cookie.trim().startsWith('access_token='));
-      if (access_token_cookie) {
-        const access_token = access_token_cookie.split('=')[1];
-        config.headers.Authorization = `Bearer ${access_token}`;
-      }
+      config.headers['Authorization'] = `Bearer ${userAuth.access_token}`;
+      config.headers['x-user-id'] = userAuth.user_id;
     }
   }
+
   return config;
 });
 
-//Response interceptor to handle unauthorized errors and retry request
+// Helper function to extract cookie value
+const getCookieValue = (cookies: string, cookieName: string) => {
+  const cookie = cookies.split(';').find((c) => c.trim().startsWith(`${cookieName}=`));
+  return cookie ? cookie.split('=')[1] : null;
+};
+
+// Response interceptor to handle unauthorized errors and retry request
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  async (error: AxiosError & { response: { config: { __isRetryRequest: boolean } } }) => {
     if (
       error.response &&
-      error.response.status === 419 &&
+      error.response.status === 419 && // Token expired code
       error.response.config &&
-      !error.response.config.url?.includes('auth/refresh') &&
-      !error.response.config.url?.includes('auth')
+      !error.response.config.url?.includes('auth') && // Prevent refreshing token requests
+      !error.response.config.__isRetryRequest // Prevent infinite loop
     ) {
-      return await refreshToken(error);
+      return refreshToken(error);
     }
     return Promise.reject(error);
   }
 );
 
-let fetchingToken = false;
-let subscribers: ((token: string) => any)[] = [];
+let isRefreshing = false;
+let failedQueue: any[] = [];
 
-const onAccessTokenFetched = (token: string) => {
-  subscribers.forEach((callback) => callback(token));
-  subscribers = [];
+const processQueue = (error: any, token: string | null = null, userId: number | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve({ token, userId });
+    }
+  });
+
+  failedQueue = [];
 };
 
-const addSubscriber = (callback: (token: string) => any) => {
-  subscribers.push(callback);
-};
+const refreshToken = async (error: AxiosError & { response: { config: { __isRetryRequest: boolean } } }) => {
+  return new Promise((resolve, reject) => {
+    const originalRequest = error.response?.config;
 
-const refreshToken = async (oError: AxiosError) => {
-  try {
-    const { response } = oError;
+    // Queue up the failed request
+    failedQueue.push({ resolve, reject });
 
-    // create new Promise to retry original request
-    const retryOriginalRequest = new Promise((resolve) => {
-      addSubscriber((token: string) => {
-        response!.config.headers['Authorization'] = `Bearer ${token}`;
-        resolve(api(response!.config));
-      });
-    });
+    if (!isRefreshing) {
+      isRefreshing = true;
 
-    // check whether refreshing token or not
-    if (!fetchingToken) {
-      fetchingToken = true;
+      let refreshPromise: Promise<AxiosResponse<RefreshTokenResponse, any>> | null = null;
+      let _user_id = 0;
 
-      let data: RefreshTokenResponse = { access_token: '', refresh_token: '' };
+      if (isServer() && context) {
+        // Server-side refresh
+        const cookies = context.req.headers.cookie || '';
+        const refresh_token = getCookieValue(cookies, 'refresh_token');
+        const user_id = getCookieValue(cookies, 'user_id');
 
-      // check if this is server or not
-      if (!isServer()) {
+        if (refresh_token && user_id) {
+          refreshPromise = api.post<RefreshTokenResponse>('/auth/refresh', {
+            refresh_token,
+            user_id: +user_id
+          });
+
+          _user_id = +user_id;
+        }
+      } else if (!isServer()) {
+        // Client-side refresh
         const userAuth = getUserAuth();
-        const response = await api.post<RefreshTokenResponse>('/auth/refresh', {
-          refresh_token: userAuth.refresh_token,
-          user_id: +userAuth.user_id
-        });
-        data = response.data;
 
-        setUserAuth({
-          user_id: userAuth.user_id as string,
-          ...data
-        });
-      } else {
-        if (context.req.headers.cookie) {
-          const cookies = context.req.headers.cookie;
-          const user_id_cookie = cookies
-            .split(';')
-            .find((cookie: string) => cookie.trim().startsWith('user_id='));
-          const refresh_token_cookie = cookies
-            .split(';')
-            .find((cookie: string) => cookie.trim().startsWith('refresh_token='));
-          if (user_id_cookie && refresh_token_cookie) {
-            const user_id = user_id_cookie.split('=')[1];
-            const refresh_token = refresh_token_cookie.split('=')[1];
-            const response = await api.post<RefreshTokenResponse>('/auth/refresh', {
-              refresh_token: refresh_token,
-              user_id: +user_id
-            });
-            data = response.data;
-            context.res.setHeader('Set-Cookie', [
-              `user_id=${user_id}; HttpOnly; Max-Age=604800; SameSite=Lax; Path=/`,
-              `access_token=${data.access_token}; HttpOnly; Max-Age=604800; SameSite=Lax; Path=/`,
-              `refresh_token=${data.refresh_token}; HttpOnly; Max-Age=604800; SameSite=Lax; Path=/`
-            ]);
-          }
+        if (userAuth?.refresh_token) {
+          refreshPromise = api.post<RefreshTokenResponse>('/auth/refresh', {
+            refresh_token: userAuth.refresh_token,
+            user_id: +userAuth.user_id
+          });
+
+          _user_id = +userAuth.user_id;
         }
       }
 
-      // when new token arrives, retry old requests
-      onAccessTokenFetched(data.access_token);
+      if (refreshPromise) {
+        refreshPromise
+          .then((response) => {
+            const { access_token, refresh_token } = response.data;
+
+            if (isServer() && context) {
+              // Server-side: Set cookies
+              context.res.setHeader('Set-Cookie', [
+                `user_id=${_user_id}; Max-Age=604800; SameSite=Lax; Path=/`,
+                `access_token=${access_token}; Max-Age=604800; SameSite=Lax; Path=/`,
+                `refresh_token=${refresh_token}; Max-Age=604800; SameSite=Lax; Path=/`
+              ]);
+            } else if (!isServer()) {
+              // Client-side: Update local storage
+              setUserAuth({
+                user_id: _user_id.toString(),
+                access_token,
+                refresh_token
+              });
+            }
+
+            // Retry the original request and all queued requests
+            originalRequest!.headers['Authorization'] = 'Bearer ' + access_token;
+            originalRequest!.headers['x-user-id'] = _user_id;
+            originalRequest!.__isRetryRequest = true; // Mark as retried to prevent loops
+            processQueue(null, access_token, _user_id);
+            resolve(api(originalRequest!)); // Retry the original request
+          })
+          .catch((err) => {
+            // Refresh token is invalid, logout the user
+            processQueue(err, null, null);
+            if (!isServer()) {
+              removeUserAuth();
+              Router.push('/auth');
+            } else if (context && !context.res.headersSent) {
+              // Server-side redirect if headers haven't been sent yet
+              context.res.setHeader('Set-Cookie', [
+                `user_id=; Max-Age=0; SameSite=Lax; Path=/`,
+                `access_token=; Max-Age=0; SameSite=Lax; Path=/`,
+                `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`
+              ]);
+              context.res.setHeader('location', '/auth');
+              context.res.statusCode = 302;
+              context.res.end();
+            }
+            reject(err);
+          })
+          .finally(() => {
+            isRefreshing = false;
+          });
+      } else {
+        // No refresh token available
+        processQueue(new Error('Refresh token not found'), null, null);
+        if (!isServer()) {
+          removeUserAuth();
+          Router.push('/auth');
+        } else if (context && !context.res.headersSent) {
+          // Server-side redirect if headers haven't been sent yet
+          context.res.setHeader('Set-Cookie', [
+            `user_id=; Max-Age=0; SameSite=Lax; Path=/`,
+            `access_token=; Max-Age=0; SameSite=Lax; Path=/`,
+            `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`
+          ]);
+          context.res.setHeader('location', '/auth');
+          context.res.statusCode = 302;
+          context.res.end();
+        }
+      }
+    } else {
+      // Refreshing is already in progress, just queue the request
     }
-    return retryOriginalRequest;
-  } catch (error) {
-    // on error go to login page
-    if (!isServer() && !Router.asPath.includes('/auth')) {
-      removeUserAuth();
-      Router.push('/auth');
-    }
-    if (isServer() && context.res && !context.res.headersSent && !context.req.url?.includes('/auth')) {
-      context.res.setHeader('Set-Cookie', [
-        `user_id=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`,
-        `access_token=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`,
-        `refresh_token=; HttpOnly; Max-Age=0; SameSite=Lax; Path=/`
-      ]);
-      context.res.setHeader('location', '/auth');
-      context.res.statusCode = 302;
-      context.res.end();
-    }
-    return Promise.reject(oError);
-  } finally {
-    fetchingToken = false;
-  }
+  });
 };
 
 export default api;
