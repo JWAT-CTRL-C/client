@@ -1,3 +1,5 @@
+import { RolesType } from '.';
+
 export type User = {
   user_id: number;
   usrn: string;
@@ -5,7 +7,7 @@ export type User = {
   avatar: string;
   email: string;
   phone: string;
-  role: string;
+  role: RolesType;
 };
 
 export type UserForm = {

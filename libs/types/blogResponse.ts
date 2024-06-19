@@ -1,3 +1,4 @@
+import { RolesType } from '.';
 import { Tag } from './tagType';
 
 export type BlogResponse = {
@@ -13,7 +14,7 @@ export type BlogResponse = {
     fuln: string;
     phone: string;
     pass: string;
-    role: string;
+    role: RolesType;
     deleted_at: string | null;
     crd_at: string;
     upd_at: string;

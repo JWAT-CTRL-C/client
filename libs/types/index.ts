@@ -18,3 +18,5 @@ export type GENERAL_RESPONSE_TYPE = {
   success: boolean;
   message: string;
 };
+
+export type RolesType = 'MA' | 'HM' | 'PM' | 'EM';

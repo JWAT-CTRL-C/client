@@ -1,4 +1,3 @@
-import React from 'react';
 import Image from 'next/image';
 import SynergyLogo from '@/public/images/logo.svg';
 const Logo = () => {
