@@ -1,7 +1,7 @@
 import { RESOURCE_TYPE } from '@/services/resourceServices';
 import { SPECIFIC_WORKSPACE_RESPONSE } from '@/services/workspaceServices';
 import { Text } from '@mantine/core';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export default function SourceItem({ value }: { value: RESOURCE_TYPE }) {
   const router = useRouter();
