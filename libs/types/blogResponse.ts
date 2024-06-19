@@ -1,3 +1,5 @@
+import { blogCommentType } from './blogCommentType';
+import { blogRatingType } from './blogRatingType';
 import { Tag } from './tagType';
 
 export type BlogResponse = {
@@ -17,6 +19,7 @@ export type BlogResponse = {
     deleted_at: string | null;
     crd_at: string;
     upd_at: string;
+    avatar: string;
   };
   tags: Tag[];
   blogImage: {
@@ -25,8 +28,8 @@ export type BlogResponse = {
     crd_at: string;
     upd_at: string;
   };
-  blogComments: any[];
-  blogRatings: any[];
+  blogComments: blogCommentType[];
+  blogRatings: blogRatingType[];
   workspace: any;
   resource: any;
 };

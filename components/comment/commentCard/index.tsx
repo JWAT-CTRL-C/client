@@ -5,6 +5,7 @@ import React from 'react';
 
 const CommentCard = ({ comment }: { comment: blogCommentType }) => {
   const { user } = comment;
+
   return (
     <Card shadow='sm' padding='lg' radius='md' withBorder>
       <Flex align='center' justify={'space-between'}>
@@ -20,7 +21,7 @@ const CommentCard = ({ comment }: { comment: blogCommentType }) => {
         <Text>{convertIsoToDate(comment?.crd_at as string)}</Text>
       </Flex>
 
-      <Text mt={'lg'}>{comment?.blog_cmnt_ctn}</Text>
+      <Text mt={'lg'}>{comment?.blog_cmt_cont}</Text>
     </Card>
   );
 };

@@ -89,12 +89,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     },
     {
       accessorKey: 'blog_rtg',
-      header: 'Rating',
-      cell: ({ row }) =>
-        row.original.blog_rtg?.length > 0
-          ? row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
-            row.original.blog_rtg.length
-          : 0
+      header: 'Like',
+      cell: ({ row }) => (row.original.blog_rtg?.length > 0 ? row.original.blog_rtg?.length : 0)
     },
     {
       accessorKey: 'crd_at',
@@ -203,11 +199,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     await removeBlog(blog_id, {
       onSuccess: async () => {
         showSuccessToast('Delete blog successfully!');
-     
       },
       onError: async (err) => {
         showErrorToast(err.message);
-        
       }
     });
   };

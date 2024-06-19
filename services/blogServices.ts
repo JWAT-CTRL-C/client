@@ -110,3 +110,25 @@ export const updateBlog = async (blog_id: string, blogData: blogFormType): Promi
     throw error;
   }
 };
+
+export const createBlogCommentById = async (blog_id: string, blog_cmt_cont: string) => {
+  try {
+    const response = await api.post(`/blogs/${blog_id}/comments`, {
+      blog_cmt_cont
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error('createBlogCommentById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const ratingBlogById = async (blog_id: string) => {
+  try {
+    await api.put(`/blogs/${blog_id}/rating`);
+  } catch (error: any) {
+    console.error('ratingBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};

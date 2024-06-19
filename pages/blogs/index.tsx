@@ -5,7 +5,7 @@ import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
-import { transformBlogData } from '@/libs/utils';
+
 import { fetchBlogs } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
@@ -56,7 +56,7 @@ const Blogs = () => {
       cols={{ base: 1, sm: 1, md: 2, lg: 3 }}
       spacing={{ base: 5, sm: 'xl' }}
       verticalSpacing={{ base: 'md', sm: 'xl' }}>
-      {blogs && transformBlogData(blogs).map((blog) => <BlogCard blog={blog} key={blog.blog_id} />)}
+      {blogs && blogs.map((blog) => <BlogCard blog={blog} key={blog.blog_id} />)}
     </SimpleGrid>
   );
 };

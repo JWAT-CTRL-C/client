@@ -1,32 +1,47 @@
-import { BlogCardType } from '@/libs/types/blogCardType';
-import { convertIsoToDate } from '@/libs/utils';
-import { Avatar, Card, Flex, Group, Image, Rating, Text, Title, useMantineTheme } from '@mantine/core';
+import { useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { BlogResponse } from '@/libs/types/blogResponse';
+import { Avatar, Badge, Card, Divider, Group, Image, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import LoveIcon from '../loveIcon';
+import { getTimeDifference } from '@/libs/utils';
 
-const BlogCard = ({ blog }: { blog: BlogCardType }) => {
-  const theme = useMantineTheme();
+const BlogCard = ({ blog }: { blog: BlogResponse }) => {
   const router = useRouter();
+  const { ratingBlog, isPending: isLoadingRating } = useRatingBlog();
+  const { user } = useMyInfo();
+
+  const isLoveBlog = blog?.blogRatings?.find((rating) => rating.user.user_id === user?.user_id)?.is_rated;
+
+  const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true);
 
   const defaultBackground =
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png';
 
-  const [imageSrc, setImageSrc] = useState(blog.blog_image || defaultBackground);
+  const [imageSrc, setImageSrc] = useState(blog?.blogImage?.blog_img_url || defaultBackground);
 
   const handleImageError = () => {
     setImageSrc(defaultBackground);
   };
 
+  const handleRating = async () => {
+    await ratingBlog({ blog_id: blog.blog_id });
+  };
+
+  const handleToBlog = async () => {
+    router.push(`/blogs/${blog?.blog_id}`);
+  };
+
   return (
     <Card
-      onClick={() => router.push(`blogs/${blog.blog_id}`)}
-      className='flex cursor-pointer justify-between'
+      className='flex h-full w-full cursor-pointer justify-between gap-2'
       shadow='sm'
       padding='lg'
       radius='md'
       withBorder>
-      <Card.Section>
+      <Card.Section mb='sm' onClick={handleToBlog}>
         <Image
           h={200}
           fit='cover'
@@ -37,26 +52,45 @@ const BlogCard = ({ blog }: { blog: BlogCardType }) => {
         />
       </Card.Section>
 
-      <Flex direction={'column'} mt='md' mb='xs' wrap='nowrap' gap='md'>
-        {/* <Badge color={`${tagColors[blog.tag]}`}>{blog.tag}</Badge> */}
-        <Text fw={500} size='md' className=' text-xl' c={theme.primaryColor}>
+      {/* <Group className='flex w-full overflow-hidden text-ellipsis whitespace-nowrap'>
+        {blog?.tags?.map((tag) => <TagComp key={tag?.tag_id} tag={tag?.tag_name} />)}
+      </Group> */}
+
+      <Tooltip
+        label={blog?.blog_tle}
+        position='bottom-start'
+        withArrow
+        arrowOffset={10}
+        arrowSize={4}
+        w={220}
+        multiline
+        transitionProps={{ duration: 200 }}
+        offset={5}>
+        <Text fw={700} mt='md' lineClamp={1} onClick={handleToBlog}>
           {upperFirst(blog.blog_tle)}
         </Text>
-      </Flex>
+      </Tooltip>
 
-      {/* <Title className=' text-sm' size='sm' lineClamp={3} c='dimmed' fw={400}>
-        {blog.blog_cont}
-      </Title> */}
-      <Group mt='md' mb='xs' align='center' wrap='nowrap' justify='space-between'>
-        <Avatar size={'md'} src={blog.auth_img} alt="it's me" />
-        <Group flex={1} align='center' wrap='nowrap' justify='space-between' className=''>
-          <Text size='xs'>{blog.auth_name}</Text>
-          <Text size='xs'>{convertIsoToDate(blog.crd_at as string)}</Text>
-        </Group>
+      <Group mt='lg' className='w-full'>
+        <Avatar src={blog?.user?.avatar} alt='author of blog' radius='sm' />
+        <div>
+          <Text fw={500}>{blog?.user?.fuln}</Text>
+          <Text fz='xs' c='dimmed'>
+            {getTimeDifference(blog?.crd_at)}
+          </Text>
+        </div>
       </Group>
 
-      <Group>
-        <Rating defaultValue={blog.blog_rtg ?? 1} readOnly />
+      <Card.Section my={'sm'}>
+        <Divider />
+      </Card.Section>
+      <Group justify='space-between'>
+        <Text fz='xs' c='dimmed'>
+          {totalLoveBlog.length ?? 0} people liked this
+        </Text>
+        <Group gap={0}>
+          <LoveIcon onRating={handleRating} isLoveBlog={isLoveBlog as boolean} isLoading={isLoadingRating} />
+        </Group>
       </Group>
     </Card>
   );

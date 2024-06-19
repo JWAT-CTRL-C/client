@@ -14,7 +14,7 @@ import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
 
 export const useFetchBlogs = () => {
-  return useQuery({
+  return useQuery<BlogResponse[]>({
     queryKey: [BlogQueryEnum.BLOGS],
     queryFn: async () => await fetchBlogs()
   });
