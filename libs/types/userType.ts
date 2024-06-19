@@ -1,4 +1,5 @@
 import { RolesType } from '.';
+import { workspacesType } from './workspacesType';
 
 export type User = {
   user_id: number;
@@ -8,6 +9,7 @@ export type User = {
   email: string;
   phone: string;
   role: RolesType;
+  workspaces: workspacesType[];
 };
 
 export type UserForm = {
