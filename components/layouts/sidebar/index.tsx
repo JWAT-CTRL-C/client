@@ -8,9 +8,10 @@ import { removeUserAuth } from '@/libs/utils';
 import ChangeInformation from '@/components/profile/ChangeInformation';
 
 const Sidebar = () => {
-  const { blogConfig, workspaceConfig } = sidebarConfig;
+  const { blogConfig, workspaceConfig, dashboardConfig } = sidebarConfig;
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
+  const isDashboard = router.pathname.startsWith('/dashboard');
   const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');
 
@@ -22,13 +23,24 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
+    if (isDashboard) {
+      setSidebarState(dashboardConfig);
+    }
+    if (
+      router.pathname === '/blogs' ||
+      router.pathname === '/workspaces' ||
+      router.pathname === '/dashboard'
+    ) {
       setActive(0);
     }
     const sidebarStatePath = sidebarState.map((state) => state.link);
 
     if (!sidebarStatePath.includes(router.pathname)) {
-      if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
+      if (
+        router.pathname === '/blogs' ||
+        router.pathname === '/workspaces' ||
+        router.pathname === '/dashboard'
+      ) {
         setActive(0);
       } else {
         setActive(null);
@@ -42,14 +54,14 @@ const Sidebar = () => {
   };
 
   return (
-    <div className='my-auto flex  h-full flex-col justify-between   '>
+    <div className='my-auto flex h-full flex-col justify-between'>
       <div>
         {sidebarState.map((item, index) => (
           <NavLink
             key={item.label}
             active={index === active}
             label={item.label}
-            className={`my-5 cursor-pointer rounded-md p-4 `}
+            className={`my-5 cursor-pointer rounded-md p-4`}
             onClick={() => handleToPage(item.link, index)}
             leftSection={item.icon}></NavLink>
         ))}
@@ -59,7 +71,7 @@ const Sidebar = () => {
 
         <NavLink
           label={'Log out'}
-          className={`my-5 cursor-pointer rounded-md p-4 `}
+          className={`my-5 cursor-pointer rounded-md p-4`}
           onClick={() => {
             router.push('/auth');
             removeUserAuth();

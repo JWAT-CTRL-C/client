@@ -7,4 +7,5 @@ export type SidebarItem = {
 export type SidebarConfig = {
     blogConfig: SidebarItem[];
     workspaceConfig: SidebarItem[];
+    dashboardConfig: SidebarItem[];
 };
