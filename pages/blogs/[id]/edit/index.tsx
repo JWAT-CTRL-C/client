@@ -9,15 +9,14 @@ import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { fetchBlogById } from '@/services/blogServices';
-import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
 import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -31,10 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryKey: [BlogQueryEnum.BLOGS, id as string],
       queryFn: async () => await fetchBlogById(id as string)
     }),
-    queryClient.prefetchQuery({
-      queryKey: [MY_INFO_KEY],
-      queryFn: async () => await fetchUserById('me')
-    }),
+    prefetchMyInfo(queryClient),
     queryClient.prefetchQuery({
       queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
       queryFn: async () => await getWorkspacesByUser()
