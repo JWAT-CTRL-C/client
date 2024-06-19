@@ -1,12 +1,14 @@
-import React, { ReactNode, useEffect } from 'react';
-import Sidebar from './sidebar';
+import { ReactNode, useEffect, useState } from 'react';
+
 import { AppShell, Burger, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+
 import Header from './header';
+import Sidebar from './sidebar';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   // prevent hydration error
-  const [loader, setLoader] = React.useState(false);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     setLoader(true);
@@ -14,6 +16,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
 
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+
   return !loader ? (
     <></>
   ) : (

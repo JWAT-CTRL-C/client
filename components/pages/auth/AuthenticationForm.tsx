@@ -21,7 +21,7 @@ export function AuthenticationForm() {
   });
 
   const handleSubmit = async (values: typeof form.values) => {
-    loginFunc(
+    await loginFunc(
       { usrn: values.username, pass: values.password },
       {
         onSuccess() {
