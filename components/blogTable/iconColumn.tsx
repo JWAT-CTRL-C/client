@@ -1,5 +1,5 @@
 import { ActionIcon, Flex } from '@mantine/core';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 const IconColumn = ({
   children,

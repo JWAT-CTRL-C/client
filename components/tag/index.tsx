@@ -1,5 +1,5 @@
 import { Badge } from '@mantine/core';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 const TagComp = ({ tag }: { tag: ReactNode }) => {
   return (

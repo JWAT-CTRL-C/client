@@ -1,7 +1,6 @@
 import { blogCommentType } from '@/libs/types/blogCommentType';
 import { convertIsoToDate } from '@/libs/utils';
 import { Avatar, Card, Flex, Text } from '@mantine/core';
-import React from 'react';
 
 const CommentCard = ({ comment }: { comment: blogCommentType }) => {
   const { user } = comment;

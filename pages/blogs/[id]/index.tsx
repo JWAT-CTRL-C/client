@@ -1,6 +1,5 @@
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import React from 'react';
 import { upperFirst } from '@mantine/hooks';
 import { convertIsoToDate } from '@/libs/utils';
 import { FaRegArrowAltCircleUp, FaRegCommentAlt, FaUserTie } from 'react-icons/fa';

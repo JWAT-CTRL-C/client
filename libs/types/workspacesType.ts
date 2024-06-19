@@ -1,3 +1,4 @@
+import { RolesType } from '.';
 import { ResourceType } from './sourcesType';
 
 export type workspacesType = {
@@ -14,10 +15,10 @@ type User = {
   usrn: string;
   email: null;
   fuln: string;
-  role: string;
+  role: RolesType;
 };
 export type Owner = {
   user_id: number;
   usrn: string;
-  role: string;
+  role: RolesType;
 };
