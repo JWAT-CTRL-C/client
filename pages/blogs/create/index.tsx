@@ -5,9 +5,7 @@ import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
-import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { toast } from 'react-toastify';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 const CreateBlog = () => {
