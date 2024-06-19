@@ -13,7 +13,10 @@ import { useEffect, useState } from 'react';
 import { FaEdit, FaTimes, FaUserPlus } from 'react-icons/fa';
 import _ from 'lodash';
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useGetAllUsers } from '@/libs/hooks/queries/userQueries';
+import { useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
 import { useRouter } from 'next/router';
+import { useRouter as useNavRouter } from 'next/navigation';
 import { USER_TYPE } from '@/services/userServices';
 import {
   useAddMemberToWorkspace,
@@ -36,8 +39,7 @@ export function WpsMemberTable({
   wksp_id: string;
 }) {
   const theme = useMantineColorScheme();
-  const router = useRouter();
-
+  const navRouter = useNavRouter();
   // table config
   const memeberAttribute = {
     HM: { color: 'red', roleName: 'Head Master' },
@@ -68,7 +70,7 @@ export function WpsMemberTable({
   // Franchise
   const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
-    router.replace(`/workspaces/${wksp_id}`);
+    navRouter.replace(`/workspaces/${wksp_id}`);
     return { wksp_id };
   };
   const handleFranchiseMemberFail = (err: Error | AxiosError) => {
