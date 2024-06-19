@@ -1,6 +1,6 @@
 import '@mantine/core/styles.css';
-import 'react-toastify/dist/ReactToastify.min.css';
 import '@mantine/tiptap/styles.css';
+import 'react-toastify/dist/ReactToastify.min.css';
 import '@/styles/globals.css';
 
 import { NextPage } from 'next';
@@ -9,15 +9,16 @@ import { ReactElement, ReactNode, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import { useIsomorphicLayoutEffect } from 'react-use';
 
+import LoadingPageTransition from '@/components/loadingPageTransition';
 import { theme } from '@/libs/theme';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { cn } from '@/libs/utils';
-import { SocketStoreProvider } from '@/providers/SocketProvider';
+import { StoreProvider } from '@/providers/StoreProvider';
 import { MantineProvider } from '@mantine/core';
 import { HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import type { AppProps } from 'next/app';
-import LoadingPageTransition from '@/components/loadingPageTransition';
+import { AbilityProvider } from '@/providers/AbilityProvider';
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -44,6 +45,7 @@ export default function App({
         }
       })
   );
+
   const getLayout = Component.getLayout ?? ((page) => page);
 
   useIsomorphicLayoutEffect(() => {
@@ -51,16 +53,18 @@ export default function App({
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <HydrationBoundary state={dehydratedState}>
-        <MantineProvider defaultColorScheme='auto' theme={theme}>
-          <SocketStoreProvider>
-            <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
-            <ToastContainer />
-          </SocketStoreProvider>
-        </MantineProvider>
-      </HydrationBoundary>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <MantineProvider defaultColorScheme='auto' theme={theme}>
+      <QueryClientProvider client={queryClient}>
+        <HydrationBoundary state={dehydratedState}>
+          <StoreProvider>
+            <AbilityProvider>
+              <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
+              <ToastContainer />
+            </AbilityProvider>
+          </StoreProvider>
+        </HydrationBoundary>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </MantineProvider>
   );
 }

@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next';
-import React from 'react';
 
 import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';

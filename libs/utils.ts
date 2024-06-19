@@ -26,6 +26,7 @@ export const setUserAuth = (data: LoginResponse) => {
   Cookies.set('user_id', data.user_id, { expires: 7 });
   Cookies.set('access_token', data.access_token, { expires: 7 });
   Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
+  Cookies.remove('expired');
 };
 
 export const getUserAuth = () => {

@@ -1,5 +1,5 @@
-import { BackgroundImage, Box, Center, Container } from '@mantine/core';
-import React, { ReactNode } from 'react';
+import { BackgroundImage, Box } from '@mantine/core';
+import { ReactNode } from 'react';
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (

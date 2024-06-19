@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { StateCreator } from 'zustand';
 import { Socket, io } from 'socket.io-client';
 
 export interface SocketState {
@@ -7,15 +7,6 @@ export interface SocketState {
 
 export const WsServer = process.env.NEXT_PUBLIC_WS_SERVER;
 
-export const initSocketStore = (): SocketState => ({
+export const createSocketStore: StateCreator<SocketState> = () => ({
   notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
 });
-
-// export const defaultInitState: SocketState = {
-//   notificationSocket: io(WsServer + '/notifications', { transports: ['websocket'] })
-// };
-
-export const createSocketStore = (initState: SocketState) =>
-  create<SocketState>()(() => ({
-    ...initState
-  }));

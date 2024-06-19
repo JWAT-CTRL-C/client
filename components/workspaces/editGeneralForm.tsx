@@ -1,7 +1,6 @@
 import { Button, ButtonGroup, Divider, Group, Text, Textarea, TextInput, Tooltip } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import React from 'react';
 import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa';
 import AddResourceForm from './addResourceForm';
 import { ResourceItemType } from '@/libs/types/workspace';

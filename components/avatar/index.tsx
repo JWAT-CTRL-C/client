@@ -1,9 +1,18 @@
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { removeUserAuth } from '@/libs/utils';
-import { Avatar, Indicator, Menu, Switch, rem, useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import {
+  Avatar,
+  Indicator,
+  Menu,
+  Skeleton,
+  Switch,
+  rem,
+  useMantineColorScheme,
+  useMantineTheme
+} from '@mantine/core';
 
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaRegMoon, FaRegSun } from 'react-icons/fa';
 
 const AvatarComp = () => {
@@ -17,7 +26,7 @@ const AvatarComp = () => {
 
   const moonIcon = <FaRegMoon style={{ width: rem(16), height: rem(16) }} color={theme.colors.blue[6]} />;
 
-  const { user } = useMyInfo();
+  const { user, isPending } = useMyInfo();
 
   return (
     <Menu
@@ -26,11 +35,16 @@ const AvatarComp = () => {
       closeOnClickOutside
       closeOnItemClick
       shadow='md'
+      disabled={isPending}
       width={200}
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
         <Indicator inline label='2' size={16} className='cursor-pointer'>
-          <Avatar src={user?.avatar || '/images/default-avatar.png'} alt="it's me" />
+          {isPending ? (
+            <Skeleton circle h={40} w={40} />
+          ) : (
+            <Avatar src={user?.avatar || '/images/default-avatar.png'} alt="it's me" />
+          )}
         </Indicator>
       </Menu.Target>
 
