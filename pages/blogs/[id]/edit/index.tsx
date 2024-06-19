@@ -18,6 +18,7 @@ import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries'
 import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { ReactNode } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -124,6 +125,6 @@ const EditBlog = () => {
 
 export default EditBlog;
 
-EditBlog.getLayout = function getLayout(page: any) {
+EditBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

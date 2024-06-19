@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 import { FaEdit } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -70,6 +71,6 @@ export default function Page() {
     </div>
   );
 }
-Page.getLayout = function getLayout(page: any) {
+Page.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

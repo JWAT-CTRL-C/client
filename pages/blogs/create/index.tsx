@@ -9,6 +9,7 @@ import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { toast } from 'react-toastify';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { ReactNode } from 'react';
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
@@ -69,6 +70,6 @@ const CreateBlog = () => {
 
 export default CreateBlog;
 
-CreateBlog.getLayout = function getLayout(page: any) {
+CreateBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

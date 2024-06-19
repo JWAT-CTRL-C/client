@@ -9,6 +9,7 @@ import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
+import { ReactNode } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -42,6 +43,6 @@ export default function Workspace() {
     </div>
   );
 }
-Workspace.getLayout = function getLayout(page: any) {
+Workspace.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

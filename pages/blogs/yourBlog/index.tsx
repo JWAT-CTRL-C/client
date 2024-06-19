@@ -11,6 +11,7 @@ import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { ReactNode } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -48,6 +49,6 @@ const YourBlog = () => {
 
 export default YourBlog;
 
-YourBlog.getLayout = function getLayout(page: any) {
+YourBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

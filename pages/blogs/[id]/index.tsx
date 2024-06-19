@@ -1,31 +1,31 @@
+import CommentCard from '@/components/comment/commentCard';
+import CommentInput from '@/components/comment/commentInput';
+import { convertIsoToDate } from '@/libs/utils';
+import { upperFirst } from '@mantine/hooks';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import { upperFirst } from '@mantine/hooks';
-import { convertIsoToDate } from '@/libs/utils';
 import {
-  FaCommentAlt,
-  FaHeart,
   FaRegArrowAltCircleUp,
   FaRegCommentAlt,
-  FaRegHeart,
   FaUserTie
 } from 'react-icons/fa';
-import CommentInput from '@/components/comment/commentInput';
-import CommentCard from '@/components/comment/commentCard';
 
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import LoveIcon from '@/components/loveIcon';
 import TagComp from '@/components/tag';
 import { setContext } from '@/libs/api';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
+import { useCreateBlogComment, useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { fetchBlogById } from '@/services/blogServices';
 import { fetchUserById } from '@/services/userServices';
 import {
-  ActionIcon,
   BackgroundImage,
   Divider,
   Flex,
   LoadingOverlay,
-  Rating,
   ScrollArea,
   Skeleton,
   Spoiler,
@@ -34,12 +34,8 @@ import {
   Title,
   TypographyStylesProvider
 } from '@mantine/core';
-import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
-import { useCreateBlogComment, useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
-import { useMyInfo, useUserInfo } from '@/libs/hooks/queries/userQueries';
-import LoveIcon from '@/components/loveIcon';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { ReactNode } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -197,6 +193,6 @@ const BlogInfo = () => {
 
 export default BlogInfo;
 
-BlogInfo.getLayout = function getLayout(page: any) {
+BlogInfo.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
