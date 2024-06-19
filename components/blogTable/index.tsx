@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
 

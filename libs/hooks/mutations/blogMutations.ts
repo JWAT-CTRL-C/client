@@ -3,7 +3,7 @@ import { blogFormType } from '@/libs/types/blogFormType';
 import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
 import { createBlog, removeBlogById, updateBlog, uploadImage } from '@/services/blogServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 export const useUploadImage = () => {
   const mutation = useMutation({
