@@ -2,13 +2,11 @@ import { useRouter } from 'next/router';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
-import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { toast } from 'react-toastify';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { ReactNode } from 'react';
 
 const CreateBlog = () => {
@@ -56,7 +54,7 @@ const CreateBlog = () => {
         <Title order={1}>Create new blog</Title>
       </Center>
       <Group justify='center' className='w-full'>
-        {/* To use updateform please provide isEditing and updateValues*/}
+        {/* To use update form please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workspaces ? workspaces : []}

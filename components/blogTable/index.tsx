@@ -8,13 +8,11 @@ import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
 import {
-  ActionIcon,
   Flex,
   Group,
   Input,
   Loader,
   LoadingOverlay,
-  Select,
   Space,
   Table,
   Text,
@@ -23,7 +21,6 @@ import {
 } from '@mantine/core';
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -32,10 +29,9 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 
+import { showErrorToast, showSuccessToast } from '../shared/toast';
 import IconColumn from './iconColumn';
 import TextColumn from './textColumn';
-import { toast } from 'react-toastify';
-import { showErrorToast, showSuccessToast } from '../shared/toast';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -53,7 +49,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
   let displayData = filterField ? transformedBlogs : dataTable;
 
-  // fix : dupliate select field
+  // fix : duplicate select field
   // const allTagsSet = new Set<Tag>();
 
   // dataTable.forEach((blog) => {

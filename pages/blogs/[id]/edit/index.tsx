@@ -53,7 +53,7 @@ const EditBlog = () => {
   const router = useRouter();
   const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
   const { workspaces: workSpaceList } = useFetchWorkspacesByUser();
-  //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  //const { uploadImage, imageUrl, isPending: IsPendingImage } = useUploadImage();
 
   const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();
 
@@ -111,7 +111,7 @@ const EditBlog = () => {
         <Title order={1}>Edit blog</Title>
       </Center>
       <Group justify='center' className='w-full'>
-        {/* To use updateform please provide isEditing and updateValues*/}
+        {/* To use update form please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleEdit}
           workSpaceList={workSpaceList ? workSpaceList : []}

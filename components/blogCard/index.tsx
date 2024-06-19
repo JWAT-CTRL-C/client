@@ -1,12 +1,12 @@
 import { useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { BlogResponse } from '@/libs/types/blogResponse';
-import { Avatar, Badge, Card, Divider, Group, Image, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import { getTimeDifference } from '@/libs/utils';
+import { Avatar, Card, Divider, Group, Image, Text, Tooltip } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import LoveIcon from '../loveIcon';
-import { getTimeDifference } from '@/libs/utils';
 
 const BlogCard = ({ blog }: { blog: BlogResponse }) => {
   const router = useRouter();

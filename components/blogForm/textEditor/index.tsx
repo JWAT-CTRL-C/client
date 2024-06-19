@@ -1,7 +1,9 @@
 import { blogFormType } from '@/libs/types/blogFormType';
+import { Container, Grid, useMantineTheme } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { Link, RichTextEditor } from '@mantine/tiptap';
 import { Color } from '@tiptap/extension-color';
+import FontFamily from '@tiptap/extension-font-family';
 import Highlight from '@tiptap/extension-highlight';
 import { Image as ImageTiptab } from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
@@ -12,9 +14,7 @@ import TextStyle from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import { BubbleMenu, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import FontFamily from '@tiptap/extension-font-family';
 import { useEffect } from 'react';
-import { Container, Grid, useMantineTheme } from '@mantine/core';
 
 const colors = [
   '#25262b',

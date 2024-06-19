@@ -83,7 +83,7 @@ export const useRemoveBlogById = () => {
 };
 
 export const useUpdateBlog = () => {
-  const router = useRouter();
+  
   const queryClient = useQueryClient();
 
   const mutation = useMutation<void, Error, { blog_id: string; blogData: blogFormType }>({
