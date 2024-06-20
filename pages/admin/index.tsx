@@ -3,12 +3,11 @@ import { GetServerSideProps } from 'next';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { Can } from '@/providers/AbilityProvider';
 import { Flex } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 import { NextPageWithLayout } from '../_app';
-import RecentNotifications from '@/components/dashboard/Notifications/RecentNotifications';
-import RecentlyJoinedWorkspaces from '@/components/dashboard/Workspaces/RecentlyJoinedWorkspaces';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -24,20 +23,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const Dashboard: NextPageWithLayout = () => {
+const AdminPage: NextPageWithLayout = () => {
   return (
-    <Flex direction='column' gap={3} p={8}>
-      <h1 className='text-2xl font-semibold'>Recent Notifications</h1>
-      <RecentNotifications />
-
-      <h1 className='text-2xl font-semibold'>Recently Joined Workspaces</h1>
-      <RecentlyJoinedWorkspaces />
-    </Flex>
+    <Can I='reach' a='AdminPage' passThrough>
+      {(allowed) =>
+        allowed ? (
+          <Flex direction='column' gap={3}>
+            AdminPage
+          </Flex>
+        ) : (
+          <Flex direction='column' gap={3}>
+            You are not allowed to access this page
+          </Flex>
+        )
+      }
+    </Can>
   );
 };
 
-Dashboard.getLayout = function getLayout(page: React.ReactElement) {
+AdminPage.getLayout = function getLayout(page: React.ReactElement) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
 
-export default Dashboard;
+export default AdminPage;

@@ -31,7 +31,7 @@ export default function Workspace() {
     <div className='grid justify-items-center gap-4 p-2'>
       <div className='grid w-full grid-cols-2'>
         <p className='pl-10 text-2xl font-semibold uppercase'>Workspaces</p>
-        <Can I='create' a='Workspace'>
+        <Can I='create' a='workspace'>
           <Button onClick={toggle} className='justify-self-end' leftSection={<FaPlusCircle />}>
             New Workspace
           </Button>

@@ -8,12 +8,13 @@ import { removeUserAuth } from '@/libs/utils';
 import ChangeInformation from '@/components/profile/ChangeInformation';
 
 const Sidebar = () => {
-  const { blogConfig, workspaceConfig, dashboardConfig } = sidebarConfig;
+  const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig;
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
   const isDashboard = router.pathname.startsWith('/dashboard');
   const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');
+  const isAdmin = router.pathname.startsWith('/admin');
 
   const [active, setActive] = useState<number | null>(0);
   useEffect(() => {
@@ -25,6 +26,9 @@ const Sidebar = () => {
     }
     if (isDashboard) {
       setSidebarState(dashboardConfig);
+    }
+    if (isAdmin) {
+      setSidebarState(adminConfig);
     }
     if (
       router.pathname === '/blogs' ||

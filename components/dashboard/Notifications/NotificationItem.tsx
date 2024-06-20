@@ -1,9 +1,8 @@
 import { Text, Avatar, Group, TypographyStylesProvider, Paper } from '@mantine/core';
-import classes from './CommentHtml.module.css';
 
-export function CommentHtml() {
+export function NotificationItem() {
   return (
-    <Paper withBorder radius='md' className={classes.comment}>
+    <Paper withBorder radius='md' className='px-2 py-4'>
       <Group>
         <Avatar
           src='https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png'
@@ -17,9 +16,9 @@ export function CommentHtml() {
           </Text>
         </div>
       </Group>
-      <TypographyStylesProvider className={classes.body}>
+      <TypographyStylesProvider className='pl-14 pt-4'>
         <div
-          className={classes.content}
+          className='[&_>_p:last-child]:mb-0'
           dangerouslySetInnerHTML={{
             __html:
               '<p>I use <a href="https://heroku.com/" rel="noopener noreferrer" target="_blank">Heroku</a> to host my Node.js application, but MongoDB add-on appears to be too <strong>expensive</strong>. I consider switching to <a href="https://www.digitalocean.com/" rel="noopener noreferrer" target="_blank">Digital Ocean</a> VPS to save some cash.</p>'

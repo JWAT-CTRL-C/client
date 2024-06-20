@@ -1,11 +1,12 @@
 export type SidebarItem = {
-    link: string;
-    label: string;
-    icon: JSX.Element;
+  link: string;
+  label: string;
+  icon: JSX.Element;
 };
-  
+
 export type SidebarConfig = {
-    blogConfig: SidebarItem[];
-    workspaceConfig: SidebarItem[];
-    dashboardConfig: SidebarItem[];
+  blogConfig: SidebarItem[];
+  workspaceConfig: SidebarItem[];
+  dashboardConfig: SidebarItem[];
+  adminConfig: SidebarItem[];
 };
