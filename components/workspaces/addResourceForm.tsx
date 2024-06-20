@@ -18,7 +18,19 @@ export default function AddResourceForm({ opened, handleClose }: AddResourceForm
     },
     validate: {
       resrc_name: (value) => (value ? null : 'Resource name is required'),
-      resrc_url: (value) => (value ? null : 'Resource url is required')
+      resrc_url: (value) => {
+        if (!value) {
+          return 'Resource URL is required';
+        }
+        if (
+          !/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g.test(
+            value
+          )
+        ) {
+          return 'Invalid URL';
+        }
+        return null;
+      }
     }
   });
   const handleSuccess = () => {

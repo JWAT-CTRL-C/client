@@ -25,15 +25,18 @@ import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
 import PopoverConfirm from '../popoverConfirm';
 import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
+import { User } from '@/libs/types/userType';
 
 export function WpsMemberTable({
   className,
   member,
-  wksp_id
+  wksp_id,
+  currentUser
 }: {
   className: string;
   member: WORKSPACE_MEMBER;
   wksp_id: string;
+  currentUser: User;
 }) {
   const theme = useMantineColorScheme();
   const router = useRouter();
@@ -68,7 +71,8 @@ export function WpsMemberTable({
   // Franchise
   const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
-    router.replace(`/workspaces/${wksp_id}`);
+    if (member.owner.user_id !== currentUser.user_id && !['MA', 'HM'].includes(currentUser.role))
+      router.replace(`/workspaces/${wksp_id}`);
     return { wksp_id };
   };
   const handleFranchiseMemberFail = (err: Error | AxiosError) => {
@@ -184,14 +188,15 @@ export function WpsMemberTable({
 
 export default function EditWorkspaceMemberForm({
   users,
-  members
+  members,
+  currentUser
 }: {
   users: USER_TYPE[];
   members: WORKSPACE_MEMBER;
+  currentUser: User;
 }) {
   const router = useRouter();
   const [data, setData] = useState<ComboboxItem[]>([]);
-  useEffect(() => {}, [users]);
 
   useEffect(() => {
     const listUserData = users.filter(
@@ -236,7 +241,7 @@ export default function EditWorkspaceMemberForm({
         <Select
           leftSection={<FaUserPlus />}
           mt='lg'
-          label='Invite Members'
+          label='Invite a member'
           data={data}
           searchable
           withAsterisk
@@ -253,6 +258,7 @@ export default function EditWorkspaceMemberForm({
           className='max-h-96'
           member={members ?? ({} as WORKSPACE_MEMBER)}
           wksp_id={router.query.id as string}
+          currentUser={currentUser}
         />
       </div>
     </div>
