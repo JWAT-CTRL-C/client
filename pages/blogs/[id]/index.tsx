@@ -4,11 +4,7 @@ import { convertIsoToDate } from '@/libs/utils';
 import { upperFirst } from '@mantine/hooks';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import {
-  FaRegArrowAltCircleUp,
-  FaRegCommentAlt,
-  FaUserTie
-} from 'react-icons/fa';
+import { FaRegArrowAltCircleUp, FaRegCommentAlt, FaUserTie } from 'react-icons/fa';
 
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import LoveIcon from '@/components/loveIcon';
@@ -91,7 +87,7 @@ const BlogInfo = () => {
   };
 
   return (
-    <Flex direction={'column'} gap={'xl'} justify={'center'} className='w-full'>
+    <Flex direction={'column'} gap={'xl'} justify={'center'} className='w-full px-10 py-12'>
       <Skeleton visible={isLoading}>
         <BackgroundImage
           className='flex min-h-60 items-center justify-center object-cover object-center'

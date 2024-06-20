@@ -37,7 +37,7 @@ const YourBlog = () => {
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
-    <Flex>
+    <Flex className=''>
       <BlogTable dataTable={blogs ? transformBlogTableType(blogs) : []} />
     </Flex>
   );

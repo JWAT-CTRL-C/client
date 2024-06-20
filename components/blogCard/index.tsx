@@ -2,16 +2,18 @@ import { useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { BlogResponse } from '@/libs/types/blogResponse';
 import { getTimeDifference } from '@/libs/utils';
-import { Avatar, Card, Divider, Group, Image, Text, Tooltip } from '@mantine/core';
+import { Avatar, Card, Divider, Group, Image, Text, Tooltip, useMantineTheme } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import LoveIcon from '../loveIcon';
+import TagComp from '../tag';
 
 const BlogCard = ({ blog }: { blog: BlogResponse }) => {
   const router = useRouter();
   const { ratingBlog, isPending: isLoadingRating } = useRatingBlog();
   const { user } = useMyInfo();
+  const theme = useMantineTheme();
 
   const isLoveBlog = blog?.blogRatings?.find((rating) => rating.user.user_id === user?.user_id)?.is_rated;
 
@@ -52,9 +54,10 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         />
       </Card.Section>
 
-      {/* <Group className='flex w-full overflow-hidden text-ellipsis whitespace-nowrap'>
-        {blog?.tags?.map((tag) => <TagComp key={tag?.tag_id} tag={tag?.tag_name} />)}
-      </Group> */}
+      <Group className='flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap'>
+        {blog?.tags?.slice(0, 2).map((tag) => <TagComp key={tag?.tag_id} tag={tag?.tag_name} />)}
+        {blog?.tags?.length > 2 && <Text c={theme.primaryColor}>+{blog.tags.length - 2} more </Text>}
+      </Group>
 
       <Tooltip
         label={blog?.blog_tle}

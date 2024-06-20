@@ -50,7 +50,7 @@ const CreateBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3}>
+    <Flex direction='column' gap={3} className='px-10 py-12'>
       <Center>
         <Title order={1}>Create new blog</Title>
       </Center>

@@ -48,6 +48,7 @@ const Blogs = () => {
 
   return (
     <SimpleGrid
+      className='px-10 py-12'
       cols={{ base: 1, sm: 1, md: 2, lg: 3 }}
       spacing={{ base: 5, sm: 'xl' }}
       verticalSpacing={{ base: 'md', sm: 'xl' }}>
