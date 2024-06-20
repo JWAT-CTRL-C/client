@@ -25,7 +25,7 @@ export function AuthenticationForm() {
       { usrn: values.username, pass: values.password },
       {
         onSuccess() {
-          router.push('/blogs');
+          router.push('/dashboard');
         },
         onError(error) {
           switch ((error as ErrorResponseType).response.status) {

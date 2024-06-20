@@ -1,6 +1,5 @@
 import { setContext } from '@/libs/api';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
-import { fetchUserById } from '@/services/userServices';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
@@ -14,10 +13,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: [MY_INFO_KEY],
-    queryFn: async () => await fetchUserById('me')
-  });
+  await prefetchMyInfo(queryClient);
 
   return {
     props: {

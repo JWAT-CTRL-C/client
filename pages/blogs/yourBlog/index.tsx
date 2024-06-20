@@ -3,15 +3,14 @@ import { GetServerSideProps } from 'next';
 import BlogTable from '@/components/blogTable';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import {  useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
+import { useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
 import { transformBlogTableType } from '@/libs/utils';
 import { fetchBlogsForCurrentUser } from '@/services/blogServices';
-import { fetchUserById } from '@/services/userServices';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { ReactNode } from 'react';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -23,10 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
       queryFn: async () => await fetchBlogsForCurrentUser()
     }),
-    queryClient.prefetchQuery({
-      queryKey: [MY_INFO_KEY],
-      queryFn: async () => await fetchUserById('me')
-    })
+    prefetchMyInfo(queryClient)
   ]);
 
   return {

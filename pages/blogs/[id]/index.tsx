@@ -14,13 +14,12 @@ import DefaultLayout from '@/components/layouts/DefaultLayout';
 import LoveIcon from '@/components/loveIcon';
 import TagComp from '@/components/tag';
 import { setContext } from '@/libs/api';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+
 import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { useCreateBlogComment, useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { fetchBlogById } from '@/services/blogServices';
-import { fetchUserById } from '@/services/userServices';
 import {
   BackgroundImage,
   Divider,
@@ -34,8 +33,11 @@ import {
   Title,
   TypographyStylesProvider
 } from '@mantine/core';
-import { QueryClient, dehydrate } from '@tanstack/react-query';
+
 import { ReactNode } from 'react';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -49,10 +51,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryKey: [BlogQueryEnum.BLOGS, id as string],
       queryFn: async () => await fetchBlogById(id as string)
     }),
-    queryClient.prefetchQuery({
-      queryKey: [MY_INFO_KEY],
-      queryFn: async () => await fetchUserById('me')
-    })
+    prefetchMyInfo(queryClient)
   ]);
 
   return {

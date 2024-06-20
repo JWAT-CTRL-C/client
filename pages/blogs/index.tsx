@@ -6,12 +6,10 @@ import { setContext } from '@/libs/api';
 import { useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
 
 import { fetchBlogs } from '@/services/blogServices';
-import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
-import { ReactNode } from 'react';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -23,10 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       queryKey: [BlogQueryEnum.BLOGS],
       queryFn: fetchBlogs
     }),
-    queryClient.prefetchQuery({
-      queryKey: [MY_INFO_KEY],
-      queryFn: async () => await fetchUserById('me')
-    })
+    prefetchMyInfo(queryClient)
   ]);
 
   return {
@@ -63,6 +58,6 @@ const Blogs = () => {
 
 export default Blogs;
 
-Blogs.getLayout = function getLayout(page: ReactNode) {
+Blogs.getLayout = function getLayout(page: React.ReactElement) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
