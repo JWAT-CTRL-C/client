@@ -162,7 +162,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const table = useReactTable({
     data: tableValues,
     defaultColumn: {
-      size: 140, //starting column size
+      size: 100, //starting column size
       minSize: 30, //enforced during column resizing
       maxSize: 500 //enforced during column resizing
     },
@@ -258,7 +258,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       <Table
         className={`overflow-clip`}
         style={{
-          width: `${table.getTotalSize()}px`
+          width: `${table.getCenterTotalSize()}px`
         }}
         horizontalSpacing='md'
         verticalSpacing='md'
@@ -288,7 +288,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
                     onMouseDown={header.getResizeHandler()}
                     onTouchStart={header.getResizeHandler()}
                     onDoubleClick={() => header.column.resetSize()}
-                    style={{ width: '4px', backgroundColor: theme.colors.gray[4] }}
+                    style={{ width: '4px' }}
                   />
                 </Table.Th>
               ))}
