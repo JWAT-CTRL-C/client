@@ -12,14 +12,14 @@ export default async function middleware(req: NextRequest) {
 
   if (isAuthPage) {
     if (isAuth) {
-      return NextResponse.redirect(new URL('/blogs', req.url));
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   } else {
     if (!isAuth) {
       return NextResponse.redirect(new URL('/auth', req.url));
     }
     if (isMainPage && isAuth) {
-      return NextResponse.redirect(new URL('/blogs', req.url));
+      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }
 
@@ -27,5 +27,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/','/((?!api|_next|.*\\..*).*)']
+  matcher: ['/', '/((?!api|_next|.*\\..*).*)']
 };

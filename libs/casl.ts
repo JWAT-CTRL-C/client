@@ -11,25 +11,25 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, r
 
   switch (role) {
     case 'MA':
-      can('reach', 'all');
-      can('create', 'all');
+      can('reach', 'AdminPage');
+      can('create', ['blog', 'workspace']);
       break;
     case 'HM':
-      can('create', 'all');
-      cannot('reach', 'Admin');
+      can('create', ['blog', 'workspace']);
+      cannot('reach', 'AdminPage');
       break;
     case 'PM':
       can('create', 'blog');
       can('create', 'workspace');
-      cannot('reach', 'Admin');
+      cannot('reach', 'AdminPage');
       break;
     case 'EM':
       can('create', 'blog');
       cannot('create', 'workspace');
-      cannot('reach', 'Admin');
+      cannot('reach', 'AdminPage');
       break;
     default:
-      cannot('read', 'all');
+      cannot('do', 'anything');
       break;
   }
 

@@ -18,7 +18,7 @@ export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: baseURL,
-  timeout: 30000,
+  // timeout: 30000,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
@@ -141,7 +141,7 @@ const refreshToken = async (error: AxiosError & { response: { config: { __isRetr
                 `expired=; Max-Age=0; SameSite=Lax; Path=/`
               ]);
             } else if (!isServer()) {
-              // Client-side: Update local storage
+              // Client-side: Update cookies
               setUserAuth({
                 user_id: _user_id.toString(),
                 access_token,
