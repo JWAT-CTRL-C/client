@@ -162,8 +162,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const table = useReactTable({
     data: tableValues,
     defaultColumn: {
-      size: 100, //starting column size
-      minSize: 30, //enforced during column resizing
+      size: 112, //starting column size
+      minSize: 50, //enforced during column resizing
       maxSize: 500 //enforced during column resizing
     },
     columns,
@@ -234,17 +234,21 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   return (
     <Group>
-      <Flex className={`flex w-full flex-col gap-5 lg:flex-row lg:justify-between`}>
+      <Flex
+        className={`flex flex-col gap-5`}
+        style={{
+          width: `${table.getCenterTotalSize()}px`
+        }}>
         <Title>Your Blogs</Title>
-        <Group>
-          <Input
-            className='w-1/4 lg:w-full'
-            placeholder='Filter title...'
-            value={filterField}
-            onChange={(event) => handleSetFilterField(event.currentTarget.value)}
-            rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
-          />
-          {/* <Select
+
+        <Input
+          className='w-1/2'
+          placeholder='Filter title...'
+          value={filterField}
+          onChange={(event) => handleSetFilterField(event.currentTarget.value)}
+          rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
+        />
+        {/* <Select
             placeholder='Filter by tag...'
             data={tagOptions}
             clearable
@@ -252,11 +256,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
             value={filterByTag ? filterByTag.tag_id.toString() : null}
             onChange={(value) => handleSetFilterByTag(value)}
           /> */}
-        </Group>
       </Flex>
       <Space h='xl' />
       <Table
-        className={`overflow-clip`}
         style={{
           width: `${table.getCenterTotalSize()}px`
         }}
