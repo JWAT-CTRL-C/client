@@ -2,7 +2,18 @@ import { useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { BlogResponse } from '@/libs/types/blogResponse';
 import { getTimeDifference } from '@/libs/utils';
-import { Avatar, Card, Divider, Group, Image, Text, Tooltip, useMantineTheme } from '@mantine/core';
+import {
+  Avatar,
+  Badge,
+  Card,
+  Divider,
+  Group,
+  Image,
+  Space,
+  Text,
+  Tooltip,
+  useMantineTheme
+} from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -54,9 +65,10 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         />
       </Card.Section>
 
-      <Group className='flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap'>
+      <Group className='flex w-full items-center overflow-clip text-ellipsis whitespace-nowrap'>
         {blog?.tags?.slice(0, 2).map((tag) => <TagComp key={tag?.tag_id} tag={tag?.tag_name} />)}
         {blog?.tags?.length > 2 && <Text c={theme.primaryColor}>+{blog.tags.length - 2} more </Text>}
+        {blog?.tags?.length === 0 && <Badge c={'transparent'} bg={'transparent'} />}
       </Group>
 
       <Tooltip
@@ -69,7 +81,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         multiline
         transitionProps={{ duration: 200 }}
         offset={5}>
-        <Text fw={700} mt='md' lineClamp={1} onClick={handleToBlog}>
+        <Text fw={700} mt='md' className='overflow-clip' lineClamp={1} onClick={handleToBlog}>
           {upperFirst(blog.blog_tle)}
         </Text>
       </Tooltip>

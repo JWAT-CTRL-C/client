@@ -1,6 +1,7 @@
 import api from '@/libs/api';
 import { UploadImageResponse } from '@/libs/types/UploadImageResponse';
 import { blogFormType } from '@/libs/types/blogFormType';
+import { BlogResponse } from '@/libs/types/blogResponse';
 import { filterFalsyFields } from '@/libs/utils';
 
 export const fetchBlogs = async () => {
@@ -129,6 +130,17 @@ export const ratingBlogById = async (blog_id: string) => {
     await api.put(`/blogs/${blog_id}/rating`);
   } catch (error: any) {
     console.error('ratingBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const fetchRelatedBlogs = async (blog_id: string) => {
+  try {
+    const response = await api.get(`blogs/3-126ac9f6149081eb0e97c2e939eaad52-1718623290608/related`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchRelatedBlogs error:', error.response?.data?.message || error.message);
     throw error;
   }
 };
