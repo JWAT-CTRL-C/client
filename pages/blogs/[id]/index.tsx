@@ -96,7 +96,7 @@ const BlogInfo = () => {
   };
 
   return (
-    <Flex direction={{ base: 'column', lg: 'row' }} gap={'xl'} px={20} py={24} className=''>
+    <Flex direction={{ base: 'column', lg: 'row' }} gap={'xl'} px={20} py={24} className='relative'>
       <Flex
         direction={'column'}
         className='pr-3'
@@ -211,7 +211,7 @@ const BlogInfo = () => {
         direction={'column'}
         gap={'xl'}
         w={'1/6'}
-        className='top-10 h-full lg:sticky'
+        className='top-20 h-full lg:sticky'
         flex={{ base: 'auto', md: 'auto', sm: 'auto', lg: 3 }}>
         {/* <Title>Related :</Title> */}
         {relatedBlogs && <RelatedBlogs blogs={relatedBlogs} />}

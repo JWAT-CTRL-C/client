@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Box className='flex-center relative h-dvh w-full'>
-      <BackgroundImage src='/images/authBG.jpg' bgsz='cover' h='100%'>
+      <BackgroundImage src='/images/authBG.jpg' bgsz='cover' className='w-full'>
         {children}
       </BackgroundImage>
     </Box>
