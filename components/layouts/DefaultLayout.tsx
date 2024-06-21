@@ -1,18 +1,21 @@
 import { ReactNode, useEffect, useState } from 'react';
 
-import { AppShell, Burger, Group, LoadingOverlay } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Affix, AppShell, Burger, Button, Group, LoadingOverlay, rem, Transition } from '@mantine/core';
+import { useDisclosure, useWindowScroll } from '@mantine/hooks';
 import { NotificationType } from '@/libs/types';
 
 import Header from './header';
 import Sidebar from './sidebar';
 import { useStore } from '@/providers/StoreProvider';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { FaArrowUp } from 'react-icons/fa';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setRole } = useStore((store) => store);
 
   const { user, isPending } = useMyInfo();
+
+  const [scroll, scrollTo] = useWindowScroll();
 
   // prevent hydration error
   const [loader, setLoader] = useState(false);
@@ -72,7 +75,21 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         {/* Navbar */}
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        {children}
+        <Affix position={{ bottom: 20, right: 20 }}>
+          <Transition transition='slide-up' mounted={scroll.y > 50}>
+            {(transitionStyles) => (
+              <Button
+                leftSection={<FaArrowUp style={{ width: rem(16), height: rem(16) }} />}
+                style={transitionStyles}
+                onClick={() => scrollTo({ y: 0 })}>
+                Scroll to top
+              </Button>
+            )}
+          </Transition>
+        </Affix>
+      </AppShell.Main>
     </AppShell>
   );
 };
