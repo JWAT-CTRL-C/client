@@ -28,7 +28,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
 
   const isLoveBlog = blog?.blogRatings?.find((rating) => rating.user.user_id === user?.user_id)?.is_rated;
 
-  const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true);
+  const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true) ?? [];
 
   const defaultBackground =
     'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-8.png';
