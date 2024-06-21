@@ -1,14 +1,14 @@
-import { BlogCardType } from '@/libs/types/blogCardType';
 import BlogCard from '@/components/blogCard';
 import { useDisclosure } from '@mantine/hooks';
 import { Box, Button, Collapse } from '@mantine/core';
 import { cn } from '@/libs/utils';
+import { BlogResponse } from '@/libs/types/blogResponse';
 
-export default function BlogList({ blogs }: { blogs: BlogCardType[] }) {
+export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
   const [opened, { toggle }] = useDisclosure(false);
 
   return (
-    <div className='min-h-[30vh] p-3'>
+    <div className='p-3'>
       {blogs.length === 0 ? (
         <div className='grid h-full w-full place-items-center rounded-md border border-gray-100 bg-slate-50'>
           No blogs found
@@ -20,11 +20,7 @@ export default function BlogList({ blogs }: { blogs: BlogCardType[] }) {
               {!opened ? 'View all' : 'View less'}
             </Button>
           </Box>
-          <Box
-            className={cn(
-              'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3',
-              !opened ? 'h-auto' : 'hidden'
-            )}>
+          <Box className={cn('grid grid-cols-1 gap-4 md:grid-cols-2', !opened ? 'h-auto' : 'hidden')}>
             {blogs.map((blog, index) => (
               <BlogCard key={blog.blog_id} blog={blog} />
             ))}
