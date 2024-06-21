@@ -14,5 +14,10 @@ export type BlogCardType = {
   auth_name: string;
   blog_rtg: blogRatingType[];
   blog_tag: Tag[];
-  user: User;
+  user: {
+    user_id: number;
+    usrn: string;
+    fuln: string;
+    avatar: string;
+  };
 };
