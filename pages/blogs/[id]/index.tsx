@@ -96,8 +96,13 @@ const BlogInfo = () => {
   };
 
   return (
-    <Flex direction={{ base: 'column', lg: 'row' }} gap={'xl'} px={20} py={24}>
-      <Flex direction={'column'} gap={'xl'} justify={'center'} flex={{ base: 'auto', lg: 7 }}>
+    <Flex direction={{ base: 'column', lg: 'row' }} gap={'xl'} px={20} py={24} className=''>
+      <Flex
+        direction={'column'}
+        className='pr-3'
+        gap={'xl'}
+        justify={'center'}
+        flex={{ base: 'auto', lg: 8 }}>
         <Skeleton visible={isLoading}>
           <BackgroundImage
             className='flex min-h-60 items-center justify-center object-cover object-center'
@@ -147,7 +152,7 @@ const BlogInfo = () => {
             <Text>{blog?.resource?.resrc_name}</Text>
           </Flex>
         )}
-        {blog?.tags.length !== 0 || blog?.workspace || (blog?.resource && <Divider />)}
+        {(blog?.tags.length !== 0 || blog?.workspace || blog?.resource) && <Divider />}
 
         <Spoiler maxHeight={300} showLabel='Show more' hideLabel='Hide' transitionDuration={0}>
           {blog?.blog_cont && (
@@ -201,10 +206,12 @@ const BlogInfo = () => {
           </Flex>
         </ScrollArea>
       </Flex>
+      <Divider orientation='vertical' />
       <Flex
         direction={'column'}
         gap={'xl'}
-        justify={'center'}
+        w={'1/6'}
+        className='top-10 h-full lg:sticky'
         flex={{ base: 'auto', md: 'auto', sm: 'auto', lg: 3 }}>
         {/* <Title>Related :</Title> */}
         {relatedBlogs && <RelatedBlogs blogs={relatedBlogs} />}
