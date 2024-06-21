@@ -46,7 +46,7 @@ const Page: NextPageWithLayout = () => {
     }
   }, [workspace]);
   return (
-    <div className='px-20 py-5'>
+    <div className='px-5 py-2 md:px-20'>
       {_.isEmpty(workspace) ? (
         <LoadingOverlay
           visible={_.isEmpty(workspace)}
@@ -86,7 +86,7 @@ const Page: NextPageWithLayout = () => {
       )}
     </div>
   );
-}
+};
 
 Page.getLayout = function getLayout(page: ReactElement) {
   return <DefaultLayout>{page}</DefaultLayout>;
