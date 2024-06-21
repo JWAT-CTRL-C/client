@@ -34,7 +34,7 @@ const LoadingPageTransition = ({ children }: { children: ReactNode }) => {
         visible={loading}
         zIndex={1000}
         loaderProps={{
-          size: 'xl',
+          // size: 'sm',
           variant: 'bars'
         }}
         styles={{
