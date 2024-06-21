@@ -8,6 +8,7 @@ import {
 } from '@/services/workspaceServices';
 import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
+  GET_RECENT_WORKSPACES_KEY,
   GET_SPECIFIC_WORKSPACE_KEY,
   GET_WORKSPACE_MEMBERS_KEY
 } from '@/libs/constants/queryKeys/workspace';
@@ -36,6 +37,20 @@ export const useFetchWorkspaceById = (wksp_id: string) => {
 
   return {
     workspace: data,
+    isError,
+    isFetching,
+    isPending
+  };
+};
+
+export const useFetchRecentWorkspaces = () => {
+  const { data, isError, isFetching, isPending } = useQuery({
+    queryKey: [GET_RECENT_WORKSPACES_KEY],
+    queryFn: async () => await getWorkspacesByUser()
+  });
+
+  return {
+    workspaces: data,
     isError,
     isFetching,
     isPending

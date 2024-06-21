@@ -3,6 +3,7 @@ import {
   fetchBlogById,
   fetchBlogs,
   fetchBlogsForCurrentUser,
+  fetchRecentBlogs,
   fetchRelatedBlogs,
   filterBlogsForCurrentUserByTitle
 } from '@/services/blogServices';
@@ -16,6 +17,13 @@ export const useFetchBlogs = () => {
   return useQuery<BlogResponse[]>({
     queryKey: [BlogQueryEnum.BLOGS],
     queryFn: async () => await fetchBlogs()
+  });
+};
+
+export const useFetchRecentBlogs = () => {
+  return useQuery<BlogResponse[]>({
+    queryKey: [BlogQueryEnum.BLOGS_RECENT],
+    queryFn: async () => await fetchRecentBlogs()
   });
 };
 

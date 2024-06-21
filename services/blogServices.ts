@@ -15,6 +15,17 @@ export const fetchBlogs = async () => {
   }
 };
 
+export const fetchRecentBlogs = async () => {
+  try {
+    const response = await api.get('/blogs/recent');
+
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchRecentBlogs error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
 export const uploadImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append('file', file);
