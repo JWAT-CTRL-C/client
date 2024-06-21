@@ -52,10 +52,10 @@ const CommentInput = ({
         />
       </Skeleton>
       <Flex gap={10} justify={'end'}>
-        <Button onClick={handleClear} variant='outline' className='w-[10%]' loading={loading}>
+        <Button onClick={handleClear} variant='outline' className='w-[25%]' loading={loading}>
           Clear
         </Button>
-        <Button onClick={handleComment} variant='filled' className='w-[10%]' loading={loading}>
+        <Button onClick={handleComment} variant='filled' className='w-[25%]' loading={loading}>
           Comment
         </Button>
       </Flex>
