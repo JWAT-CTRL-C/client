@@ -1,15 +1,6 @@
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { removeUserAuth } from '@/libs/utils';
-import {
-  Avatar,
-  Indicator,
-  Menu,
-  Skeleton,
-  Switch,
-  rem,
-  useMantineColorScheme,
-  useMantineTheme
-} from '@mantine/core';
+import { Avatar, Menu, Skeleton, Switch, rem, useMantineColorScheme, useMantineTheme } from '@mantine/core';
 
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -39,13 +30,15 @@ const AvatarComp = () => {
       width={200}
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
-        <Indicator inline label='2' size={16} className='cursor-pointer'>
-          {isPending ? (
-            <Skeleton circle h={40} w={40} />
-          ) : (
-            <Avatar src={user?.avatar || '/images/default-avatar.png'} alt="it's me" />
-          )}
-        </Indicator>
+        {isPending ? (
+          <Skeleton circle h={40} w={40} />
+        ) : (
+          <Avatar
+            className='cursor-pointer'
+            src={user?.avatar || '/images/default-avatar.png'}
+            alt="it's me"
+          />
+        )}
       </Menu.Target>
 
       <Menu.Dropdown>
@@ -61,9 +54,6 @@ const AvatarComp = () => {
             offLabel={sunIcon}
           />
         </Menu.Item>
-
-        <Menu.Label>Application</Menu.Label>
-        <Menu.Item>Notification</Menu.Item>
 
         <Menu.Divider />
 

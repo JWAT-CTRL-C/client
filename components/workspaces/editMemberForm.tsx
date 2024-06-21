@@ -20,12 +20,13 @@ import {
   useFranchiseWorkspace,
   useRemoveMemberFromWorkspace
 } from '@/libs/hooks/mutations/workspaceMutations';
-import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { GENERAL_RESPONSE_TYPE, NotificationType } from '@/libs/types';
 import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
 import PopoverConfirm from '../popoverConfirm';
 import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
 import { User } from '@/libs/types/userType';
+import { useStore } from '@/providers/StoreProvider';
 
 export function WpsMemberTable({
   className,
@@ -40,13 +41,14 @@ export function WpsMemberTable({
 }) {
   const theme = useMantineColorScheme();
   const router = useRouter();
+  const { notificationSocket } = useStore((state) => state);
 
   // table config
   const memeberAttribute = {
-    HM: { color: 'red', roleName: 'Head Master' },
-    MA: { color: 'red', roleName: 'Head Master' },
-    PM: { color: 'orange', roleName: 'Project Manager' },
-    EM: { color: 'rgba(255, 255, 255, 0)', roleName: 'Employee' }
+    HM: { color: 'orange', roleName: 'Head Master' },
+    MA: { color: 'red', roleName: 'Master Admin' },
+    PM: { color: 'yellow', roleName: 'Project Manager' },
+    EM: { color: 'green', roleName: 'Employee' }
   };
   // Remove member
   const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
@@ -62,6 +64,12 @@ export function WpsMemberTable({
   };
   const { removeMember } = useRemoveMemberFromWorkspace(handleRemoveMemberSuccess, handleRemoveMemberFail);
   const handleDeleteMember = (user_id: number) => {
+    notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
+      noti_tle: 'Remove Member',
+      noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed from the workspace`,
+      user_id: currentUser.user_id,
+      wksp_id
+    });
     removeMember({ wksp_id, user_id });
   };
   const handleConfirmRemoveMember = (user_id: number) => {
@@ -196,7 +204,9 @@ export default function EditWorkspaceMemberForm({
   currentUser: User;
 }) {
   const router = useRouter();
-  const [data, setData] = useState<ComboboxItem[]>([]);
+  const [data, setData] = useState<(ComboboxItem & { fuln: string })[]>([]);
+
+  const { notificationSocket } = useStore((state) => state);
 
   useEffect(() => {
     const listUserData = users.filter(
@@ -204,7 +214,8 @@ export default function EditWorkspaceMemberForm({
     );
     const dropDownData = listUserData.map((user) => ({
       value: user.user_id.toString(),
-      label: `${user.fuln} #${user.user_id}`
+      label: `${user.fuln} #${user.user_id}`,
+      fuln: user.fuln
     }));
     setData(dropDownData);
   }, [members]);
@@ -232,6 +243,12 @@ export default function EditWorkspaceMemberForm({
   };
   const { addMember } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
+    notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
+      noti_tle: 'New Member',
+      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added to the workspace`,
+      user_id: currentUser.user_id,
+      wksp_id: router.query.id?.toString() ?? ''
+    });
     addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });
   };
   return (

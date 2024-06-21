@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { USER_TYPE } from './userServices';
 import { ResourceType } from '@/libs/types/sourcesType';
 import { BlogCardType } from '@/libs/types/blogCardType';
+import { BlogResponse } from '@/libs/types/blogResponse';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -32,7 +33,7 @@ export type SPECIFIC_WORKSPACE_RESPONSE = {
     resrc_name: string;
     resrc_url: string;
   }[];
-  blogs: BlogCardType[];
+  blogs: BlogResponse[];
 };
 export type WORKSPACE_MEMBER = {
   wksp_id: string;
@@ -63,6 +64,16 @@ export const getSpecificWorkspace = (wksp_id: string) => {
       .catch((err) => reject(err));
   });
 };
+
+export const getRecentWorkspaces = () => {
+  return new Promise<WORKSPACES_RESPONSE[]>((resolve, reject) => {
+    api
+      .get<WORKSPACES_RESPONSE[]>('/workspaces/recent')
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
 export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api

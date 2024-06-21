@@ -49,7 +49,8 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
 
   return (
     <Card
-      className='flex h-full w-full cursor-pointer justify-between gap-2'
+      onClick={() => router.replace(`/blogs/${blog.blog_id}`)}
+      className='flex h-full w-full cursor-pointer justify-between'
       shadow='sm'
       padding='lg'
       radius='md'
