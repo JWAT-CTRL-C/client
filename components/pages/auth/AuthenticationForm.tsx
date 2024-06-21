@@ -41,11 +41,7 @@ export function AuthenticationForm() {
   };
 
   return (
-    <Paper
-      className='h-full min-h-[900px] max-w-[450px] pt-[80px] max-md:sm:max-w-full'
-      radius={0}
-      p={30}
-      pt={60}>
+    <Paper className='h-full w-full pt-[80px] md:w-[450px]' radius={0} p={30} pt={60}>
       <Title order={2} className='' ta='center' mt='md' mb={50}>
         Welcome back to Synergy!
       </Title>
