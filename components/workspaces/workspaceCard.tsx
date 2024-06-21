@@ -1,17 +1,20 @@
 import { WorkspaceCardProps, WorkspaceCardPropsExpand } from '@/libs/types/workspace';
 import { Avatar, Card, Group, Image, Text, Tooltip } from '@mantine/core';
 import colors from '@/assets/json/color_background_theme.json';
+import { cn } from '@/libs/utils';
+import { useRouter } from 'next/router';
 export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpand }) {
   const { wksp_name, wksp_desc, wksp_id, users, index } = value;
+  const router = useRouter();
   return (
     <Card
       shadow='sm'
       padding='lg'
       component='a'
-      href={`/workspaces/${wksp_id}`}
+      onClick={() => router.push(`/workspaces/${wksp_id}`)}
       target='_self'
       radius='md'
-      className=' w-72 hover:shadow-lg md:w-96'>
+      className={cn('w-[60%] min-w-64 hover:shadow-lg', 'md:min-w-80 md:max-w-[33%] lg:max-w-[30%]')}>
       <Card.Section>
         <Image
           h={110}
@@ -20,18 +23,18 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
         />
       </Card.Section>
 
-      <Text fw={500} size='lg' mt='lg'>
+      <Text fw={500} size='lg' mt='lg' truncate='end'>
         {wksp_name}
       </Text>
 
-      <Text mt='xs' c='dimmed' size='sm'>
+      <Text mt='xs' c='dimmed' size='sm' truncate='end'>
         {wksp_desc}
       </Text>
       <Avatar.Group className='mt-2' spacing='xs'>
         {users?.map((user, index) => {
           if (index > 3) return null;
           return (
-            <Tooltip label={user.usrn} withArrow key={user.user_id}>
+            <Tooltip label={user.fuln} withArrow key={user.user_id}>
               <Avatar
                 src={
                   user.avatar ??
