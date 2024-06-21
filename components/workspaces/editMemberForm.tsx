@@ -45,10 +45,10 @@ export function WpsMemberTable({
 
   // table config
   const memeberAttribute = {
-    HM: { color: 'red', roleName: 'Head Master' },
-    MA: { color: 'red', roleName: 'Head Master' },
-    PM: { color: 'orange', roleName: 'Project Manager' },
-    EM: { color: 'rgba(255, 255, 255, 0)', roleName: 'Employee' }
+    HM: { color: 'orange', roleName: 'Head Master' },
+    MA: { color: 'red', roleName: 'Master Admin' },
+    PM: { color: 'yellow', roleName: 'Project Manager' },
+    EM: { color: 'green', roleName: 'Employee' }
   };
   // Remove member
   const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {

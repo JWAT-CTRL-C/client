@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { USER_TYPE } from './userServices';
 import { ResourceType } from '@/libs/types/sourcesType';
 import { BlogCardType } from '@/libs/types/blogCardType';
+import { BlogResponse } from '@/libs/types/blogResponse';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -32,7 +33,7 @@ export type SPECIFIC_WORKSPACE_RESPONSE = {
     resrc_name: string;
     resrc_url: string;
   }[];
-  blogs: BlogCardType[];
+  blogs: BlogResponse[];
 };
 export type WORKSPACE_MEMBER = {
   wksp_id: string;

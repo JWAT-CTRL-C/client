@@ -1,6 +1,6 @@
 import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { BlogCardType } from '@/libs/types/blogCardType';
+import { BlogResponse } from '@/libs/types/blogResponse';
 export type RESOURCE_TYPE = {
   resrc_id: string;
   resrc_name: string;
@@ -9,7 +9,7 @@ export type RESOURCE_TYPE = {
 export type RESOURCE_REQUEST = Omit<RESOURCE_TYPE, 'resrc_id'>;
 export type UPDATE_RESOURCE_REQUEST = Partial<RESOURCE_REQUEST> & {};
 export type SPECIFIC_RESOURCE_RESPONSE = RESOURCE_TYPE & {
-  blog: BlogCardType[];
+  blog: BlogResponse;
   workspace: {
     owner: number;
   };
