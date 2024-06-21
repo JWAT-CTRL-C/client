@@ -11,13 +11,18 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 import { NextPageWithLayout } from '../_app';
 import RecentBlogs from '@/components/dashboard/BLogs/RecentBlogs';
+import { prefetchNotifications } from '@/libs/prefetchQueries/noti';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await Promise.all([prefetchMyInfo(queryClient), prefetchRecentWorkspaces(queryClient)]);
+  await Promise.all([
+    prefetchMyInfo(queryClient),
+    prefetchRecentWorkspaces(queryClient),
+    prefetchNotifications(queryClient)
+  ]);
 
   return {
     props: {

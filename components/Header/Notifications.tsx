@@ -1,4 +1,4 @@
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
 import { Indicator, Menu, Tooltip } from '@mantine/core';
 
 import { useState } from 'react';
@@ -6,6 +6,8 @@ import { FaBell } from 'react-icons/fa';
 
 const Notifications = () => {
   const [opened, setOpened] = useState(false);
+
+  const { data: notifications } = useFetchNotifications();
 
   return (
     <Menu
@@ -23,14 +25,26 @@ const Notifications = () => {
       <Menu.Target>
         <Indicator inline label='2' size={16} className='cursor-pointer'>
           <Tooltip label='Notifications'>
-            <FaBell className='size-6 max-md:size-5' />
+            <div>
+              <FaBell className='size-6 max-md:size-5' />
+            </div>
           </Tooltip>
         </Indicator>
       </Menu.Target>
 
       <Menu.Dropdown>
         <Menu.Label>Notifications</Menu.Label>
-        <Menu.Item>Notification</Menu.Item>
+        {notifications?.map((noti) => (
+          <Menu.Item key={noti.noti_id} className='flex items-center'>
+            <div className='flex items-center gap-4'>
+              <Indicator color='blue' />
+              <div>
+                <div className='text-sm'>{noti.noti_tle}</div>
+                <div className='text-xs text-gray-500'>{noti.noti_cont}</div>
+              </div>
+            </div>
+          </Menu.Item>
+        ))}
       </Menu.Dropdown>
     </Menu>
   );
