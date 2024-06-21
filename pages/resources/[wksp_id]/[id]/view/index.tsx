@@ -1,3 +1,4 @@
+import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import BlogList from '@/components/workspaces/blogs/blogList';
 import { setContext } from '@/libs/api';
@@ -46,7 +47,10 @@ const ResourceViewPage: NextPageWithLayout = () => {
         </Link>
       </div>
       <Divider />
-      <BlogList blogs={resource.blog} />
+
+      <BlogCard key={resource.blog.blog_id} blog={resource.blog} />
+
+      {/* <BlogList blogs={resource.blog} /> */}
     </div>
   );
 };

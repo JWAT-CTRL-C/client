@@ -14,7 +14,10 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
       onClick={() => router.push(`/workspaces/${wksp_id}`)}
       target='_self'
       radius='md'
-      className={cn('w-[60%] min-w-64 hover:shadow-lg', 'md:min-w-80 md:max-w-[33%] lg:max-w-[30%]')}>
+      className={cn(
+        'w-[60%] min-w-64 hover:cursor-pointer hover:shadow-lg',
+        'md:min-w-80 md:max-w-[33%] lg:max-w-[30%]'
+      )}>
       <Card.Section>
         <Image
           h={110}
