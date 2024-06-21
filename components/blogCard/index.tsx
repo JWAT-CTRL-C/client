@@ -49,7 +49,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
 
   return (
     <Card
-      onClick={() => router.replace(`/blogs/${blog.blog_id}`)}
+      onClick={handleToBlog}
       className='flex h-full w-full cursor-pointer justify-between'
       shadow='sm'
       padding='lg'
