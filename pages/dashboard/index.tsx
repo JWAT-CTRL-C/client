@@ -1,21 +1,23 @@
 import { GetServerSideProps } from 'next';
 
+import RecentNotifications from '@/components/dashboard/Notifications/RecentNotifications';
+import RecentJoinedWorkspaces from '@/components/dashboard/Workspaces/RecentJoinedWorkspaces';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchRecentWorkspaces } from '@/libs/prefetchQueries/workspace';
 import { Flex } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 import { NextPageWithLayout } from '../_app';
-import RecentNotifications from '@/components/dashboard/Notifications/RecentNotifications';
-import RecentlyJoinedWorkspaces from '@/components/dashboard/Workspaces/RecentlyJoinedWorkspaces';
+import RecentBlogs from '@/components/dashboard/BLogs/RecentBlogs';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await prefetchMyInfo(queryClient);
+  await Promise.all([prefetchMyInfo(queryClient), prefetchRecentWorkspaces(queryClient)]);
 
   return {
     props: {
@@ -31,7 +33,10 @@ const Dashboard: NextPageWithLayout = () => {
       <RecentNotifications />
 
       <h1 className='text-2xl font-semibold'>Recently Joined Workspaces</h1>
-      <RecentlyJoinedWorkspaces />
+      <RecentJoinedWorkspaces />
+
+      <h1 className='text-2xl font-semibold'>Recent Blogs</h1>
+      <RecentBlogs />
     </Flex>
   );
 };

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import Logo from './logo';
-import AvatarComp from '@/components/avatar';
+import AvatarComp from '@/components/Header/avatar';
 import { Group, Tabs } from '@mantine/core';
 import { useRouter } from 'next/router';
 
 import { FaBlog, FaBriefcase, FaBuffer, FaUserSecret } from 'react-icons/fa';
 import { Can } from '@/providers/AbilityProvider';
+import Notifications from '@/components/Header/Notifications';
 
 const Header = () => {
   const router = useRouter();
@@ -81,7 +82,8 @@ const Header = () => {
           </Tabs.List>
         </Tabs>
       </Group>
-      <div className='mr-4'>
+      <div className='mr-4 flex items-center gap-5'>
+        <Notifications />
         <AvatarComp />
       </div>
     </header>

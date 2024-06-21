@@ -61,6 +61,16 @@ export const getSpecificWorkspace = (wksp_id: string) => {
       .catch((err) => reject(err));
   });
 };
+
+export const getRecentWorkspaces = () => {
+  return new Promise<WORKSPACES_RESPONSE[]>((resolve, reject) => {
+    api
+      .get<WORKSPACES_RESPONSE[]>('/workspaces/recent')
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
 export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api

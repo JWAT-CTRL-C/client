@@ -29,7 +29,7 @@ const LoadingPageTransition = ({ children }: { children: ReactNode }) => {
   return (
     <div className='relative'>
       {children}
-      <LoadingOverlay h='100dvh' visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
     </div>
   );
 };
