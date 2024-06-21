@@ -113,7 +113,7 @@ export default function EditGeneralWorkspaceForm({
     }
     form.reset();
   };
-  const { updateWorkspace } = useUpdateWorkspace(handleSuccess, handleFail);
+  const { updateWorkspace, isPending } = useUpdateWorkspace(handleSuccess, handleFail);
   const handleSubmit = (value: typeof form.values) => {
     // console.log(value)
     updateWorkspace(value as unknown as UPDATE_WORKSPACE_REQUEST);
@@ -126,19 +126,20 @@ export default function EditGeneralWorkspaceForm({
           <TextInput
             mt='lg'
             withAsterisk
-            required
             label='Workspace Name'
             key={form.key('wksp_name')}
             {...form.getInputProps('wksp_name')}
           />
           <Textarea
             mt='lg'
+            withAsterisk
             inputSize='lg'
+            value={form.values.wksp_desc}
             label='Workspace Description'
             {...form.getInputProps('wksp_desc')}
           />
           <Group mt='lg'>
-            <Button type='submit' variant='pill'>
+            <Button type='submit' variant='pill' loading={isPending}>
               Save
             </Button>
           </Group>

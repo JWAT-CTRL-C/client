@@ -13,10 +13,13 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, r
     case 'MA':
       can('reach', 'AdminPage');
       can('create', ['blog', 'workspace']);
+      can('edit', ['blog', 'workspace']);
       break;
     case 'HM':
       can('create', ['blog', 'workspace']);
+      can('edit', ['blog', 'workspace']);
       cannot('reach', 'AdminPage');
+
       break;
     case 'PM':
       can('create', 'blog');

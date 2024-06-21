@@ -1,5 +1,9 @@
 import { GET_ALL_RESOURCES_KEY, GET_SPECIFIC_RESOURCE_KEY } from '@/libs/constants/queryKeys/resource';
-import { getAllResources, getSpecificResource } from '@/services/resourceServices';
+import {
+  getAllResources,
+  getSpecificResource,
+  SPECIFIC_RESOURCE_RESPONSE
+} from '@/services/resourceServices';
 import { useQuery } from '@tanstack/react-query';
 
 export const useGetAllResourcesByWorkspace = (wksp_id: string) => {
@@ -22,7 +26,7 @@ export const useGetSpecificResource = (wksp_id: string, resrc_id: string) => {
     queryFn: async () => await getSpecificResource(wksp_id, resrc_id)
   });
   return {
-    resource: data ?? [],
+    resource: data ?? ({} as SPECIFIC_RESOURCE_RESPONSE),
     isError,
     isFetching,
     isPending
