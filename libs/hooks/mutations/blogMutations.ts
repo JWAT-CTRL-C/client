@@ -83,7 +83,6 @@ export const useRemoveBlogById = () => {
 };
 
 export const useUpdateBlog = () => {
-  
   const queryClient = useQueryClient();
 
   const mutation = useMutation<void, Error, { blog_id: string; blogData: blogFormType }>({
@@ -140,12 +139,18 @@ export const useRatingBlog = () => {
     onSuccess: async (data, variables) => {
       const { blog_id } = variables;
 
-      await Promise.all([
+      await Promise.allSettled([
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS]
         }),
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS, blog_id]
+        }),
+        // queryClient.invalidateQueries({
+        //   queryKey: [BlogQueryEnum.BLOGS_RELATED, blog_id]
+        // }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_RELATED]
         })
       ]);
     },

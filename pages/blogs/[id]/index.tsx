@@ -51,11 +51,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }),
 
     queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
+      queryKey: [BlogQueryEnum.BLOGS_RELATED, id as string],
       queryFn: async () => await fetchRelatedBlogs(id as string)
-    })
+    }),
+
+    prefetchMyInfo(queryClient)
   ]);
-  await prefetchMyInfo(queryClient);
 
   return {
     props: {

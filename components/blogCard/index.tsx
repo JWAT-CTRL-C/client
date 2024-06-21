@@ -65,10 +65,10 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         />
       </Card.Section>
 
-      <Group className='flex w-full items-center overflow-clip text-ellipsis whitespace-nowrap'>
+      <Group className='flex w-full items-center overflow-hidden text-ellipsis whitespace-nowrap'>
         {blog?.tags?.slice(0, 2).map((tag) => <TagComp key={tag?.tag_id} tag={tag?.tag_name} />)}
         {blog?.tags?.length > 2 && <Text c={theme.primaryColor}>+{blog.tags.length - 2} more </Text>}
-        {blog?.tags?.length === 0 && <Badge c={'transparent'} bg={'transparent'} />}
+        {blog?.tags?.length === 0 && <Badge className='opacity-0' />}
       </Group>
 
       <Tooltip
