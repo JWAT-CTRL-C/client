@@ -16,6 +16,7 @@ import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -48,7 +49,7 @@ const EditBlog = () => {
   const router = useRouter();
   const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
   const { workspaces: workSpaceList } = useFetchWorkspacesByUser();
-  //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  //const { uploadImage, imageUrl, isPending: IsPendingImage } = useUploadImage();
 
   const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();
 
@@ -101,12 +102,12 @@ const EditBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3}>
+    <Flex direction='column' gap={3} className='px-10 py-12'>
       <Center>
         <Title order={1}>Edit blog</Title>
       </Center>
       <Group justify='center' className='w-full'>
-        {/* To use updateform please provide isEditing and updateValues*/}
+        {/* To use update form please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleEdit}
           workSpaceList={workSpaceList ? workSpaceList : []}
@@ -120,6 +121,6 @@ const EditBlog = () => {
 
 export default EditBlog;
 
-EditBlog.getLayout = function getLayout(page: any) {
+EditBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

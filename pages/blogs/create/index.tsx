@@ -2,10 +2,12 @@ import { useRouter } from 'next/router';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
+import { ReactNode } from 'react';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 const CreateBlog = () => {
@@ -48,12 +50,12 @@ const CreateBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3}>
+    <Flex direction='column' gap={3} className='px-10 py-12'>
       <Center>
         <Title order={1}>Create new blog</Title>
       </Center>
       <Group justify='center' className='w-full'>
-        {/* To use updateform please provide isEditing and updateValues*/}
+        {/* To use update form please provide isEditing and updateValues*/}
         <BlogForm
           handleSubmitForm={handleCreateBlog}
           workSpaceList={workspaces ? workspaces : []}
@@ -67,6 +69,6 @@ const CreateBlog = () => {
 
 export default CreateBlog;
 
-CreateBlog.getLayout = function getLayout(page: any) {
+CreateBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

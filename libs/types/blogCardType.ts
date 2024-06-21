@@ -1,4 +1,5 @@
 import { Tag } from './tagType';
+import { User } from './userType';
 
 export type BlogCardType = {
   blog_id: number | string;
@@ -10,4 +11,5 @@ export type BlogCardType = {
   auth_name: string;
   blog_rtg: number;
   blog_tag: Tag[];
+  user: User;
 };

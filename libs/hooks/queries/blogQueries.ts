@@ -3,6 +3,7 @@ import {
   fetchBlogById,
   fetchBlogs,
   fetchBlogsForCurrentUser,
+  fetchRelatedBlogs,
   filterBlogsForCurrentUserByTitle
 } from '@/services/blogServices';
 
@@ -11,10 +12,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useDebouncedValue } from '@mantine/hooks';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 
-
-
 export const useFetchBlogs = () => {
-  return useQuery({
+  return useQuery<BlogResponse[]>({
     queryKey: [BlogQueryEnum.BLOGS],
     queryFn: async () => await fetchBlogs()
   });
@@ -40,5 +39,12 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
     queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, debounced],
     queryFn: async () => await filterBlogsForCurrentUserByTitle(debounced),
     enabled: !!debounced
+  });
+};
+
+export const useFetchRelatedBlog = (blog_id: string) => {
+  return useQuery<void, Error, BlogResponse[]>({
+    queryKey: [BlogQueryEnum.BLOGS_RELATED, blog_id],
+    queryFn: async () => await fetchRelatedBlogs(blog_id)
   });
 };

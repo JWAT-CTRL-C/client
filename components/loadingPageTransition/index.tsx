@@ -29,7 +29,31 @@ const LoadingPageTransition = ({ children }: { children: ReactNode }) => {
   return (
     <div className='relative'>
       {children}
-      <LoadingOverlay h='100dvh' visible={loading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+      <LoadingOverlay
+        h='100vh'
+        visible={loading}
+        zIndex={1000}
+        loaderProps={{
+          // size: 'sm',
+          variant: 'bars'
+        }}
+        styles={{
+          overlay: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1000
+          },
+          loader: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }
+        }}
+      />
     </div>
   );
 };

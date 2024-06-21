@@ -1,18 +1,33 @@
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
-import { Avatar, Button, Card, Flex, Textarea, Text } from '@mantine/core';
-import { useState } from 'react';
+import { Avatar, Button, Card, Flex, Textarea, Text, Skeleton } from '@mantine/core';
+import React, { useEffect, useState } from 'react';
 
-const CommnetInput = ({ onComment, loading = false }: { onComment: Function; loading?: boolean }) => {
+const CommentInput = ({
+  onComment,
+  loading = false,
+  isSuccess
+}: {
+  onComment: Function;
+  loading?: boolean;
+  isSuccess: boolean;
+}) => {
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
   const { user } = useMyInfo();
 
-  const handleComment = () => {
+  const handleComment = async () => {
     if (!value) {
       setError('Please enter a comment before submit');
+    } else {
+      onComment && (await onComment(value));
     }
-    onComment && onComment(value);
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      handleClear();
+    }
+  }, [isSuccess]);
 
   const handleClear = () => {
     setValue(''), setError('');
@@ -25,15 +40,17 @@ const CommnetInput = ({ onComment, loading = false }: { onComment: Function; loa
           {user?.fuln || user?.usrn}
         </Text>
       </Flex>
-      <Textarea
-        value={value}
-        placeholder='Comment....'
-        autosize
-        minRows={3}
-        maxRows={4}
-        error={error}
-        onChange={(event) => setValue(event.currentTarget.value)}
-      />
+      <Skeleton visible={loading}>
+        <Textarea
+          value={value}
+          placeholder='Comment....'
+          autosize
+          minRows={3}
+          maxRows={4}
+          error={error}
+          onChange={(event) => setValue(event.currentTarget.value)}
+        />
+      </Skeleton>
       <Flex gap={10} justify={'end'}>
         <Button onClick={handleClear} variant='outline' className='w-[10%]' loading={loading}>
           Clear
@@ -46,4 +63,4 @@ const CommnetInput = ({ onComment, loading = false }: { onComment: Function; loa
   );
 };
 
-export default CommnetInput;
+export default CommentInput;

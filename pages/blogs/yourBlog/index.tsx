@@ -9,6 +9,7 @@ import { fetchBlogsForCurrentUser } from '@/services/blogServices';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -36,7 +37,7 @@ const YourBlog = () => {
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
-    <Flex>
+    <Flex className=''>
       <BlogTable dataTable={blogs ? transformBlogTableType(blogs) : []} />
     </Flex>
   );
@@ -44,6 +45,6 @@ const YourBlog = () => {
 
 export default YourBlog;
 
-YourBlog.getLayout = function getLayout(page: any) {
+YourBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
