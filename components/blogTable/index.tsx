@@ -8,13 +8,11 @@ import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
 import {
-  ActionIcon,
   Flex,
   Group,
   Input,
   Loader,
   LoadingOverlay,
-  Select,
   Space,
   Table,
   Text,
@@ -23,7 +21,8 @@ import {
 } from '@mantine/core';
 import {
   ColumnDef,
-  ColumnFiltersState,
+  ColumnResizeDirection,
+  ColumnResizeMode,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -32,10 +31,9 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 
+import { showErrorToast, showSuccessToast } from '../shared/toast';
 import IconColumn from './iconColumn';
 import TextColumn from './textColumn';
-import { toast } from 'react-toastify';
-import { showErrorToast, showSuccessToast } from '../shared/toast';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -53,7 +51,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
   let displayData = filterField ? transformedBlogs : dataTable;
 
-  // fix : dupliate select field
+  // fix : duplicate select field
   // const allTagsSet = new Set<Tag>();
 
   // dataTable.forEach((blog) => {
@@ -68,6 +66,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_id',
       header: 'Blog ID',
+      enableResizing: true,
+
       cell: ({ row }) => (
         <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
           {row.original.blog_id}
@@ -77,6 +77,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_tle',
       header: 'Title',
+      enableResizing: true,
+
       cell: ({ row }) => row.original.blog_tle
       // filterFn: (row, columnId, filterValue) => {
       //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
@@ -85,30 +87,36 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_cmt',
       header: 'Comments',
+      enableResizing: true,
+
       cell: ({ row }) => row.original.blog_cmt?.length ?? 0
     },
     {
       accessorKey: 'blog_rtg',
-      header: 'Rating',
-      cell: ({ row }) =>
-        row.original.blog_rtg?.length > 0
-          ? row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
-            row.original.blog_rtg.length
-          : 0
+      header: 'Like',
+      enableResizing: true,
+
+      cell: ({ row }) => (row.original.blog_rtg?.length > 0 ? row.original.blog_rtg?.length : 0)
     },
     {
       accessorKey: 'crd_at',
       header: 'Created At',
+      enableResizing: true,
+
       cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
+      enableResizing: true,
+
       cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',
       header: 'Tags',
+      enableResizing: true,
+
       cell: ({ row }) => {
         return (
           <Flex wrap={'wrap'} align='center' gap={'sm'}>
@@ -129,6 +137,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       id: 'edit',
       header: 'Edit',
+      enableResizing: true,
+
       cell: ({ row, cell, column }) => (
         <IconColumn blog_id={row.original.blog_id} onClick={handleToEditBlogPage}>
           <FaRegEdit />
@@ -139,6 +149,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       id: 'delete',
       header: 'Delete',
+      enableResizing: true,
+
       cell: ({ row }) => (
         <IconColumn isRed={true} blog_id={row.original.blog_id} onClick={handleDeleteBlogPage}>
           <FaRegTrashAlt />
@@ -149,6 +161,11 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   const table = useReactTable({
     data: tableValues,
+    defaultColumn: {
+      size: 112, //starting column size
+      minSize: 50, //enforced during column resizing
+      maxSize: 500 //enforced during column resizing
+    },
     columns,
     state: {
       // columnFilters
@@ -157,6 +174,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+
+    columnResizeDirection: 'ltr',
     // onColumnFiltersChange: setColumnFilters,
 
     columnResizeMode: 'onChange'
@@ -203,11 +222,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     await removeBlog(blog_id, {
       onSuccess: async () => {
         showSuccessToast('Delete blog successfully!');
-     
       },
       onError: async (err) => {
         showErrorToast(err.message);
-        
       }
     });
   };
@@ -217,16 +234,21 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
 
   return (
     <Group>
-      <Flex align={'center'} justify={'space-between'} className='w-full'>
+      <Flex
+        className={`flex flex-col gap-5`}
+        style={{
+          width: `${table.getCenterTotalSize()}px`
+        }}>
         <Title>Your Blogs</Title>
-        <Group>
-          <Input
-            placeholder='Filter title...'
-            value={filterField}
-            onChange={(event) => handleSetFilterField(event.currentTarget.value)}
-            rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
-          />
-          {/* <Select
+
+        <Input
+          className='w-1/2'
+          placeholder='Filter title...'
+          value={filterField}
+          onChange={(event) => handleSetFilterField(event.currentTarget.value)}
+          rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
+        />
+        {/* <Select
             placeholder='Filter by tag...'
             data={tagOptions}
             clearable
@@ -234,10 +256,12 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
             value={filterByTag ? filterByTag.tag_id.toString() : null}
             onChange={(value) => handleSetFilterByTag(value)}
           /> */}
-        </Group>
       </Flex>
       <Space h='xl' />
       <Table
+        style={{
+          width: `${table.getCenterTotalSize()}px`
+        }}
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
@@ -250,12 +274,24 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'}>
+                <Table.Th
+                  key={header.id}
+                  c={theme.primaryColor}
+                  fw={'bolder'}
+                  className='group relative'
+                  style={{ width: `${header.getSize()}px` }}>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                   )}
+                  <div
+                    className='absolute right-0 top-0 hidden h-full cursor-col-resize group-hover:block'
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                    onDoubleClick={() => header.column.resetSize()}
+                    style={{ width: '4px' }}
+                  />
                 </Table.Th>
               ))}
             </Table.Tr>
@@ -278,8 +314,10 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
             table.getRowModel().rows.map((row) => (
               <Table.Tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <Table.Td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <Table.Td key={cell.id} style={{ width: `${cell.column.getSize()}px` }}>
+                    <Text size='sm' lineClamp={4}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Text>
                   </Table.Td>
                 ))}
               </Table.Tr>

@@ -31,7 +31,6 @@ export const useFetchWorkspacesByUser = () => {
 export const useFetchWorkspaceById = (wksp_id: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp_id,
-    initialData: {} as SPECIFIC_WORKSPACE_RESPONSE,
     queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
     queryFn: async () => await getSpecificWorkspace(wksp_id)
   });

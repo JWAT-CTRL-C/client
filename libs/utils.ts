@@ -1,12 +1,13 @@
 import { clsx, type ClassValue } from 'clsx';
+
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
+import _ from 'lodash';
 import { twMerge } from 'tailwind-merge';
 import { LoginResponse } from './types/authType';
-import { BlogCardType } from './types/blogCardType';
-import { BlogResponse } from './types/blogResponse';
 import { blogTableType } from './types/blogTableType';
-import _ from 'lodash';
+
+import moment from 'moment-timezone';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -39,23 +40,6 @@ export const removeUserAuth = () => {
   Cookies.remove('user_id');
   Cookies.remove('access_token');
   Cookies.remove('refresh_token');
-};
-export const transformBlogData = (blogs: BlogResponse[]): BlogCardType[] => {
-  return blogs.map((blog) => ({
-    blog_id: blog.blog_id,
-    blog_tle: blog.blog_tle,
-    blog_cont: blog.blog_cont,
-    crd_at: blog.crd_at,
-    blog_image: blog.blogImage ? blog.blogImage.blog_img_url : null,
-    auth_img: null,
-    auth_name: blog.user.fuln || blog.user.usrn,
-    blog_rtg:
-      blog.blogRatings.length > 0
-        ? blog.blogRatings.reduce((acc: any, rating: { blog_rtg: any }) => acc + rating.blog_rtg, 0) /
-          blog.blogRatings.length
-        : 0,
-    blog_tag: blog.tags
-  }));
 };
 
 export const isTokenExpired = (token: string): boolean => {
@@ -92,3 +76,25 @@ export function filterFalsyFields<T extends object>(data: T): Partial<T> {
     return value === null || value === undefined || value === false || value === '';
   });
 }
+export const getTimeDifference = (timestamp: string): string => {
+  const vietnamTime = moment.tz(timestamp, 'Asia/Ho_Chi_Minh');
+  const now = moment();
+
+  const duration = moment.duration(now.diff(vietnamTime));
+  const minutes = duration.asMinutes();
+  const hours = duration.asHours();
+  const days = duration.asDays();
+  const weeks = duration.asWeeks();
+
+  if (weeks >= 1) {
+    return `posted ${Math.floor(weeks)} week${Math.floor(weeks) > 1 ? 's' : ''} ago`;
+  } else if (days >= 1) {
+    return `posted ${Math.floor(days)} day${Math.floor(days) > 1 ? 's' : ''} ago`;
+  } else if (hours >= 1) {
+    return `posted ${Math.floor(hours)} hour${Math.floor(hours) > 1 ? 's' : ''} ago`;
+  } else if (minutes >= 1) {
+    return `posted ${Math.floor(minutes)} minute${Math.floor(minutes) > 1 ? 's' : ''} ago`;
+  } else {
+    return 'posted just now';
+  }
+};

@@ -1,6 +1,6 @@
 import { blogFormType } from '@/libs/types/blogFormType';
+import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 import {
-  Autocomplete,
   Button,
   FileInput,
   Group,
@@ -11,10 +11,9 @@ import {
   TextInput
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { useEffect, useState } from 'react';
 import { FaFileImage } from 'react-icons/fa';
 import TextEditor from './textEditor';
-import { useEffect, useState } from 'react';
-import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; //10 MB
 

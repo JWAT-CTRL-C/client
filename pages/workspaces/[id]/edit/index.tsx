@@ -6,8 +6,16 @@ import { GET_ALL_RESOURCES_KEY } from '@/libs/constants/queryKeys/resource';
 import { GET_ALL_USERS_KEY } from '@/libs/constants/queryKeys/user';
 import { GET_SPECIFIC_WORKSPACE_KEY, GET_WORKSPACE_MEMBERS_KEY } from '@/libs/constants/queryKeys/workspace';
 import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
-import { useGetAllUsers } from '@/libs/hooks/queries/userQueries';
+import { useGetAllUsers, useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById, useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
+import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import {
+  preFetchAllUser,
+  preFetchAllWorkspaceMembers,
+  preFetchSpecificWorkspace
+} from '@/libs/prefetchQueries/workspace';
+import { User } from '@/libs/types/userType';
 import { getUserAuth, pushHash } from '@/libs/utils';
 import { NextPageWithLayout } from '@/pages/_app';
 import { getAllResources } from '@/services/resourceServices';
@@ -26,28 +34,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
   const wksp_id = context.query.id as string;
   const queryClient = new QueryClient();
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
-      queryFn: async () => await getSpecificWorkspace(wksp_id)
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_RESOURCES_KEY + wksp_id],
-      queryFn: async () => await getAllResources(wksp_id)
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_USERS_KEY],
-      queryFn: async () => await getAllUsers()
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id],
-      queryFn: async () => await getWorkspaceMembers(wksp_id)
-    })
-  ]);
+  const isExist = await Promise.all([
+    preFetchSpecificWorkspace(queryClient, wksp_id),
+    preFetchAllResources(queryClient, wksp_id),
+    preFetchAllUser(queryClient),
+    preFetchAllWorkspaceMembers(queryClient, wksp_id),
+    prefetchMyInfo(queryClient)
+  ]).then((res) => res[0]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    notFound: !isExist
   };
 };
 
@@ -60,11 +58,15 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const { resources } = useGetAllResourcesByWorkspace(wksp_id);
   const { users } = useGetAllUsers();
   const { members } = useGetWorkspaceMember(wksp_id);
+  const { user } = useMyInfo();
 
   useEffect(() => {
     const { user_id } = getUserAuth();
     if (!_.isEmpty(workspace)) {
-      if (workspace.owner.user_id !== parseInt(user_id.toString() ?? '')) {
+      if (
+        workspace.owner.user_id !== parseInt(user_id.toString() ?? '') &&
+        !['MA', 'HM'].includes(user?.role ?? '')
+      ) {
         router.replace('https://youtu.be/watch_popup?v=Ts2Nv8z0lo4');
       }
     }
@@ -82,7 +84,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   };
   return (
     <div className='h-[84vh]'>
-      {_.isEmpty(workspace) && isFetching ? (
+      {_.isEmpty(workspace) || isFetching ? (
         <div className='flex h-full w-full items-center justify-center'>
           <Loader />
         </div>
@@ -117,7 +119,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='collaborator' className='p-5'>
-            <EditWorkspaceMemberForm members={members} users={users} />
+            <EditWorkspaceMemberForm members={members} users={users} currentUser={user ?? ({} as User)} />
           </Tabs.Panel>
         </Tabs>
       )}

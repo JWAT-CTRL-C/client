@@ -1,5 +1,6 @@
 import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { BlogCardType } from '@/libs/types/blogCardType';
 export type RESOURCE_TYPE = {
   resrc_id: string;
   resrc_name: string;
@@ -7,7 +8,12 @@ export type RESOURCE_TYPE = {
 };
 export type RESOURCE_REQUEST = Omit<RESOURCE_TYPE, 'resrc_id'>;
 export type UPDATE_RESOURCE_REQUEST = Partial<RESOURCE_REQUEST> & {};
-export type SPECIFIC_RESOURCE_RESPONSE = RESOURCE_TYPE & {};
+export type SPECIFIC_RESOURCE_RESPONSE = RESOURCE_TYPE & {
+  blog: BlogCardType[];
+  workspace: {
+    owner: number;
+  };
+};
 export const getAllResources = (wksp_id: string) => {
   return new Promise<RESOURCE_TYPE[]>((resolve, reject) => {
     api
@@ -17,7 +23,7 @@ export const getAllResources = (wksp_id: string) => {
   });
 };
 export const getSpecificResource = (wksp_id: string, resrc_id: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<SPECIFIC_RESOURCE_RESPONSE>((resolve, reject) => {
     api
       .get<SPECIFIC_RESOURCE_RESPONSE>(`/resources/${wksp_id}/${resrc_id}`)
       .then((res) => resolve(res.data))

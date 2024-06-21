@@ -1,6 +1,7 @@
 import api from '@/libs/api';
 import { UploadImageResponse } from '@/libs/types/UploadImageResponse';
 import { blogFormType } from '@/libs/types/blogFormType';
+import { BlogResponse } from '@/libs/types/blogResponse';
 import { filterFalsyFields } from '@/libs/utils';
 
 export const fetchBlogs = async () => {
@@ -107,6 +108,39 @@ export const updateBlog = async (blog_id: string, blogData: blogFormType): Promi
     return response.data;
   } catch (error: any) {
     console.error('update blog error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const createBlogCommentById = async (blog_id: string, blog_cmt_cont: string) => {
+  try {
+    const response = await api.post(`/blogs/${blog_id}/comments`, {
+      blog_cmt_cont
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error('createBlogCommentById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const ratingBlogById = async (blog_id: string) => {
+  try {
+    await api.put(`/blogs/${blog_id}/rating`);
+  } catch (error: any) {
+    console.error('ratingBlogById error:', error.response?.data?.message || error.message);
+    throw error;
+  }
+};
+
+export const fetchRelatedBlogs = async (blog_id: string) => {
+  try {
+    const response = await api.get(`blogs/3-126ac9f6149081eb0e97c2e939eaad52-1718623290608/related`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchRelatedBlogs error:', error.response?.data?.message || error.message);
     throw error;
   }
 };
