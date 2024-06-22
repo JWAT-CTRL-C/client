@@ -11,7 +11,7 @@ export const fetchBlogs = async () => {
     return response.data;
   } catch (error: any) {
     console.error('fetchBlogs error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -22,7 +22,7 @@ export const fetchRecentBlogs = async () => {
     return response.data;
   } catch (error: any) {
     console.error('fetchRecentBlogs error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -39,7 +39,7 @@ export const uploadImage = async (file: File): Promise<string> => {
     return response.data?.data?.url;
   } catch (error: any) {
     console.error('uploadImage error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -58,7 +58,7 @@ export const createBlog = async (blogData: blogFormType): Promise<void> => {
     return response.data;
   } catch (error: any) {
     console.error('create blog error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -69,7 +69,7 @@ export const fetchBlogById = async (blog_id: string) => {
     return response.data;
   } catch (error: any) {
     console.error('fetchBlogById error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -80,7 +80,7 @@ export const fetchBlogsForCurrentUser = async () => {
     return response.data;
   } catch (error: any) {
     console.error('fetchBlogsForCurrentUser error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -91,7 +91,7 @@ export const filterBlogsForCurrentUserByTitle = async (blog_tle: string) => {
     return response.data;
   } catch (error: any) {
     console.error('filterBlogsForCurrentUserByTitle error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -102,7 +102,7 @@ export const removeBlogById = async (blog_id: string) => {
     return response.data;
   } catch (error: any) {
     console.error('removeBlogById error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -119,7 +119,7 @@ export const updateBlog = async (blog_id: string, blogData: blogFormType): Promi
     return response.data;
   } catch (error: any) {
     console.error('update blog error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -132,7 +132,7 @@ export const createBlogCommentById = async (blog_id: string, blog_cmt_cont: stri
     return response.data;
   } catch (error: any) {
     console.error('createBlogCommentById error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -141,7 +141,7 @@ export const ratingBlogById = async (blog_id: string) => {
     await api.put(`/blogs/${blog_id}/rating`);
   } catch (error: any) {
     console.error('ratingBlogById error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };
 
@@ -152,6 +152,6 @@ export const fetchRelatedBlogs = async (blog_id: string) => {
     return response.data;
   } catch (error: any) {
     console.error('fetchRelatedBlogs error:', error.response?.data?.message || error.message);
-    throw error;
+    throw new Error(error.response?.data?.message || error.message);
   }
 };

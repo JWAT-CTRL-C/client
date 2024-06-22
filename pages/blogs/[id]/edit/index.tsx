@@ -74,22 +74,20 @@ const EditBlog = () => {
       // blog_img: imageUrlResponse || values.blog_img
     });
 
-    await updateBlog(
-      {
+    try {
+      await updateBlog({
         blog_id: router.query.id as string,
         blogData: filteredValues as blogFormType
-      },
-      {
-        onSuccess: async () => {
-          showSuccessToast('Update blog successfully!');
+      });
+      showSuccessToast('Update blog successfully!');
 
-          await router.push('/blogs/yourBlog');
-        },
-        onError: async (err) => {
-          showErrorToast(err.message);
-        }
-      }
-    );
+      await router.push('/blogs/yourBlog');
+    } catch (error) {
+      console.error('Error Delete blog:', error);
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+
+    }
   };
 
   if (isPendingUpdateBlog || isLoading)

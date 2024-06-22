@@ -20,7 +20,12 @@ const CreateBlog = () => {
     let imageUrlResponse = '';
 
     if (values.blog_img && typeof values.blog_img !== 'string') {
-      imageUrlResponse = await uploadImage(values.blog_img);
+      try {
+        imageUrlResponse = await uploadImage(values.blog_img);
+      } catch (error) {
+        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        return;
+      }
     }
 
     const filteredValues = {
@@ -28,16 +33,15 @@ const CreateBlog = () => {
       blog_img: imageUrlResponse || values.blog_img
     };
 
-    await createBlog(filteredValues as blogFormType, {
-      onSuccess: async () => {
-        showSuccessToast('Create blog successfully!');
+    try {
+      await createBlog(filteredValues as blogFormType);
+      showSuccessToast('Create blog successfully!');
 
-        await router.push('/blogs');
-      },
-      onError: async (err) => {
-        showErrorToast(err.message);
-      }
-    });
+      await router.push('/blogs');
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   if (isPendingCreateBlog || isPendingImage)

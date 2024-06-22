@@ -1,15 +1,6 @@
 import { blogFormType } from '@/libs/types/blogFormType';
 import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
-import {
-  Button,
-  FileInput,
-  Group,
-  Image,
-  Input,
-  Select,
-  TagsInput,
-  TextInput
-} from '@mantine/core';
+import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { FaFileImage } from 'react-icons/fa';
@@ -96,6 +87,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
   function handleClearForm() {
     form.setValues(initialValues);
+    setSelectedSource(null);
   }
 
   const handleSubmit = (values: blogFormType) => {
