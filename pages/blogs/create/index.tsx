@@ -9,6 +9,24 @@ import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { ReactNode } from 'react';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { GetServerSideProps } from 'next';
+import { setContext } from '@/libs/api';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
+
+  const queryClient = new QueryClient();
+
+  await Promise.allSettled([preFetchMyWorkspace(queryClient)]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();

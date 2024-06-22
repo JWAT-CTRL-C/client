@@ -37,6 +37,7 @@ import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import RelatedBlogs from '@/components/relatedBlogs';
 import { showErrorToast } from '@/components/shared/toast';
+import { prefetchBlogById, prefetchRelatedBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -45,16 +46,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
+  await Promise.allSettled([
+    prefetchBlogById(queryClient, id as string),
 
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS_RELATED, id as string],
-      queryFn: async () => await fetchRelatedBlogs(id as string)
-    }),
+    prefetchRelatedBlogs(queryClient, id as string),
 
     prefetchMyInfo(queryClient)
   ]);
@@ -94,7 +89,6 @@ const BlogInfo = () => {
     } catch (error) {
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
-
     }
   };
 
@@ -104,7 +98,6 @@ const BlogInfo = () => {
     } catch (error) {
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
-
     }
   };
 

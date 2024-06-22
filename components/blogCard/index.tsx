@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import LoveIcon from '../loveIcon';
 import TagComp from '../tag';
+import { showErrorToast } from '../shared/toast';
 
 const BlogCard = ({ blog }: { blog: BlogResponse }) => {
   const router = useRouter();
@@ -40,7 +41,11 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
   };
 
   const handleRating = async () => {
-    await ratingBlog({ blog_id: blog.blog_id });
+    try {
+      await ratingBlog({ blog_id: blog.blog_id });
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+    }
   };
 
   const handleToBlog = async () => {
@@ -49,7 +54,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
 
   return (
     <Card
-      onClick={handleToBlog}
+      //  onClick={handleToBlog}
       className='flex h-full w-full cursor-pointer justify-between'
       shadow='sm'
       padding='lg'

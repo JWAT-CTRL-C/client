@@ -18,6 +18,8 @@ import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -26,16 +28,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
+  await Promise.allSettled([
+    prefetchBlogById(queryClient, id as string),
     prefetchMyInfo(queryClient),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-      queryFn: async () => await getWorkspacesByUser()
-    })
+    preFetchMyWorkspace(queryClient)
   ]);
 
   return {
@@ -86,7 +82,6 @@ const EditBlog = () => {
       console.error('Error Delete blog:', error);
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
-
     }
   };
 

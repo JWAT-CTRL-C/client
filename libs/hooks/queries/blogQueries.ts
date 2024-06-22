@@ -52,7 +52,7 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
 
 export const useFetchRelatedBlog = (blog_id: string) => {
   return useQuery<void, Error, BlogResponse[]>({
-    queryKey: [BlogQueryEnum.BLOGS_RELATED, blog_id],
+    queryKey: [BlogQueryEnum.BLOGS_RELATED, ],
     queryFn: async () => await fetchRelatedBlogs(blog_id)
   });
 };

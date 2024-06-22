@@ -11,19 +11,14 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchCurrentUserBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
-      queryFn: async () => await fetchBlogsForCurrentUser()
-    }),
-    prefetchMyInfo(queryClient)
-  ]);
+  await Promise.allSettled([prefetchCurrentUserBlogs(queryClient), prefetchMyInfo(queryClient)]);
 
   return {
     props: {
