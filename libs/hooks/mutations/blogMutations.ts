@@ -1,4 +1,5 @@
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
 import {
@@ -133,6 +134,8 @@ export const useCreateBlogComment = () => {
 
 export const useRatingBlog = () => {
   const queryClient = useQueryClient();
+  //const router = useRouter();
+
 
   const mutation = useMutation<void, Error, { blog_id: string }>({
     mutationFn: async ({ blog_id }) => await ratingBlogById(blog_id),
@@ -151,8 +154,17 @@ export const useRatingBlog = () => {
         // }),
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS_RELATED]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_RECENT]
         })
       ]);
+
+      // if (router.pathname === '/workspaces/[id]') {
+      //   await queryClient.invalidateQueries({
+      //     queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY + router.query.id]
+      //   });
+      // }
     },
     onError: (error) => {
       console.error('Error updating blog:', error);
