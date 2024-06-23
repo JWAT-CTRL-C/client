@@ -5,6 +5,7 @@ import {
   fetchBlogsForCurrentUser,
   fetchRecentBlogs,
   fetchRelatedBlogs,
+  fetchWorkspacesInfo,
   filterBlogsForCurrentUserByTitle
 } from '@/services/blogServices';
 
@@ -12,6 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useDebouncedValue } from '@mantine/hooks';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
+import { workspacesType } from '@/libs/types/workspacesType';
 
 export const useFetchBlogs = () => {
   return useQuery<BlogResponse[]>({
@@ -52,7 +54,14 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
 
 export const useFetchRelatedBlog = (blog_id: string) => {
   return useQuery<void, Error, BlogResponse[]>({
-    queryKey: [BlogQueryEnum.BLOGS_RELATED, ],
+    queryKey: [BlogQueryEnum.BLOGS_RELATED],
     queryFn: async () => await fetchRelatedBlogs(blog_id)
+  });
+};
+
+export const useFetchWorkSpaceInfo = () => {
+  return useQuery<void, Error, Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[]>({
+    queryKey: [BlogQueryEnum.BLOGS_WORKSPACES_INFO],
+    queryFn: async () => await fetchWorkspacesInfo()
   });
 };

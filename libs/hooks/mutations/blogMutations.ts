@@ -66,9 +66,14 @@ export const useRemoveBlogById = () => {
   const mutation = useMutation<RemoveBlogResponse, Error, string>({
     mutationFn: async (blog_id: string) => await removeBlogById(blog_id),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
-      });
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
+        })
+      ]);
     },
     onError: (error) => {
       console.error('Error removing blog:', error);
@@ -89,9 +94,14 @@ export const useUpdateBlog = () => {
   const mutation = useMutation<void, Error, { blog_id: string; blogData: blogFormType }>({
     mutationFn: async ({ blog_id, blogData }) => await updateBlog(blog_id, blogData),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [BlogQueryEnum.BLOGS, BlogQueryEnum.BLOGS_CURRENT_USER]
-      });
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
+        })
+      ]);
     },
     onError: (error) => {
       console.error('Error updating blog:', error);
@@ -135,7 +145,6 @@ export const useCreateBlogComment = () => {
 export const useRatingBlog = () => {
   const queryClient = useQueryClient();
   //const router = useRouter();
-
 
   const mutation = useMutation<void, Error, { blog_id: string }>({
     mutationFn: async ({ blog_id }) => await ratingBlogById(blog_id),

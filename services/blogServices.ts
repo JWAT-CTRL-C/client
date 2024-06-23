@@ -147,11 +147,21 @@ export const ratingBlogById = async (blog_id: string) => {
 
 export const fetchRelatedBlogs = async (blog_id: string) => {
   try {
-    const response = await api.get(`blogs/3-126ac9f6149081eb0e97c2e939eaad52-1718623290608/related`);
+    const response = await api.get(`blogs/${blog_id}/related`);
 
     return response.data;
   } catch (error: any) {
     console.error('fetchRelatedBlogs error:', error.response?.data?.message || error.message);
+    throw new Error(error.response?.data?.message || error.message);
+  }
+};
+
+export const fetchWorkspacesInfo = async () => {
+  try {
+    const response = await api.get(`blogs/workspace-info`);
+    return response.data;
+  } catch (error: any) {
+    console.error('fetchWorkspaceInfo error:', error.response?.data?.message || error.message);
     throw new Error(error.response?.data?.message || error.message);
   }
 };

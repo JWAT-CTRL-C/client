@@ -13,13 +13,15 @@ import { GetServerSideProps } from 'next';
 import { setContext } from '@/libs/api';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
+import { prefetchWorkspaceInfo } from '@/libs/prefetchQueries/blog';
+import { useFetchWorkSpaceInfo } from '@/libs/hooks/queries/blogQueries';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await Promise.allSettled([preFetchMyWorkspace(queryClient)]);
+  await Promise.allSettled([preFetchMyWorkspace(queryClient), prefetchWorkspaceInfo(queryClient)]);
 
   return {
     props: {
@@ -31,7 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
+  // const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
+  const { data: workspaces } = useFetchWorkSpaceInfo();
   const router = useRouter();
 
   const handleCreateBlog = async (values: blogFormType) => {
