@@ -174,7 +174,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         clearable
         nothingFoundMessage='Nothing found...'
         placeholder={`${sourceList[indexSelectingField]?.length === 0 ? 'No resource to find' : 'Resource...'}`}
-        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0}
+        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0 || isEditing}
         data={
           form.getValues().blog_wksp
             ? sourceList[indexSelectingField]?.map((source) => ({
