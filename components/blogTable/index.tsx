@@ -172,7 +172,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
 
     columnResizeDirection: 'ltr',

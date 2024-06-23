@@ -1,18 +1,35 @@
-import { blogFormType } from '@/libs/types/blogFormType';
-import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
-import { Button, FileInput, Group, Image, Input, Select, TagsInput, TextInput } from '@mantine/core';
+import {
+  ActionIcon,
+  AspectRatio,
+  Button,
+  FileInput,
+  Flex,
+  Group,
+  Image,
+  Input,
+  Select,
+  TagsInput,
+  Text,
+  TextInput,
+  useMantineTheme
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { FaFileImage } from 'react-icons/fa';
+import { FaFileImage, FaTimes } from 'react-icons/fa';
+
+import { blogFormType } from '@/libs/types/blogFormType';
+import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
+import { workspacesType } from '@/libs/types/workspacesType';
+
 import TextEditor from './textEditor';
 
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; //10 MB
+const MAX_IMAGE_SIZE = 1024 * 200; //200 KB
 
 type BlogFormProps = {
   updateValues?: blogFormType;
   handleSubmitForm: (values: blogFormType) => void;
   isEditing?: boolean;
-  workSpaceList: WORKSPACES_RESPONSE[];
+  workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
 };
 
 const initialValues: blogFormType = {
@@ -28,6 +45,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const [indexSelectingField, setIndexSelectingField] = useState(0);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [prevTag, setPrevTag] = useState<string[]>([]);
+  const theme = useMantineTheme();
 
   const workSpaceListOptions = workSpaceList?.map((workSpace) => ({
     value: workSpace?.wksp_id,
@@ -59,7 +77,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       blog_img: (blog_img) => {
         if (blog_img && typeof blog_img !== 'string' && blog_img.size > MAX_IMAGE_SIZE) {
-          return `Image size should be less than ${MAX_IMAGE_SIZE / (1024 * 1024)} MB`;
+          return `Image size should be less than ${MAX_IMAGE_SIZE / 1024} KB`;
         }
         return null;
       }
@@ -135,6 +153,10 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     form.setFieldValue('blog_tag', []);
   };
 
+  const handleClearImage = () => {
+    form.setFieldValue('blog_img', null);
+  };
+
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
       <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('blog_tle')} />
@@ -188,31 +210,80 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         onChange={handleSourceField}
       />
 
-      <FileInput
-        clearable={!isEditing}
-        description='Optional'
-        leftSection={<FaFileImage />}
-        label='Background Image'
-        disabled={isEditing}
-        accept='image/*'
-        placeholder='Background Image...'
-        {...form.getInputProps('blog_img')}
-        onChange={(value) => {
-          form.setFieldValue('blog_img', value);
-        }}
-      />
-
-      {form.values.blog_img && (
-        <Image
-          radius={'md'}
-          src={
-            typeof form.getValues().blog_img === 'string'
-              ? form.getValues().blog_img
-              : URL.createObjectURL(form.values.blog_img! as File)
-          }
-          alt='Background Image Preview'
+      {!form.values.blog_img && (
+        <FileInput
+          clearable={!isEditing}
+          description='Optional'
+          leftSection={<FaFileImage />}
+          label='Background Image'
+          className={``}
+          disabled={isEditing}
+          accept='image/*'
+          placeholder='Background Image...'
+          {...form.getInputProps('blog_img')}
+          onChange={(value) => {
+            form.setFieldValue('blog_img', value);
+          }}
         />
       )}
+
+      {form.values.blog_img && (
+        <Flex className='flex-col items-start lg:flex-row lg:items-center' gap='sm' mt={10}>
+          <AspectRatio
+            ratio={1080 / 720}
+            maw={350}
+            style={{
+              borderColor: form.errors.blog_img ? theme.colors.red[7] : '',
+              borderRadius: theme.radius.md
+            }}>
+            <div style={{ position: 'relative' }}>
+              <Image
+                radius={'md'}
+                fit='cover'
+                src={
+                  typeof form.getValues().blog_img === 'string'
+                    ? form.getValues().blog_img
+                    : URL.createObjectURL(form.values.blog_img! as File)
+                }
+                alt='Background Image Preview'
+              />
+              {!isEditing && (
+                <ActionIcon
+                  className='absolute -right-1 -top-1'
+                  variant='filled'
+                  color='red'
+                  size='xs'
+                  radius={'lg'}
+                  onClick={handleClearImage}>
+                  <FaTimes />
+                </ActionIcon>
+              )}
+            </div>
+          </AspectRatio>
+          {!isEditing && (
+            <Flex direction={'column'} className='mb-7'>
+              <Text fw={500}>
+                Name : &nbsp;
+                {form.getValues().blog_img &&
+                  typeof form.getValues().blog_img !== 'string' &&
+                  (form.getValues().blog_img as File).name}
+              </Text>
+              <Text fw={500}>
+                Size : &nbsp;
+                {form.getValues().blog_img &&
+                  typeof form.getValues().blog_img !== 'string' &&
+                  `${((form.getValues().blog_img as File).size / 1024).toFixed(2)} KB`}
+              </Text>
+            </Flex>
+          )}
+        </Flex>
+      )}
+
+      {
+        <Input.Wrapper error={form.errors.blog_img}>
+          <p></p>
+        </Input.Wrapper>
+      }
 
       <Input.Wrapper withAsterisk label='Content' error={form.errors.blog_cont}>
         <TextEditor form={form} />
