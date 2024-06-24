@@ -3,25 +3,29 @@ import { useRouter } from 'next/router';
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { setContext } from '@/libs/api';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { useFetchWorkSpaceInfo } from '@/libs/hooks/queries/blogQueries';
+import { prefetchWorkspaceInfo } from '@/libs/prefetchQueries/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { ReactNode } from 'react';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
-import { GetServerSideProps } from 'next';
-import { setContext } from '@/libs/api';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
-import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
-import { prefetchWorkspaceInfo } from '@/libs/prefetchQueries/blog';
-import { useFetchWorkSpaceInfo } from '@/libs/hooks/queries/blogQueries';
+import { GetServerSideProps } from 'next';
+import { ReactNode } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await Promise.allSettled([preFetchMyWorkspace(queryClient), prefetchWorkspaceInfo(queryClient)]);
+  await Promise.all([
+    preFetchMyWorkspace(queryClient),
+    prefetchWorkspaceInfo(queryClient),
+    prefetchMyInfo(queryClient)
+  ]);
 
   return {
     props: {

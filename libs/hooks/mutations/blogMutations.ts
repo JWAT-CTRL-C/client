@@ -1,5 +1,4 @@
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
-import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { RemoveBlogResponse } from '@/libs/types/removeBlogResponse';
 import {
@@ -11,7 +10,6 @@ import {
   uploadImage
 } from '@/services/blogServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 
 export const useUploadImage = () => {
   const mutation = useMutation({
@@ -19,9 +17,7 @@ export const useUploadImage = () => {
     onSuccess: (data) => {
       // console.log('Image uploaded successfully:', data);
     },
-    onError: (error) => {
-      console.error('Error uploading image:', error);
-    }
+    onError: (error) => {}
   });
 
   return {
@@ -47,9 +43,7 @@ export const useCreateBlog = () => {
         })
       ]);
     },
-    onError: (error) => {
-      console.error('Error creating blog:', error);
-    }
+    onError: (error) => {}
   });
 
   return {
@@ -63,10 +57,10 @@ export const useCreateBlog = () => {
 export const useRemoveBlogById = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<RemoveBlogResponse, Error, string>({
-    mutationFn: async (blog_id: string) => await removeBlogById(blog_id),
+  const mutation = useMutation<void, Error, string>({
+    mutationFn: (blog_id: string) => removeBlogById(blog_id),
     onSuccess: async () => {
-      Promise.all([
+      await Promise.all([
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS]
         }),
@@ -76,18 +70,17 @@ export const useRemoveBlogById = () => {
       ]);
     },
     onError: (error) => {
-      console.error('Error removing blog:', error);
+      console.error('Error removing blog:', error.message);
     }
   });
 
   return {
     removeBlog: mutation.mutateAsync,
-    isPending: mutation.isPending,
+    isPending: mutation.isPending, // Correct property name for loading state
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null
   };
 };
-
 export const useUpdateBlog = () => {
   const queryClient = useQueryClient();
 
@@ -103,9 +96,7 @@ export const useUpdateBlog = () => {
         })
       ]);
     },
-    onError: (error) => {
-      console.error('Error updating blog:', error);
-    }
+    onError: (error) => {}
   });
 
   return {
@@ -128,9 +119,7 @@ export const useCreateBlogComment = () => {
         queryKey: [BlogQueryEnum.BLOGS, blog_id]
       });
     },
-    onError: (error) => {
-      console.error('Error updating blog:', error);
-    }
+    onError: (error) => {}
   });
 
   return {
@@ -151,7 +140,7 @@ export const useRatingBlog = () => {
     onSuccess: async (data, variables) => {
       const { blog_id } = variables;
 
-      await Promise.allSettled([
+      await Promise.all([
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS]
         }),
@@ -175,9 +164,7 @@ export const useRatingBlog = () => {
       //   });
       // }
     },
-    onError: (error) => {
-      console.error('Error updating blog:', error);
-    }
+    onError: (error) => {}
   });
 
   return {

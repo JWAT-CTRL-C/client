@@ -21,12 +21,9 @@ import {
 } from '@mantine/core';
 import {
   ColumnDef,
-  ColumnResizeDirection,
-  ColumnResizeMode,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';

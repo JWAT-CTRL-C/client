@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.allSettled([
+  await Promise.all([
     prefetchBlogById(queryClient, id as string),
     prefetchMyInfo(queryClient),
     preFetchMyWorkspace(queryClient)
