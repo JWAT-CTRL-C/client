@@ -229,14 +229,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       {form.values.blog_img && (
         <Flex className='flex-col items-start lg:flex-row lg:items-center' gap='sm' mt={10}>
-          <AspectRatio
-            ratio={1080 / 720}
-            maw={350}
-            style={{
-              borderColor: form.errors.blog_img ? theme.colors.red[7] : '',
-              borderRadius: theme.radius.md
-            }}>
-            <div style={{ position: 'relative' }}>
+          <AspectRatio ratio={1080 / 720} maw={350}>
+            <div className='relative'>
               <Image
                 radius={'md'}
                 fit='cover'
@@ -249,7 +243,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
               />
               {!isEditing && (
                 <ActionIcon
-                  className='absolute -right-1 -top-1'
+                  className='absolute -right-1 -top-1 flex justify-center'
                   variant='filled'
                   color='red'
                   size='xs'
