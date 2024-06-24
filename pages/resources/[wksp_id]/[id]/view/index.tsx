@@ -20,10 +20,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const wksp_id = context.query.wksp_id as string;
   const resrc_id = context.query.id as string;
   const queryClient = new QueryClient();
-  const isExist = await Promise.all([
+  const [isExist] = await Promise.all([
     preFetchSpecificResource(queryClient, wksp_id, resrc_id),
     prefetchMyInfo(queryClient)
-  ]).then((res) => res[0]);
+  ]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)

@@ -29,13 +29,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
   const wksp_id = context.query.id as string;
   const queryClient = new QueryClient();
-  const isExist = await Promise.all([
+  const [isExist] = await Promise.all([
     fetchSpecificWorkspace(queryClient, wksp_id),
     preFetchAllResources(queryClient, wksp_id),
     preFetchAllUser(queryClient),
     preFetchAllWorkspaceMembers(queryClient, wksp_id),
     prefetchMyInfo(queryClient)
-  ]).then((res) => res[0]);
+  ]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)

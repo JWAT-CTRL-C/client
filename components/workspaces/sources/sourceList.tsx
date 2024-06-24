@@ -1,9 +1,8 @@
 import { Box, Button, Collapse } from '@mantine/core';
 import SourceItem from './sourceItem';
 import { useDisclosure } from '@mantine/hooks';
-import { cn } from '@/libs/utils';
+import { cn, useBreakpoint } from '@/libs/utils';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
-import { useBreakpoint } from '@/pages/_app';
 import _ from 'lodash';
 
 export default function SourceList({ resources = [] }: { resources?: RESOURCE_TYPE[] }) {

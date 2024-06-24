@@ -1,9 +1,8 @@
 import BlogCard from '@/components/blogCard';
 import { useDisclosure } from '@mantine/hooks';
 import { Box, Button, Collapse } from '@mantine/core';
-import { cn } from '@/libs/utils';
+import { cn, useBreakpoint } from '@/libs/utils';
 import { BlogResponse } from '@/libs/types/blogResponse';
-import { useBreakpoint } from '@/pages/_app';
 
 export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
   const [opened, { toggle }] = useDisclosure(false);
