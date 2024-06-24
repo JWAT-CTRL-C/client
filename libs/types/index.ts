@@ -1,3 +1,5 @@
+import { AxiosError } from 'axios';
+
 // for all type
 export enum NotificationType {
   SETUP_USER = 'setup_user',
@@ -14,7 +16,7 @@ export type ErrorResponseType = Error & {
       message: string | string[];
     };
   };
-};
+} & AxiosError;
 export type GENERAL_RESPONSE_TYPE = {
   success: boolean;
   message: string;

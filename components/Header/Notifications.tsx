@@ -40,7 +40,7 @@ const Notifications = () => {
               <Indicator color='blue' />
               <div>
                 <div className='text-sm'>{noti.noti_tle}</div>
-                <div className='text-xs text-gray-500'>{noti.noti_cont}</div>
+                <div className='text-xs text-gray-500'>{noti.noti_cont + ' ' + noti.workspace.wksp_name}</div>
               </div>
             </div>
           </Menu.Item>

@@ -7,7 +7,7 @@ interface INotificationItemProps {
 
 export function NotificationItem({ notification }: INotificationItemProps) {
   return (
-    <Paper withBorder radius='md' className='px-2 py-4'>
+    <Paper withBorder radius='md' className='p-4'>
       <Group>
         <Avatar
           src={notification.user.avatar || 'https://images.unsplash.com/photo-1612838320302-3b3b7f0b3b3d'}
@@ -25,7 +25,7 @@ export function NotificationItem({ notification }: INotificationItemProps) {
         <Text fz='h6' className='!mb-2'>
           {notification.noti_tle}
         </Text>
-        <Text fz='sm'>{notification.noti_cont}</Text>
+        <Text fz='sm'>{notification.noti_cont + ' ' + notification.workspace.wksp_name}</Text>
       </TypographyStylesProvider>
     </Paper>
   );

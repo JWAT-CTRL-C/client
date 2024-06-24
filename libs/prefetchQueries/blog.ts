@@ -11,7 +11,7 @@ import {
 export const prefetchBlogs = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
     queryKey: [BlogQueryEnum.BLOGS],
-    queryFn: fetchBlogs
+    queryFn: () => fetchBlogs(1)
   });
 
 export const prefetchCurrentUserBlogs = async (queryClient: QueryClient) =>
@@ -32,10 +32,7 @@ export const prefetchRelatedBlogs = async (queryClient: QueryClient, id: string)
     queryFn: async () => await fetchRelatedBlogs(id as string)
   });
 
-
-
-  
-export const prefetchWorkspaceInfo = async (queryClient: QueryClient, ) =>
+export const prefetchWorkspaceInfo = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
     queryKey: [BlogQueryEnum.BLOGS_WORKSPACES_INFO],
     queryFn: async () => await fetchWorkspacesInfo()
