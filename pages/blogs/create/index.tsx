@@ -1,26 +1,55 @@
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
-
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { setContext } from '@/libs/api';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { useFetchWorkSpaceInfo } from '@/libs/hooks/queries/blogQueries';
+import { prefetchWorkspaceInfo } from '@/libs/prefetchQueries/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { ReactNode } from 'react';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
+
+  const queryClient = new QueryClient();
+
+  await Promise.all([
+    preFetchMyWorkspace(queryClient),
+    prefetchWorkspaceInfo(queryClient),
+    prefetchMyInfo(queryClient)
+  ]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
-  const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
+  // const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
+  const { data: workspaces } = useFetchWorkSpaceInfo();
   const router = useRouter();
 
   const handleCreateBlog = async (values: blogFormType) => {
     let imageUrlResponse = '';
 
     if (values.blog_img && typeof values.blog_img !== 'string') {
-      imageUrlResponse = await uploadImage(values.blog_img);
+      try {
+        imageUrlResponse = await uploadImage(values.blog_img);
+      } catch (error) {
+        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        return;
+      }
     }
 
     const filteredValues = {
@@ -28,16 +57,15 @@ const CreateBlog = () => {
       blog_img: imageUrlResponse || values.blog_img
     };
 
-    await createBlog(filteredValues as blogFormType, {
-      onSuccess: async () => {
-        showSuccessToast('Create blog successfully!');
+    try {
+      await createBlog(filteredValues as blogFormType);
+      showSuccessToast('Create blog successfully!');
 
-        await router.push('/blogs');
-      },
-      onError: async (err) => {
-        showErrorToast(err.message);
-      }
-    });
+      await router.push('/blogs');
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   if (isPendingCreateBlog || isPendingImage)

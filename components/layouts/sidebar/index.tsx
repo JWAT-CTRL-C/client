@@ -16,7 +16,6 @@ const Sidebar = () => {
   const isWorkspace = router.pathname.startsWith('/workspaces');
   const isAdmin = router.pathname.startsWith('/admin');
 
-  const [active, setActive] = useState<number | null>(0);
   useEffect(() => {
     if (isBlog) {
       setSidebarState(blogConfig);
@@ -30,47 +29,32 @@ const Sidebar = () => {
     if (isAdmin) {
       setSidebarState(adminConfig);
     }
-    if (
-      router.pathname === '/blogs' ||
-      router.pathname === '/workspaces' ||
-      router.pathname === '/dashboard'
-    ) {
-      setActive(0);
-    }
-    const sidebarStatePath = sidebarState.map((state) => state.link);
-
-    if (!sidebarStatePath.includes(router.pathname)) {
-      if (
-        router.pathname === '/blogs' ||
-        router.pathname === '/workspaces' ||
-        router.pathname === '/dashboard'
-      ) {
-        setActive(0);
-      } else {
-        setActive(null);
-      }
-    }
   }, [router.pathname]);
 
-  const handleToPage = (link: string, index: number) => {
+  const handleToPage = (link: string) => {
     router.push(link);
-    setActive(index);
   };
 
   return (
     <div className='my-auto flex h-full flex-col justify-between'>
       <div>
-        {sidebarState.map((item, index) => (
-          <NavLink
-            key={item.label}
-            active={index === active}
-            label={item.label}
-            className={`my-5 cursor-pointer rounded-md p-4`}
-            onClick={() => handleToPage(item.link, index)}
-            leftSection={item.icon}></NavLink>
-        ))}
+        {sidebarState.map((item, index) => {
+          const isActive = router.pathname === item.link;
+
+          return (
+            <NavLink
+              key={item.label}
+              active={isActive}
+              label={item.label}
+              className={`my-5 cursor-pointer rounded-md p-4`}
+              onClick={() => handleToPage(item.link)}
+              leftSection={item.icon}
+            />
+          );
+        })}
       </div>
-      <div className=''>
+
+      <div>
         <ChangeInformation />
 
         <NavLink

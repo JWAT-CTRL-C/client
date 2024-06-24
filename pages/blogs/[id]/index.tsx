@@ -11,31 +11,30 @@ import LoveIcon from '@/components/loveIcon';
 import TagComp from '@/components/tag';
 import { setContext } from '@/libs/api';
 
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { useCreateBlogComment, useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById, useFetchRelatedBlog } from '@/libs/hooks/queries/blogQueries';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
-import { fetchBlogById, fetchRelatedBlogs } from '@/services/blogServices';
 import {
+  Avatar,
   BackgroundImage,
   Divider,
   Flex,
-  Group,
   LoadingOverlay,
   ScrollArea,
   Skeleton,
   Spoiler,
   Text,
   ThemeIcon,
-  Title,
-  TypographyStylesProvider
+  Title
 } from '@mantine/core';
 
 import { ReactNode } from 'react';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import RelatedBlogs from '@/components/relatedBlogs';
+import ShowContent from '@/components/EditorContent';
+import { showErrorToast } from '@/components/shared/toast';
+import { prefetchBlogById, prefetchRelatedBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -45,15 +44,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
+    prefetchBlogById(queryClient, id as string),
 
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS_RELATED, id as string],
-      queryFn: async () => await fetchRelatedBlogs(id as string)
-    }),
+    prefetchRelatedBlogs(queryClient, id as string),
 
     prefetchMyInfo(queryClient)
   ]);
@@ -88,11 +81,21 @@ const BlogInfo = () => {
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   const handleCommentBlog = async (comment: string) => {
-    await createBlogComment({ blog_id: id as string, blog_cmt_cont: comment });
+    try {
+      await createBlogComment({ blog_id: id as string, blog_cmt_cont: comment });
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   const handleRating = async () => {
-    await ratingBlog({ blog_id: id as string });
+    try {
+      await ratingBlog({ blog_id: id as string });
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   return (
@@ -123,7 +126,7 @@ const BlogInfo = () => {
 
         <Flex justify={'space-between'}>
           <Flex align='center' className='text-lg'>
-            <FaUserTie /> &nbsp;{' '}
+            <Avatar src={blog?.user?.avatar} /> &nbsp;
             {blog?.user?.fuln?.toLocaleUpperCase() ?? blog?.user?.usrn?.toLocaleUpperCase()}
           </Flex>
           <Flex align='center' c={'green'} className='text-lg'>
@@ -134,34 +137,28 @@ const BlogInfo = () => {
 
         {blog?.tags.length !== 0 && (
           <Flex direction={'column'} gap={'md'} wrap={'wrap'}>
-            <Title order={2}>Tags :</Title>
+            <Title order={2}>Tags:</Title>
             <Flex gap={'sm'}>{blog?.tags.map((tag) => <TagComp key={tag.tag_id} tag={tag.tag_name} />)}</Flex>
           </Flex>
         )}
 
         {blog?.workspace && (
           <Flex align={'center'}>
-            <Text fw={'bold'}>Workspace : &nbsp; &nbsp; </Text>
+            <Text fw={'bold'}>Workspace: &nbsp; </Text>
             <Text>{blog?.workspace?.wksp_name}</Text>
           </Flex>
         )}
 
         {blog?.resource && (
           <Flex align={'center'}>
-            <Text fw={'bold'}>Resource : &nbsp; &nbsp; </Text>
+            <Text fw={'bold'}>Resource: &nbsp; </Text>
             <Text>{blog?.resource?.resrc_name}</Text>
           </Flex>
         )}
         {(blog?.tags.length !== 0 || blog?.workspace || blog?.resource) && <Divider />}
 
-        <Spoiler maxHeight={300} showLabel='Show more' hideLabel='Hide' transitionDuration={0}>
-          {blog?.blog_cont && (
-            <TypographyStylesProvider flex={1}>
-              <article>
-                <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
-              </article>
-            </TypographyStylesProvider>
-          )}
+        <Spoiler maxHeight={800} showLabel='Show more' hideLabel='Show less' transitionDuration={0}>
+          {blog?.blog_cont && <ShowContent content={blog.blog_cont} />}
         </Spoiler>
 
         <Divider />
@@ -213,7 +210,7 @@ const BlogInfo = () => {
         w={'1/6'}
         className='top-20 h-full lg:sticky'
         flex={{ base: 'auto', md: 'auto', sm: 'auto', lg: 3 }}>
-        {/* <Title>Related :</Title> */}
+        <Title>Related Blogs</Title>
         {relatedBlogs && <RelatedBlogs blogs={relatedBlogs} />}
       </Flex>
     </Flex>

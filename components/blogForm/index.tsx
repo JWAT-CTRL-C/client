@@ -1,28 +1,44 @@
-import { blogFormType } from '@/libs/types/blogFormType';
-import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 import {
+  ActionIcon,
+  AspectRatio,
   Button,
   FileInput,
+  Flex,
   Group,
   Image,
   Input,
   Select,
   TagsInput,
+  Text,
   TextInput
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
-import { FaFileImage } from 'react-icons/fa';
+import { FaFileImage, FaTimes } from 'react-icons/fa';
+
+import { blogFormType } from '@/libs/types/blogFormType';
+import { workspacesType } from '@/libs/types/workspacesType';
+
 import TextEditor from './textEditor';
 
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; //10 MB
+const MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 
-type BlogFormProps = {
-  updateValues?: blogFormType;
+type BlogFormPropsBase = {
   handleSubmitForm: (values: blogFormType) => void;
-  isEditing?: boolean;
-  workSpaceList: WORKSPACES_RESPONSE[];
+  workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
 };
+
+type BlogFormPropsEditing = BlogFormPropsBase & {
+  isEditing: true;
+  updateValues: blogFormType;
+};
+
+type BlogFormPropsNotEditing = BlogFormPropsBase & {
+  isEditing?: false;
+  updateValues?: undefined;
+};
+
+type BlogFormProps = BlogFormPropsEditing | BlogFormPropsNotEditing;
 
 const initialValues: blogFormType = {
   blog_tle: '',
@@ -58,7 +74,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         if (blog_wksp && blog_wksp.trim().length === 0) return 'Workspace is required';
         return null;
       },
-      blog_src: (blog_src, values) => {
+      blog_src: (blog_src) => {
         if (blog_src && blog_src?.trim()?.length === 0) return 'Resource is required';
 
         return null;
@@ -68,7 +84,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       blog_img: (blog_img) => {
         if (blog_img && typeof blog_img !== 'string' && blog_img.size > MAX_IMAGE_SIZE) {
-          return `Image size should be less than ${MAX_IMAGE_SIZE / (1024 * 1024)} MB`;
+          return `Image size should be less than ${MAX_IMAGE_SIZE / 1024 / 1024}MB`;
         }
         return null;
       }
@@ -96,6 +112,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
   function handleClearForm() {
     form.setValues(initialValues);
+    setSelectedSource(null);
   }
 
   const handleSubmit = (values: blogFormType) => {
@@ -113,7 +130,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     setIndexSelectingField(indexSelecting);
 
     if (selectedWorkspace && !form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue('blog_tag', [...form.getValues().blog_tag, 'workspaces']);
+      form.setFieldValue('blog_tag', (prevTag) => [...prevTag, 'workspaces']);
+      setPrevTag((prevTag) => [...prevTag, 'workspaces']);
     }
   };
 
@@ -125,10 +143,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const handleClearWorkspaceFiled = () => {
     form.setFieldValue('blog_wksp', '');
     if (form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue(
-        'blog_tag',
-        form.getValues().blog_tag.filter((blog_tag) => blog_tag !== 'workspaces')
-      );
+      form.setFieldValue('blog_tag', (prevTag) => prevTag.filter((tag) => tag !== 'workspaces'));
     }
   };
   const handleClearTagField = () => {
@@ -143,6 +158,10 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     form.setFieldValue('blog_tag', []);
   };
 
+  const handleClearImage = () => {
+    form.setFieldValue('blog_img', null);
+  };
+
   return (
     <form onSubmit={form.onSubmit((values) => handleSubmit(values))} className='flex w-9/12 flex-col gap-3'>
       <TextInput withAsterisk label='Title' placeholder='Title...' {...form.getInputProps('blog_tle')} />
@@ -154,11 +173,17 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Tag...'
         {...form.getInputProps('blog_tag')}
         onChange={(blog_tag) => {
-          setPrevTag([...prevTag, ...blog_tag, 'to remove wksp']);
+          setPrevTag((prevTag) => [...prevTag, ...blog_tag]);
           form.setFieldValue('blog_tag', blog_tag);
+          if (blog_tag.includes('workspaces') && workSpaceList.length > 0 && !form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', workSpaceList[0]?.wksp_id);
+          } else if (!blog_tag.includes('workspaces') && form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', null);
+          }
         }}
         onClear={handleClearTagField}
       />
+
       <Select
         data={workSpaceListOptions}
         checkIconPosition='right'
@@ -182,7 +207,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         clearable
         nothingFoundMessage='Nothing found...'
         placeholder={`${sourceList[indexSelectingField]?.length === 0 ? 'No resource to find' : 'Resource...'}`}
-        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0}
+        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0 || isEditing}
         data={
           form.getValues().blog_wksp
             ? sourceList[indexSelectingField]?.map((source) => ({
@@ -196,31 +221,72 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         onChange={handleSourceField}
       />
 
-      <FileInput
-        clearable={!isEditing}
-        description='Optional'
-        leftSection={<FaFileImage />}
-        label='Background Image'
-        disabled={isEditing}
-        accept='image/*'
-        placeholder='Background Image...'
-        {...form.getInputProps('blog_img')}
-        onChange={(value) => {
-          form.setFieldValue('blog_img', value);
-        }}
-      />
-
-      {form.values.blog_img && (
-        <Image
-          radius={'md'}
-          src={
-            typeof form.getValues().blog_img === 'string'
-              ? form.getValues().blog_img
-              : URL.createObjectURL(form.values.blog_img! as File)
-          }
-          alt='Background Image Preview'
+      {!form.values.blog_img && (
+        <FileInput
+          clearable={!isEditing}
+          description='Optional'
+          leftSection={<FaFileImage />}
+          label='Background Image'
+          className={``}
+          disabled={isEditing}
+          accept='image/*'
+          placeholder='Background Image...'
+          {...form.getInputProps('blog_img')}
+          onChange={(value) => {
+            form.setFieldValue('blog_img', value);
+          }}
         />
       )}
+
+      {form.values.blog_img && (
+        <Flex className='flex-col items-start lg:flex-row lg:items-center' gap='sm' mt={10}>
+          <AspectRatio ratio={1080 / 720} maw={350}>
+            <div className='relative'>
+              <Image
+                radius={'md'}
+                fit='cover'
+                src={
+                  typeof form.getValues().blog_img === 'string'
+                    ? form.getValues().blog_img
+                    : URL.createObjectURL(form.values.blog_img! as File)
+                }
+                alt='Background Image Preview'
+              />
+              {!isEditing && (
+                <ActionIcon
+                  className='absolute -right-1 -top-1 flex justify-center'
+                  variant='filled'
+                  color='red'
+                  size='xs'
+                  radius={'lg'}
+                  onClick={handleClearImage}>
+                  <FaTimes />
+                </ActionIcon>
+              )}
+            </div>
+          </AspectRatio>
+          {!isEditing && (
+            <Flex direction={'column'} className='mb-7'>
+              <Text fw={500}>
+                Name : &nbsp;
+                {form.getValues().blog_img &&
+                  typeof form.getValues().blog_img !== 'string' &&
+                  (form.getValues().blog_img as File).name}
+              </Text>
+              <Text fw={500}>
+                Size : &nbsp;
+                {form.getValues().blog_img &&
+                  typeof form.getValues().blog_img !== 'string' &&
+                  `${((form.getValues().blog_img as File).size / 1024).toFixed(2)} KB`}
+              </Text>
+            </Flex>
+          )}
+        </Flex>
+      )}
+
+      <Input.Wrapper error={form.errors.blog_img}>
+        <p></p>
+      </Input.Wrapper>
 
       <Input.Wrapper withAsterisk label='Content' error={form.errors.blog_cont}>
         <TextEditor form={form} />

@@ -8,16 +8,14 @@ import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { fetchBlogById } from '@/services/blogServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
-import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -27,15 +25,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
+    prefetchBlogById(queryClient, id as string),
     prefetchMyInfo(queryClient),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-      queryFn: async () => await getWorkspacesByUser()
-    })
+    preFetchMyWorkspace(queryClient)
   ]);
 
   return {
@@ -74,22 +66,19 @@ const EditBlog = () => {
       // blog_img: imageUrlResponse || values.blog_img
     });
 
-    await updateBlog(
-      {
+    try {
+      await updateBlog({
         blog_id: router.query.id as string,
         blogData: filteredValues as blogFormType
-      },
-      {
-        onSuccess: async () => {
-          showSuccessToast('Update blog successfully!');
+      });
+      showSuccessToast('Update blog successfully!');
 
-          await router.push('/blogs/yourBlog');
-        },
-        onError: async (err) => {
-          showErrorToast(err.message);
-        }
-      }
-    );
+      await router.push('/blogs/myBlogs');
+    } catch (error) {
+      console.error('Error Delete blog:', error);
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   if (isPendingUpdateBlog || isLoading)
