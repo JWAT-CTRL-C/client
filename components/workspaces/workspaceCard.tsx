@@ -10,18 +10,14 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
     <Card
       shadow='sm'
       padding='lg'
-      component='a'
       onClick={() => router.push(`/workspaces/${wksp_id}`)}
-      target='_self'
       radius='md'
-      className={cn(
-        'w-[60%] min-w-64 hover:cursor-pointer hover:shadow-lg',
-        'md:min-w-80 md:max-w-[33%] lg:max-w-[30%]'
-      )}>
+      className={cn('min-w-[70%] hover:cursor-pointer hover:shadow-lg', 'md:min-w-[33%] lg:min-w-[30%]')}>
       <Card.Section>
         <Image
-          h={110}
-          fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040?text=${wksp_name.toUpperCase()}`}
+          h='300px'
+          fit='cover'
+          fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040/png?text=${wksp_name.toUpperCase()}&font=roboto`}
           alt='Workspace Image'
         />
       </Card.Section>
@@ -30,7 +26,7 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
         {wksp_name}
       </Text>
 
-      <Text mt='xs' c='dimmed' size='sm' truncate='end'>
+      <Text mt='xs' c='dimmed' size='sm' truncate='end' maw={200}>
         {wksp_desc}
       </Text>
       <Avatar.Group className='mt-2' spacing='xs'>

@@ -1,32 +1,57 @@
 import BlogCard from '@/components/blogCard';
 import { useDisclosure } from '@mantine/hooks';
 import { Box, Button, Collapse } from '@mantine/core';
-import { cn } from '@/libs/utils';
+import { cn, useBreakpoint } from '@/libs/utils';
 import { BlogResponse } from '@/libs/types/blogResponse';
 
 export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
   const [opened, { toggle }] = useDisclosure(false);
+  const breakpoint = useBreakpoint();
+  const breakpointType: { [breakpoint: string]: { length: number } } = {
+    lg: {
+      length: 3
+    },
+    md: {
+      length: 3
+    },
+    sm: {
+      length: 2
+    },
+    xs: {
+      length: 1
+    }
+  };
 
   return (
-    <div className='p-3'>
+    <div className='py-3'>
       {blogs.length === 0 ? (
-        <div className='grid h-full w-full place-items-center rounded-md border border-gray-100 bg-slate-50'>
-          No blogs found
-        </div>
+        <div className='bg-slate-100 p-5'> No blogs</div>
       ) : (
         <>
-          <Box className='mb-2 flex justify-end'>
-            <Button onClick={toggle} variant='outline' className={cn(blogs.length > 3 ? '' : 'hidden')}>
+          <Box className='mb-5 flex justify-end'>
+            <Button
+              onClick={toggle}
+              variant='outline'
+              className={cn(blogs.length > breakpointType[breakpoint].length ? '' : 'hidden')}>
               {!opened ? 'View all' : 'View less'}
             </Button>
           </Box>
-          <Box className={cn('grid grid-cols-1 gap-4 md:grid-cols-2', !opened ? 'h-auto' : 'hidden')}>
-            {blogs.map((blog, index) => (
-              <BlogCard key={blog.blog_id} blog={blog} />
-            ))}
+          <Box
+            className={cn(
+              'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3',
+              !opened ? 'h-auto' : 'hidden'
+            )}>
+            {blogs.map(
+              (blog, index) =>
+                index < breakpointType[breakpoint].length && <BlogCard key={blog.blog_id} blog={blog} />
+            )}
           </Box>
           <Collapse in={opened} animateOpacity={false} transitionDuration={0}>
-            <div className={cn('grid grid-cols-3 gap-4', opened ? 'h-auto' : 'hidden')}>
+            <div
+              className={cn(
+                'grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3',
+                opened ? 'h-auto' : 'hidden'
+              )}>
               {blogs.map((blog, index) => (
                 <BlogCard key={blog.blog_id} blog={blog} />
               ))}

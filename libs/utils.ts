@@ -8,6 +8,7 @@ import { LoginResponse } from './types/authType';
 import { blogTableType } from './types/blogTableType';
 
 import moment from 'moment-timezone';
+import { createBreakpoint } from 'react-use';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -98,3 +99,10 @@ export const getTimeDifference = (timestamp: string): string => {
     return 'posted just now';
   }
 };
+
+export const useBreakpoint = createBreakpoint({
+  lg: 1024,
+  md: 768,
+  sm: 640,
+  xs: 320
+});

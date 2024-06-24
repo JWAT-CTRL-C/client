@@ -28,10 +28,10 @@ export default function CreateWorkspaceForm({ opened, handleClose }: WorkspaceCr
             : null;
       },
       wksp_desc: (value: string) => {
-        return value.length == 0
+        return value.trim().length == 0
           ? 'Please enter a description'
-          : value.length > 150
-            ? 'Description should be less than 150 characters'
+          : value.split(' ').length > 150
+            ? `Description should be less than 150 words! Current length: ${value.split(' ').length} words`
             : null;
       }
     }

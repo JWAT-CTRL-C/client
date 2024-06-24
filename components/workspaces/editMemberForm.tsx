@@ -62,7 +62,10 @@ export function WpsMemberTable({
       toast.error(err.message);
     }
   };
-  const { removeMember } = useRemoveMemberFromWorkspace(handleRemoveMemberSuccess, handleRemoveMemberFail);
+  const { removeMember, isPending: removePending } = useRemoveMemberFromWorkspace(
+    handleRemoveMemberSuccess,
+    handleRemoveMemberFail
+  );
   const handleDeleteMember = (user_id: number) => {
     notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
       noti_tle: 'Remove Member',
@@ -90,7 +93,10 @@ export function WpsMemberTable({
       toast.error(err.message);
     }
   };
-  const { franchise } = useFranchiseWorkspace(handleFranchiseMemberSuccess, handleFranchiseMemberFail);
+  const { franchise, isPending: franchisePending } = useFranchiseWorkspace(
+    handleFranchiseMemberSuccess,
+    handleFranchiseMemberFail
+  );
   const handleFranchise = (user_id: number) => {
     franchise({ wksp_id, user_id });
   };
@@ -129,7 +135,7 @@ export function WpsMemberTable({
             key={info.row.original.user_id}
             title={`Franchise to ${info.row.original.fuln}?`}
             onConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='orange'>
+            <Button variant='subtle' color='orange' loading={franchisePending}>
               <FaEdit size={15} />
             </Button>
           </PopoverConfirm>
@@ -145,7 +151,7 @@ export function WpsMemberTable({
             key={info.row.original.user_id}
             title='Remove Member'
             onConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='red'>
+            <Button variant='subtle' color='red' loading={removePending}>
               <FaTimes size={15} />
             </Button>
           </PopoverConfirm>
@@ -241,7 +247,7 @@ export default function EditWorkspaceMemberForm({
       toast.error(err.message);
     }
   };
-  const { addMember } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
+  const { addMember, isPending } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
     notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
       noti_tle: 'New Member',
@@ -265,7 +271,7 @@ export default function EditWorkspaceMemberForm({
           nothingFoundMessage='No member available'
           {...form.getInputProps('user')}
         />
-        <Button type='submit' mt='lg' disabled={_.isEmpty(data)}>
+        <Button type='submit' mt='lg' disabled={_.isEmpty(data)} loading={isPending}>
           Save
         </Button>
       </form>
