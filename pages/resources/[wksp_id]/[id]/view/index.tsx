@@ -8,10 +8,11 @@ import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { NextPageWithLayout } from '@/pages/_app';
 import { Divider, rem, Text } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import { lazy, ReactElement, Suspense } from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -19,8 +20,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const wksp_id = context.query.wksp_id as string;
   const resrc_id = context.query.id as string;
   const queryClient = new QueryClient();
-  const isExist = await preFetchSpecificResource(queryClient, wksp_id, resrc_id);
-  await prefetchMyInfo(queryClient);
+  const isExist = await Promise.all([
+    preFetchSpecificResource(queryClient, wksp_id, resrc_id),
+    prefetchMyInfo(queryClient)
+  ]).then((res) => res[0]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
@@ -33,7 +36,8 @@ const ResourceViewPage: NextPageWithLayout = () => {
   const wksp_id = router.query.wksp_id as string;
   const resrc_id = router.query.id as string;
   const { resource } = useGetSpecificResource(wksp_id, resrc_id);
-  console.log(resource);
+  const Blog = lazy(() => import('@/components/resource/blogResource'));
+
   return (
     <div className='grid gap-3'>
       <div className='flex items-center gap-2 pb-4'>
@@ -47,10 +51,13 @@ const ResourceViewPage: NextPageWithLayout = () => {
         </Link>
       </div>
       <Divider />
-
-      <BlogCard key={resource.blog.blog_id} blog={resource.blog} />
-
-      {/* <BlogList blogs={resource.blog} /> */}
+      <Suspense fallback={<Text>Loading...</Text>}>
+        {_.isEmpty(resource.blog) ? (
+          <div className='bg-slate-100 p-5'> Empty blog</div>
+        ) : (
+          <Blog blog={resource.blog} />
+        )}
+      </Suspense>
     </div>
   );
 };

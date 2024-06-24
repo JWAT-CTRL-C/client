@@ -1,22 +1,24 @@
+import { useDeleteResource } from '@/libs/hooks/mutations/resourceMutations';
+import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
+import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { ResourceItemType } from '@/libs/types/workspace';
+import { RESOURCE_TYPE } from '@/services/resourceServices';
+import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
 import { Button, ButtonGroup, Divider, Group, Text, Textarea, TextInput, Tooltip } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { FaEdit, FaPlusCircle, FaTrash } from 'react-icons/fa';
-import AddResourceForm from './addResourceForm';
-import { ResourceItemType } from '@/libs/types/workspace';
-import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
-import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { toast } from 'react-toastify';
 import { AxiosError, isAxiosError } from 'axios';
-import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
-import { RESOURCE_TYPE } from '@/services/resourceServices';
-import EditResourceForm from './editResourceForm';
-import { useDeleteResource } from '@/libs/hooks/mutations/resourceMutations';
-import { showErrorToast, showSuccessToast } from '../shared/toast';
+import { FaEdit, FaPlusCircle, FaRegNewspaper, FaTrash } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import PopoverConfirm from '../popoverConfirm';
+import { showErrorToast, showSuccessToast } from '../shared/toast';
+import AddResourceForm from './addResourceForm';
+import EditResourceForm from './editResourceForm';
+import { useRouter } from 'next/router';
 
 const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: string }) => {
   const [opened, { toggle }] = useDisclosure(false);
+  const router = useRouter();
   const handleSuccess = () => {
     showSuccessToast('Resource is deleted successfully');
     return { wksp_id: wksp_id };
@@ -31,12 +33,23 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
   const handleRemoveResource = () => {
     deleteResource({ wksp_id, resrc_id: item.resrc_id });
   };
+  const handeCreateResourceBlog = () => {
+    router.push(`/blogs/create?wksp_id=${wksp_id}&resrc_id=${item.resrc_id}`);
+  };
   return (
     <div className='grid min-w-full grid-cols-9 rounded-lg p-1 shadow-md md:min-w-[80%] md:grid-cols-11 md:p-3 dark:bg-card'>
       <div className='col-span-6 mt-3 truncate px-4 sm:px-5 md:col-span-9 lg:col-span-10 xl:px-5 2xl:px-6'>
-        <Text truncate='end' className='border-b pb-3'>
-          {item.resrc_name}
-        </Text>
+        <div className='flex items-center gap-3'>
+          <Text truncate='end'>{item.resrc_name}</Text>
+          {!item?.blogs && (
+            <Tooltip label='Add blog for this resource' withArrow position='right'>
+              <Button variant='transparent' className='p-0' color='violet' onClick={handeCreateResourceBlog}>
+                <FaRegNewspaper />
+              </Button>
+            </Tooltip>
+          )}
+          <Divider />
+        </div>
         <Text truncate='end' className='py-2 text-sm text-gray-500'>
           {item.resrc_url}
         </Text>
@@ -85,8 +98,13 @@ export default function EditGeneralWorkspaceForm({
       wksp_desc: workspace?.wksp_desc ?? ''
     },
     validate: {
-      wksp_desc: (value: string) =>
-        value.length > 255 ? 'Description should be less than 255 characters' : null,
+      wksp_desc: (value: string) => {
+        return value.trim().length == 0
+          ? 'Please enter a description'
+          : value.split(' ').length > 150
+            ? `Description should be less than 150 words! Current length: ${value.split(' ').length} words`
+            : null;
+      },
       wksp_name: (value: string) =>
         value.length > 150 || value.length === 0 ? 'Invalid workspace name' : null
     }

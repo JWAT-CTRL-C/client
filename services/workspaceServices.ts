@@ -18,6 +18,13 @@ export type WORKSPACES_RESPONSE = {
   owner: USER_TYPE;
   resources: ResourceType[] | [];
 };
+export type NOTIFICATION_TYPE = {
+  noti_id: string;
+  noti_tle: string;
+  noti_cont: string;
+  crd_at: string;
+  user: Partial<USER_TYPE>;
+};
 export type SPECIFIC_WORKSPACE_RESPONSE = {
   wksp_id: string;
   wksp_name: string;
@@ -34,6 +41,7 @@ export type SPECIFIC_WORKSPACE_RESPONSE = {
     resrc_url: string;
   }[];
   blogs: BlogResponse[];
+  notifications: NOTIFICATION_TYPE[];
 };
 export type WORKSPACE_MEMBER = {
   wksp_id: string;

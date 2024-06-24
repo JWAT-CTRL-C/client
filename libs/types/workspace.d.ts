@@ -40,4 +40,7 @@ export type ResourceItemType = {
   resrc_id: string;
   resrc_name: string;
   resrc_url: string;
+  blogs?: {
+    blog_id: string;
+  }[];
 };

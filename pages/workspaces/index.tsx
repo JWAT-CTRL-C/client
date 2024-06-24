@@ -17,8 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
-  preFetchMyWorkspace(queryClient);
-  prefetchMyInfo(queryClient);
+  await Promise.all([preFetchMyWorkspace(queryClient), prefetchMyInfo(queryClient)]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)

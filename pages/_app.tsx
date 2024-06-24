@@ -7,7 +7,7 @@ import { NextPage } from 'next';
 import { Inter } from 'next/font/google';
 import { ReactElement, ReactNode, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { useIsomorphicLayoutEffect } from 'react-use';
+import { createBreakpoint, useIsomorphicLayoutEffect } from 'react-use';
 
 import LoadingPageTransition from '@/components/loadingPageTransition';
 import { theme } from '@/libs/theme';
@@ -28,7 +28,12 @@ type AppPropsWithLayout = AppProps & {
 };
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
+export const useBreakpoint = createBreakpoint({
+  lg: 1024,
+  md: 768,
+  sm: 640,
+  xs: 320
+});
 export default function App({
   Component,
   pageProps: { session, dehydratedState, ...pageProps }

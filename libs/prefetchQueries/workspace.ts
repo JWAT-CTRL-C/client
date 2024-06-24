@@ -22,7 +22,7 @@ export const preFetchMyWorkspace = async (queryClient: QueryClient) => {
     queryFn: async () => await getWorkspacesByUser()
   });
 };
-export const preFetchSpecificWorkspace = async (queryClient: QueryClient, wksp_id: string) => {
+export const fetchSpecificWorkspace = async (queryClient: QueryClient, wksp_id: string) => {
   return await queryClient
     .fetchQuery({
       queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
