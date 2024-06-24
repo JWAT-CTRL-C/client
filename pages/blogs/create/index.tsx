@@ -1,14 +1,32 @@
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
-
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { setContext } from '@/libs/api';
 import { useCreateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
-import { ReactNode } from 'react';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  setContext(context);
+
+  const queryClient = new QueryClient();
+
+  await Promise.all([preFetchMyWorkspace(queryClient), prefetchMyInfo(queryClient)]);
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient)
+    }
+  };
+};
 
 const CreateBlog = () => {
   const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();

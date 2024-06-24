@@ -1,10 +1,9 @@
-import { LoginRequest, LoginResponse } from '@/libs/types/authType';
 import { setUserAuth } from '@/libs/utils';
 import { login } from '@/services/authenServices';
 import { useMutation } from '@tanstack/react-query';
 
 export const useLogin = () => {
-  const mutation = useMutation<LoginResponse, Error, LoginRequest>({
+  const mutation = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
       setUserAuth(data);

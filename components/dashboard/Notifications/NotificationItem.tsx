@@ -7,7 +7,7 @@ interface INotificationItemProps {
 
 export function NotificationItem({ notification }: INotificationItemProps) {
   return (
-    <Paper withBorder radius='md' className='px-2 py-4'>
+    <Paper withBorder radius='md' className='p-4'>
       <Group>
         <Avatar
           src={notification.user.avatar || 'https://images.unsplash.com/photo-1612838320302-3b3b7f0b3b3d'}

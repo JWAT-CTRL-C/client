@@ -10,6 +10,8 @@ import { useStore } from '@/providers/StoreProvider';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { FaArrowUp } from 'react-icons/fa';
 
+import 'highlight.js/styles/default.css';
+
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setRole } = useStore((store) => store);
 

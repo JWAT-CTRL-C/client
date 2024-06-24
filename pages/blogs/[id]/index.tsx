@@ -11,7 +11,6 @@ import LoveIcon from '@/components/loveIcon';
 import TagComp from '@/components/tag';
 import { setContext } from '@/libs/api';
 
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
 import { useCreateBlogComment, useRatingBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById, useFetchRelatedBlog } from '@/libs/hooks/queries/blogQueries';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
@@ -20,15 +19,13 @@ import {
   BackgroundImage,
   Divider,
   Flex,
-  Group,
   LoadingOverlay,
   ScrollArea,
   Skeleton,
   Spoiler,
   Text,
   ThemeIcon,
-  Title,
-  TypographyStylesProvider
+  Title
 } from '@mantine/core';
 
 import { ReactNode } from 'react';
@@ -36,6 +33,7 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import RelatedBlogs from '@/components/relatedBlogs';
+import ShowContent from '@/components/EditorContent';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -154,14 +152,8 @@ const BlogInfo = () => {
         )}
         {(blog?.tags.length !== 0 || blog?.workspace || blog?.resource) && <Divider />}
 
-        <Spoiler maxHeight={300} showLabel='Show more' hideLabel='Hide' transitionDuration={0}>
-          {blog?.blog_cont && (
-            <TypographyStylesProvider flex={1}>
-              <article>
-                <div dangerouslySetInnerHTML={{ __html: blog.blog_cont }} />
-              </article>
-            </TypographyStylesProvider>
-          )}
+        <Spoiler maxHeight={300} showLabel='Show more' hideLabel='Show less' transitionDuration={0}>
+          {blog?.blog_cont && <ShowContent content={blog.blog_cont} />}
         </Spoiler>
 
         <Divider />
