@@ -5,10 +5,10 @@ import { filterFalsyFields } from '@/libs/utils';
 import { BlogResponse } from '@/libs/types/blogResponse';
 import { workspacesType } from '@/libs/types/workspacesType';
 
-export const fetchBlogs = async (): Promise<BlogResponse[]> => {
+export const fetchBlogs = async (pageParam: number): Promise<BlogResponse[]> => {
   return new Promise((resolve, reject) => {
     api
-      .get('/blogs')
+      .get('/blogs?page=' + pageParam)
       .then((response) => resolve(response.data))
       .catch((error) => {
         reject(new Error(error.response?.data?.message || error.message));

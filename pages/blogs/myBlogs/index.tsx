@@ -1,17 +1,15 @@
 import { GetServerSideProps } from 'next';
+import { ReactNode } from 'react';
 
 import BlogTable from '@/components/blogTable';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { useFetchBlogsCurrentUser } from '@/libs/hooks/queries/blogQueries';
+import { prefetchCurrentUserBlogs } from '@/libs/prefetchQueries/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { transformBlogTableType } from '@/libs/utils';
-import { fetchBlogsForCurrentUser } from '@/services/blogServices';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
-import { ReactNode } from 'react';
-import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
-import { prefetchCurrentUserBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -26,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   };
 };
-const YourBlog = () => {
+const MyBlogs = () => {
   const { data: blogs, isLoading, isError } = useFetchBlogsCurrentUser();
   if (isLoading)
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
@@ -38,8 +36,8 @@ const YourBlog = () => {
   );
 };
 
-export default YourBlog;
+export default MyBlogs;
 
-YourBlog.getLayout = function getLayout(page: ReactNode) {
+MyBlogs.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };

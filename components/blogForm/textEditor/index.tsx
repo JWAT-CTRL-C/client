@@ -52,7 +52,7 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
         borderColor: form.errors.blog_cont ? theme.colors.red[7] : '',
         borderRadius: theme.radius.md
       }}>
-      <RichTextEditor.Toolbar sticky stickyOffset={60}>
+      <RichTextEditor.Toolbar sticky stickyOffset={80}>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Undo />
           <RichTextEditor.Redo />

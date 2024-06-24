@@ -10,27 +10,35 @@ import {
   Select,
   TagsInput,
   Text,
-  TextInput,
-  useMantineTheme
+  TextInput
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useEffect, useState } from 'react';
 import { FaFileImage, FaTimes } from 'react-icons/fa';
 
 import { blogFormType } from '@/libs/types/blogFormType';
-import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 import { workspacesType } from '@/libs/types/workspacesType';
 
 import TextEditor from './textEditor';
 
-const MAX_IMAGE_SIZE = 1024 * 200; //200 KB
+const MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 
-type BlogFormProps = {
-  updateValues?: blogFormType;
+type BlogFormPropsBase = {
   handleSubmitForm: (values: blogFormType) => void;
-  isEditing?: boolean;
   workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
 };
+
+type BlogFormPropsEditing = BlogFormPropsBase & {
+  isEditing: true;
+  updateValues: blogFormType;
+};
+
+type BlogFormPropsNotEditing = BlogFormPropsBase & {
+  isEditing?: false;
+  updateValues?: undefined;
+};
+
+type BlogFormProps = BlogFormPropsEditing | BlogFormPropsNotEditing;
 
 const initialValues: blogFormType = {
   blog_tle: '',
@@ -45,7 +53,6 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const [indexSelectingField, setIndexSelectingField] = useState(0);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [prevTag, setPrevTag] = useState<string[]>([]);
-  const theme = useMantineTheme();
 
   const workSpaceListOptions = workSpaceList?.map((workSpace) => ({
     value: workSpace?.wksp_id,
@@ -67,7 +74,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         if (blog_wksp && blog_wksp.trim().length === 0) return 'Workspace is required';
         return null;
       },
-      blog_src: (blog_src, values) => {
+      blog_src: (blog_src) => {
         if (blog_src && blog_src?.trim()?.length === 0) return 'Resource is required';
 
         return null;
@@ -77,7 +84,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       blog_img: (blog_img) => {
         if (blog_img && typeof blog_img !== 'string' && blog_img.size > MAX_IMAGE_SIZE) {
-          return `Image size should be less than ${MAX_IMAGE_SIZE / 1024} KB`;
+          return `Image size should be less than ${MAX_IMAGE_SIZE / 1024 / 1024}MB`;
         }
         return null;
       }
@@ -123,7 +130,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     setIndexSelectingField(indexSelecting);
 
     if (selectedWorkspace && !form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue('blog_tag', [...form.getValues().blog_tag, 'workspaces']);
+      form.setFieldValue('blog_tag', (prevTag) => [...prevTag, 'workspaces']);
+      setPrevTag((prevTag) => [...prevTag, 'workspaces']);
     }
   };
 
@@ -135,10 +143,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   const handleClearWorkspaceFiled = () => {
     form.setFieldValue('blog_wksp', '');
     if (form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue(
-        'blog_tag',
-        form.getValues().blog_tag.filter((blog_tag) => blog_tag !== 'workspaces')
-      );
+      form.setFieldValue('blog_tag', (prevTag) => prevTag.filter((tag) => tag !== 'workspaces'));
     }
   };
   const handleClearTagField = () => {
@@ -168,11 +173,17 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         placeholder='Tag...'
         {...form.getInputProps('blog_tag')}
         onChange={(blog_tag) => {
-          setPrevTag([...prevTag, ...blog_tag, 'to remove wksp']);
+          setPrevTag((prevTag) => [...prevTag, ...blog_tag]);
           form.setFieldValue('blog_tag', blog_tag);
+          if (blog_tag.includes('workspaces') && workSpaceList.length > 0 && !form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', workSpaceList[0]?.wksp_id);
+          } else if (!blog_tag.includes('workspaces') && form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', null);
+          }
         }}
         onClear={handleClearTagField}
       />
+
       <Select
         data={workSpaceListOptions}
         checkIconPosition='right'
@@ -273,11 +284,9 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         </Flex>
       )}
 
-      {
-        <Input.Wrapper error={form.errors.blog_img}>
-          <p></p>
-        </Input.Wrapper>
-      }
+      <Input.Wrapper error={form.errors.blog_img}>
+        <p></p>
+      </Input.Wrapper>
 
       <Input.Wrapper withAsterisk label='Content' error={form.errors.blog_cont}>
         <TextEditor form={form} />

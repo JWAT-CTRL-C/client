@@ -236,7 +236,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         style={{
           width: `${table.getCenterTotalSize()}px`
         }}>
-        <Title>Your Blogs</Title>
+        <Title>My Blogs</Title>
 
         <Input
           className='w-1/2'

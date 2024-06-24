@@ -25,7 +25,7 @@ export function NotificationItem({ notification }: INotificationItemProps) {
         <Text fz='h6' className='!mb-2'>
           {notification.noti_tle}
         </Text>
-        <Text fz='sm'>{notification.noti_cont}</Text>
+        <Text fz='sm'>{notification.noti_cont + ' ' + notification.workspace.wksp_name}</Text>
       </TypographyStylesProvider>
     </Paper>
   );

@@ -8,13 +8,9 @@ import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { fetchBlogById } from '@/services/blogServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
-import { getWorkspacesByUser } from '@/services/workspaceServices';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { ReactNode } from 'react';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
@@ -77,7 +73,7 @@ const EditBlog = () => {
       });
       showSuccessToast('Update blog successfully!');
 
-      await router.push('/blogs/yourBlog');
+      await router.push('/blogs/myBlogs');
     } catch (error) {
       console.error('Error Delete blog:', error);
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);

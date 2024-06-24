@@ -15,7 +15,6 @@ import { blogFormType } from '@/libs/types/blogFormType';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 
-
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 

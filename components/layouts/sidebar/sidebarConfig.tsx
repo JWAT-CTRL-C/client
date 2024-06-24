@@ -5,7 +5,7 @@ export const sidebarConfig: SidebarConfig = {
   blogConfig: [
     { link: '/blogs', label: 'Home', icon: <FaHome size={20} /> },
     { link: '/blogs/create', label: 'New blog', icon: <FaPlusSquare size={20} /> },
-    { link: '/blogs/yourBlog', label: 'Your blog', icon: <FaNewspaper size={20} /> }
+    { link: '/blogs/myBlogs', label: 'My blogs', icon: <FaNewspaper size={20} /> }
   ],
   workspaceConfig: [
     { link: '/workspaces', label: 'Home', icon: <FaHome size={20} /> }
