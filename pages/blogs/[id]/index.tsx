@@ -36,6 +36,8 @@ import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import RelatedBlogs from '@/components/relatedBlogs';
+import { showErrorToast } from '@/components/shared/toast';
+import { prefetchBlogById, prefetchRelatedBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -45,15 +47,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
+    prefetchBlogById(queryClient, id as string),
 
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS_RELATED, id as string],
-      queryFn: async () => await fetchRelatedBlogs(id as string)
-    }),
+    prefetchRelatedBlogs(queryClient, id as string),
 
     prefetchMyInfo(queryClient)
   ]);
@@ -88,11 +84,21 @@ const BlogInfo = () => {
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   const handleCommentBlog = async (comment: string) => {
-    await createBlogComment({ blog_id: id as string, blog_cmt_cont: comment });
+    try {
+      await createBlogComment({ blog_id: id as string, blog_cmt_cont: comment });
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   const handleRating = async () => {
-    await ratingBlog({ blog_id: id as string });
+    try {
+      await ratingBlog({ blog_id: id as string });
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   return (

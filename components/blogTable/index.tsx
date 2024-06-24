@@ -21,12 +21,9 @@ import {
 } from '@mantine/core';
 import {
   ColumnDef,
-  ColumnResizeDirection,
-  ColumnResizeMode,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
@@ -172,7 +169,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
 
     columnResizeDirection: 'ltr',
@@ -219,14 +216,14 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   };
 
   const handleDeleteBlogPage = async (blog_id: string) => {
-    await removeBlog(blog_id, {
-      onSuccess: async () => {
-        showSuccessToast('Delete blog successfully!');
-      },
-      onError: async (err) => {
-        showErrorToast(err.message);
-      }
-    });
+    try {
+      await removeBlog(blog_id);
+      showSuccessToast('Delete blog successfully!');
+    } catch (error) {
+      console.error('Error Delete blog:', error);
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   if (isPending)

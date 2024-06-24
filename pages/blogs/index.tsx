@@ -10,19 +10,14 @@ import { Center, Flex, LoadingOverlay, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS],
-      queryFn: fetchBlogs
-    }),
-    prefetchMyInfo(queryClient)
-  ]);
+  await Promise.all([prefetchBlogs(queryClient), prefetchMyInfo(queryClient)]);
 
   return {
     props: {
