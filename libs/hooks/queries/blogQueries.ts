@@ -17,7 +17,7 @@ import { workspacesType } from '@/libs/types/workspacesType';
 
 export const useFetchBlogs = () => {
   return useInfiniteQuery({
-    queryKey: [BlogQueryEnum.BLOGS_INFINITE],
+    queryKey: [BlogQueryEnum.BLOGS],
     queryFn: ({ pageParam }) => fetchBlogs(pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => (lastPage?.length < 12 ? null : lastPageParam + 1),
