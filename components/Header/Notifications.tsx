@@ -23,8 +23,8 @@ const Notifications = () => {
       position='bottom'
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
-        <Indicator inline label='2' size={16} className='cursor-pointer'>
-          <Tooltip label='Notifications'>
+        <Indicator inline label={notifications?.length ?? 0} size={16} className='cursor-pointer'>
+          <Tooltip label='Notifications' openDelay={500}>
             <div>
               <FaBell className='size-6 max-md:size-5' />
             </div>

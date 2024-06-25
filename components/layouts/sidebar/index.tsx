@@ -38,7 +38,7 @@ const Sidebar = () => {
   return (
     <div className='my-auto flex h-full flex-col justify-between'>
       <div>
-        {sidebarState.map((item, index) => {
+        {sidebarState.map((item) => {
           const isActive = router.pathname === item.link;
 
           return (

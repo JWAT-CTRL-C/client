@@ -20,6 +20,7 @@ import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
@@ -73,13 +74,18 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-  return (
-    <div className='h-[84vh]'>
-      {_.isEmpty(workspace) || isFetching ? (
-        <div className='flex h-full w-full items-center justify-center'>
-          <Loader />
-        </div>
-      ) : (
+  return _.isEmpty(workspace) || isFetching ? (
+    <div className='flex h-full w-full items-center justify-center'>
+      <Loader />
+    </div>
+  ) : (
+    <>
+      <Head>
+        <title>Edit workspace | Synergy</title>
+        <meta name='description' content='Edit workspace' />
+      </Head>
+
+      <div className='h-[84vh]'>
         <Tabs
           defaultValue={'general'}
           value={activeTab}
@@ -119,8 +125,8 @@ const EditWorkSpace: NextPageWithLayout = () => {
             <DangerZone wksp_id={wksp_id} />
           </Tabs.Panel>
         </Tabs>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 EditWorkSpace.getLayout = function getLayout(page: ReactElement) {

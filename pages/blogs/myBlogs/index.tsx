@@ -10,6 +10,7 @@ import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { transformBlogTableType } from '@/libs/utils';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -30,9 +31,16 @@ const MyBlogs = () => {
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
-    <Flex className=''>
-      <BlogTable dataTable={blogs ? transformBlogTableType(blogs) : []} />
-    </Flex>
+    <>
+      <Head>
+        <title>My Blogs | Synergy</title>
+        <meta name='description' content='My Blogs' />
+      </Head>
+
+      <Flex className=''>
+        <BlogTable dataTable={blogs ? transformBlogTableType(blogs) : []} />
+      </Flex>
+    </>
   );
 };
 

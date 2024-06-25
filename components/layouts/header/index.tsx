@@ -40,7 +40,7 @@ const Header = () => {
             <Can I='reach' a='AdminPage'>
               <Tabs.Tab
                 size={'lg'}
-                className='w-1/4 flex-1 border-b-2 md:px-8'
+                className='w-1/4 flex-1 border-b-2 md:px-3.5 lg:px-8'
                 classNames={{
                   tabLabel: 'flex-center gap-2'
                 }}
@@ -51,7 +51,7 @@ const Header = () => {
             </Can>
             <Tabs.Tab
               size={'lg'}
-              className='w-1/4 flex-1 border-b-2 md:px-8'
+              className='w-1/4 flex-1 border-b-2 md:px-3.5 lg:px-8'
               classNames={{
                 tabLabel: 'flex-center gap-2'
               }}
@@ -62,7 +62,7 @@ const Header = () => {
             <Tabs.Tab
               size={'lg'}
               value='blogs'
-              className='w-1/4 flex-1 border-b-2 md:px-8'
+              className='w-1/4 flex-1 border-b-2 md:px-3.5 lg:px-8'
               classNames={{
                 tabLabel: 'flex-center gap-2'
               }}>
@@ -71,7 +71,7 @@ const Header = () => {
             </Tabs.Tab>
             <Tabs.Tab
               size={'lg'}
-              className='w-1/4 flex-1 border-b-2 md:px-8'
+              className='w-1/4 flex-1 border-b-2 md:px-3.5 lg:px-8'
               classNames={{
                 tabLabel: 'flex-center gap-2'
               }}

@@ -1,32 +1,34 @@
-import {
-  Badge,
-  Button,
-  Divider,
-  Loader,
-  Table as MTable,
-  ComboboxItem,
-  useMantineColorScheme,
-  Select
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { AxiosError, isAxiosError } from 'axios';
+import _ from 'lodash';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaEdit, FaTimes, FaUserPlus } from 'react-icons/fa';
-import _ from 'lodash';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useRouter } from 'next/router';
-import { USER_TYPE } from '@/services/userServices';
+import { toast } from 'react-toastify';
+
+import { memberAttribute } from '@/libs/constants/memberAttribute';
 import {
   useAddMemberToWorkspace,
   useFranchiseWorkspace,
   useRemoveMemberFromWorkspace
 } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE, NotificationType } from '@/libs/types';
-import { toast } from 'react-toastify';
-import { AxiosError, isAxiosError } from 'axios';
-import PopoverConfirm from '../popoverConfirm';
-import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
 import { User } from '@/libs/types/userType';
 import { useStore } from '@/providers/StoreProvider';
+import { USER_TYPE } from '@/services/userServices';
+import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
+import {
+  Badge,
+  Button,
+  ComboboxItem,
+  Divider,
+  Select,
+  Table as MTable,
+  useMantineColorScheme
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+
+import PopoverConfirm from '../popoverConfirm';
 
 export function WpsMemberTable({
   className,
@@ -43,13 +45,6 @@ export function WpsMemberTable({
   const router = useRouter();
   const { notificationSocket } = useStore((state) => state);
 
-  // table config
-  const memeberAttribute = {
-    HM: { color: 'orange', roleName: 'Head Master' },
-    MA: { color: 'red', roleName: 'Master Admin' },
-    PM: { color: 'yellow', roleName: 'Project Manager' },
-    EM: { color: 'green', roleName: 'Employee' }
-  };
   // Remove member
   const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
@@ -120,14 +115,14 @@ export function WpsMemberTable({
     columnHelper.accessor('role', {
       id: 'role',
       cell: (info) => (
-        <Badge variant='light' color={memeberAttribute[info.getValue()].color} size='sm' radius='md'>
-          {memeberAttribute[info.getValue()].roleName}
+        <Badge variant='light' color={memberAttribute[info.getValue()].color} size='sm' radius='md'>
+          {memberAttribute[info.getValue()].roleName}
         </Badge>
       ),
       header: 'Role'
     }),
     columnHelper.accessor('role', {
-      id: 'franchies',
+      id: 'franchise',
       header: 'Franchise',
       cell: (info) => {
         return info.getValue() !== 'EM' && info.row.original.user_id !== member.owner.user_id ? (
