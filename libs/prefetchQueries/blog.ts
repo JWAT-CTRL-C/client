@@ -9,9 +9,10 @@ import {
 } from '@/services/blogServices';
 
 export const prefetchBlogs = async (queryClient: QueryClient) =>
-  await queryClient.prefetchQuery({
+  await queryClient.prefetchInfiniteQuery({
     queryKey: [BlogQueryEnum.BLOGS],
-    queryFn: () => fetchBlogs(1)
+    queryFn: async ({ pageParam }) => await fetchBlogs(pageParam),
+    initialPageParam: 1
   });
 
 export const prefetchCurrentUserBlogs = async (queryClient: QueryClient) =>
