@@ -11,11 +11,11 @@ const ability = defineAbilities();
 const AbilityContext = createContext<MongoAbility<AbilityTuple, MongoQuery>>(ability);
 
 export const AbilityProvider = ({ children }: { children: React.ReactNode }) => {
-  const role = useStore((state) => state.role);
+  const user = useStore((state) => state.user);
 
   useEffect(() => {
-    role && updateAbility(ability, role);
-  }, [role, ability]);
+    user && updateAbility(ability, user);
+  }, [user, ability]);
 
   return <AbilityContext.Provider value={ability}>{children}</AbilityContext.Provider>;
 };

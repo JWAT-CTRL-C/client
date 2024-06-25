@@ -2,9 +2,9 @@ import { type ReactNode, createContext, useRef, useContext } from 'react';
 import { useStore as useZStore, create, type StoreApi } from 'zustand';
 
 import { SocketState, createSocketStore } from '@/stores/websocket';
-import { RoleAction, RoleState, createRoleStore } from '@/stores/role';
+import { UserAction, UserState, createUserStore } from '@/stores/user';
 
-export type Store = SocketState & RoleState & RoleAction;
+export type Store = SocketState & UserState & UserAction;
 
 export const SocketStoreContext = createContext<StoreApi<Store> | undefined>(undefined);
 
@@ -17,7 +17,7 @@ export const StoreProvider = ({ children }: SocketStoreProviderProps) => {
   if (!storeRef.current) {
     storeRef.current = create<Store>((...setStateFn) => ({
       ...createSocketStore(...setStateFn),
-      ...createRoleStore(...setStateFn)
+      ...createUserStore(...setStateFn)
     }));
   }
 
