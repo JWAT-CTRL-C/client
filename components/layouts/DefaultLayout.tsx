@@ -13,7 +13,7 @@ import { FaArrowUp } from 'react-icons/fa';
 import 'highlight.js/styles/default.css';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
-  const { notificationSocket, setRole } = useStore((store) => store);
+  const { notificationSocket, setUser } = useStore((store) => store);
 
   const { user, isPending } = useMyInfo();
 
@@ -38,7 +38,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     }
 
     if (user) {
-      setRole(user.role);
+      setUser(user);
     }
 
     return () => {

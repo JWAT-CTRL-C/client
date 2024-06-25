@@ -83,7 +83,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         withArrow
         arrowOffset={10}
         arrowSize={4}
-        w={220}
+        maw={300}
         multiline
         transitionProps={{ duration: 200 }}
         offset={5}>

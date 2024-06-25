@@ -10,6 +10,7 @@ import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
 import { NextPageWithLayout } from '@/pages/_app';
 import { Can } from '@/providers/AbilityProvider';
+import { subject } from '@casl/ability';
 import { Divider, LoadingOverlay, Spoiler, Stack, Text, Tooltip } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
@@ -40,7 +41,7 @@ const Page: NextPageWithLayout = () => {
   const { user } = useMyInfo();
 
   useEffect(() => {
-    const isUserInWorkspace = workspace?.users?.some((user) => user.user_id?.toString() === user.user_id);
+    const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);
     if (!isUserInWorkspace && !['MA', 'HM'].includes(user?.role ?? '')) {
       router.push('/workspaces');
     }
@@ -55,7 +56,7 @@ const Page: NextPageWithLayout = () => {
         />
       ) : (
         <>
-          <div className='grid gap-3'>
+          <div className='flex-between'>
             <div className='pb-4'>
               <h1 className='mb-3 py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
               <Spoiler
@@ -69,19 +70,16 @@ const Page: NextPageWithLayout = () => {
                 {workspace?.wksp_desc}
               </Spoiler>
             </div>
-            {(user?.user_id === (workspace?.owner?.user_id ?? null) ||
-              ['MA', 'HM'].includes(user?.role ?? '')) && (
-              <Can I='edit' a='workspace'>
-                <Tooltip label='Edit workspace' color='black' withArrow>
-                  <Link
-                    className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
-                    href={`/workspaces/${router.query.id}/edit`}>
-                    <FaEdit size={16} />
-                    <span className='hidden md:inline'>Edit</span>
-                  </Link>
-                </Tooltip>
-              </Can>
-            )}
+            <Can I='edit' this={subject('workspace', workspace)}>
+              <Tooltip label='Edit workspace' color='black' withArrow>
+                <Link
+                  className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
+                  href={`/workspaces/${router.query.id}/edit`}>
+                  <FaEdit size={16} />
+                  <span className='hidden md:inline'>Edit</span>
+                </Link>
+              </Tooltip>
+            </Can>
           </div>
           <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
             <Divider my='xs' label='Resources' labelPosition='left' />

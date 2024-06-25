@@ -59,7 +59,13 @@ export default function CreateWorkspaceForm({ opened, handleClose }: WorkspaceCr
     createWorkspace(value as unknown as CREATE_WORKSPACE_REQUEST);
   };
   return (
-    <Modal opened={opened} onClose={handleClose} closeOnClickOutside={false} size='lg' centered>
+    <Modal
+      opened={opened}
+      onClose={handleClose}
+      closeOnClickOutside={false}
+      withCloseButton={false}
+      size='lg'
+      centered>
       <form className='p-5' onSubmit={form.onSubmit(handleSubmit)}>
         <h1 className='text-center text-2xl font-semibold uppercase'>Create Workspace</h1>
         <TextInput
