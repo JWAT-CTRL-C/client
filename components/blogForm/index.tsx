@@ -27,6 +27,10 @@ const MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 type BlogFormPropsBase = {
   handleSubmitForm: (values: blogFormType) => void;
   workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
+  fromWorkspacesPage?: {
+    wksp_id?: string | string[];
+    resrc_id?: string | string[];
+  };
 };
 
 type BlogFormPropsEditing = BlogFormPropsBase & {
@@ -50,7 +54,13 @@ const initialValues: blogFormType = {
   blog_src: ''
 };
 
-const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
+const BlogForm = ({
+  updateValues,
+  handleSubmitForm,
+  isEditing = false,
+  workSpaceList,
+  fromWorkspacesPage
+}: BlogFormProps) => {
   const [indexSelectingField, setIndexSelectingField] = useState(0);
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
   const [prevTag, setPrevTag] = useState<string[]>([]);
@@ -114,6 +124,26 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     }
   }, [form.getValues().blog_wksp, workSpaceList]);
 
+  useEffect(() => {
+    if (fromWorkspacesPage?.resrc_id && fromWorkspacesPage?.wksp_id) {
+      const findWorkspaceFromWorkspacePage = workSpaceList.find(
+        (wksp) => wksp.wksp_id === fromWorkspacesPage.wksp_id
+      );
+
+      if (findWorkspaceFromWorkspacePage) {
+        handleSelectField(findWorkspaceFromWorkspacePage.wksp_id);
+        const findResourceFromWorkspacePage = sourceList[indexSelectingField].find(
+          (resrc) => resrc.resrc_id === fromWorkspacesPage.resrc_id
+        );
+        findResourceFromWorkspacePage &&
+          !findResourceFromWorkspacePage.blog &&
+          handleSourceField(findResourceFromWorkspacePage.resrc_id);
+      }
+    } else {
+      handleClearForm();
+    }
+  }, [fromWorkspacesPage?.resrc_id, fromWorkspacesPage?.wksp_id]);
+
   function handleClearForm() {
     form.setValues(initialValues);
     setSelectedSource(null);
@@ -151,11 +181,8 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
     }
   };
   const handleClearTagField = () => {
-    console.log(prevTag);
-
     if (prevTag.includes('workspaces')) {
       form.setFieldValue('blog_wksp', null);
-      console.log(form.values.blog_wksp);
     }
     setPrevTag([]);
 

@@ -40,6 +40,7 @@ const CreateBlog = () => {
   // const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
   const { data: workspaces } = useFetchWorkSpaceInfo();
   const router = useRouter();
+  const { wksp_id, resrc_id } = router.query;
 
   const handleCreateBlog = async (values: blogFormType) => {
     let imageUrlResponse = '';
@@ -94,7 +95,8 @@ const CreateBlog = () => {
           <BlogForm
             handleSubmitForm={handleCreateBlog}
             workSpaceList={workspaces ? workspaces : []}
-            // isEditing
+            fromWorkspacesPage={{ wksp_id: wksp_id, resrc_id: resrc_id }}
+          // isEditing
             // updateValues={updateValues}
           />
         </Group>
