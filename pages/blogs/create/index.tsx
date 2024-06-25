@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactNode } from 'react';
 
@@ -78,20 +79,27 @@ const CreateBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3} className='px-10 py-12'>
-      <Center>
-        <Title order={1}>Create new blog</Title>
-      </Center>
-      <Group justify='center' className='w-full'>
-        {/* To use update form please provide isEditing and updateValues*/}
-        <BlogForm
-          handleSubmitForm={handleCreateBlog}
-          workSpaceList={workspaces ? workspaces : []}
-          // isEditing
-          // updateValues={updateValues}
-        />
-      </Group>
-    </Flex>
+    <>
+      <Head>
+        <title>Create new blog | Synergy</title>
+        <meta name='description' content='Create new blog' />
+      </Head>
+
+      <Flex direction='column' gap={3} className='px-10 py-12'>
+        <Center>
+          <Title order={1}>Create new blog</Title>
+        </Center>
+        <Group justify='center' className='w-full'>
+          {/* To use update form please provide isEditing and updateValues*/}
+          <BlogForm
+            handleSubmitForm={handleCreateBlog}
+            workSpaceList={workspaces ? workspaces : []}
+            // isEditing
+            // updateValues={updateValues}
+          />
+        </Group>
+      </Flex>
+    </>
   );
 };
 

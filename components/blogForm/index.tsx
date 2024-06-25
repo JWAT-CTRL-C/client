@@ -1,3 +1,9 @@
+import { useEffect, useState } from 'react';
+import { FaFileImage, FaTimes } from 'react-icons/fa';
+
+import { showErrorToast } from '@/components/shared/toast';
+import { blogFormType } from '@/libs/types/blogFormType';
+import { workspacesType } from '@/libs/types/workspacesType';
 import {
   ActionIcon,
   AspectRatio,
@@ -13,11 +19,6 @@ import {
   TextInput
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useEffect, useState } from 'react';
-import { FaFileImage, FaTimes } from 'react-icons/fa';
-
-import { blogFormType } from '@/libs/types/blogFormType';
-import { workspacesType } from '@/libs/types/workspacesType';
 
 import TextEditor from './textEditor';
 
@@ -68,6 +69,9 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       blog_tag: (blog_tags) => {
         if (workSpaceList.length === 0 && blog_tags.includes('workspaces'))
           return "You don't belong to any workspace so remove it from tag field";
+        if (blog_tags.includes('workspaces') && !form.values.blog_wksp) return 'Select workspace first';
+        if (!blog_tags.includes('workspaces') && form.values.blog_wksp)
+          return 'You must add workspaces tag first';
         return null;
       },
       blog_wksp: (blog_wksp) => {
@@ -170,9 +174,19 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         label='Tag'
         clearable
         description='Optional'
+        onDuplicate={(tag) => showErrorToast(`Tag "${tag}" already exists`)}
         placeholder='Tag...'
+        splitChars={[',', ' ', '|']}
         {...form.getInputProps('blog_tag')}
         onChange={(blog_tag) => {
+          if (isEditing && blog_tag.includes('workspaces') && !form.values.blog_wksp) {
+            showErrorToast('You can not add workspaces tag in editing mode');
+            return;
+          }
+          if (isEditing && !blog_tag.includes('workspaces') && form.values.blog_wksp) {
+            showErrorToast('You can not remove workspaces tag in editing mode');
+            return;
+          }
           setPrevTag((prevTag) => [...prevTag, ...blog_tag]);
           form.setFieldValue('blog_tag', blog_tag);
           if (blog_tag.includes('workspaces') && workSpaceList.length > 0 && !form.values.blog_wksp) {
@@ -189,9 +203,11 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         checkIconPosition='right'
         description='Optional'
         clearable
+        searchable
         maxDropdownHeight={200}
         //allowDeselect={false}
         onClear={handleClearWorkspaceFiled}
+        readOnly={isEditing}
         disabled={workSpaceList.length === 0 || isEditing}
         label='Workspaces'
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
@@ -206,8 +222,15 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         checkIconPosition='right'
         clearable
         nothingFoundMessage='Nothing found...'
+        maxDropdownHeight={200}
         placeholder={`${sourceList[indexSelectingField]?.length === 0 ? 'No resource to find' : 'Resource...'}`}
-        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0 || isEditing}
+        readOnly={isEditing}
+        disabled={
+          workSpaceList.length === 0 ||
+          sourceList[indexSelectingField]?.length === 0 ||
+          isEditing ||
+          !form.getValues().blog_wksp
+        }
         data={
           form.getValues().blog_wksp
             ? sourceList[indexSelectingField]?.map((source) => ({
@@ -227,7 +250,6 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
           description='Optional'
           leftSection={<FaFileImage />}
           label='Background Image'
-          className={``}
           disabled={isEditing}
           accept='image/*'
           placeholder='Background Image...'
@@ -254,7 +276,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
               />
               {!isEditing && (
                 <ActionIcon
-                  className='absolute -right-1 -top-1 flex justify-center'
+                  className='absolute -right-1 -top-1'
                   variant='filled'
                   color='red'
                   size='xs'
@@ -267,17 +289,9 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
           </AspectRatio>
           {!isEditing && (
             <Flex direction={'column'} className='mb-7'>
+              <Text fw={500}>Name: &nbsp;{(form.values.blog_img as File)?.name}</Text>
               <Text fw={500}>
-                Name : &nbsp;
-                {form.getValues().blog_img &&
-                  typeof form.getValues().blog_img !== 'string' &&
-                  (form.getValues().blog_img as File).name}
-              </Text>
-              <Text fw={500}>
-                Size : &nbsp;
-                {form.getValues().blog_img &&
-                  typeof form.getValues().blog_img !== 'string' &&
-                  `${((form.getValues().blog_img as File).size / 1024).toFixed(2)} KB`}
+                Size: &nbsp;{`${((form.values.blog_img as File)?.size / 1024).toFixed(2)} KB`}
               </Text>
             </Flex>
           )}
@@ -293,9 +307,13 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       </Input.Wrapper>
 
       <Group justify='space-between' mt='md'>
-        <Button variant='outline' type='reset' onClick={handleClearForm}>
-          Clear
-        </Button>
+        {!isEditing ? (
+          <Button variant='outline' type='reset' onClick={handleClearForm}>
+            Clear
+          </Button>
+        ) : (
+          <div />
+        )}
 
         <Button type='submit'>Save</Button>
       </Group>

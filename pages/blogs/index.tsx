@@ -1,4 +1,5 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -47,6 +48,11 @@ const Blogs = () => {
 
   return (
     <>
+      <Head>
+        <title>Blogs | Synergy</title>
+        <meta name='description' content='Blogs' />
+      </Head>
+
       <SimpleGrid
         className='px-10 py-12'
         cols={{ base: 1, sm: 1, md: 2, lg: 3 }}

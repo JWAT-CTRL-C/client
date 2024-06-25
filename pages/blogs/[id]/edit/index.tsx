@@ -1,21 +1,22 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { setContext } from '@/libs/api';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
-import { ReactNode } from 'react';
-import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
-import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
-import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -91,20 +92,27 @@ const EditBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3} className='px-10 py-12'>
-      <Center>
-        <Title order={1}>Edit blog</Title>
-      </Center>
-      <Group justify='center' className='w-full'>
-        {/* To use update form please provide isEditing and updateValues*/}
-        <BlogForm
-          handleSubmitForm={handleEdit}
-          workSpaceList={workSpaceList ? workSpaceList : []}
-          isEditing
-          updateValues={updateValues}
-        />
-      </Group>
-    </Flex>
+    <>
+      <Head>
+        <title>Edit blog | Synergy</title>
+        <meta name='description' content={blog?.blog_tle?.slice(0, 20) ?? 'Blog'} />
+      </Head>
+
+      <Flex direction='column' gap={3} className='px-10 py-12'>
+        <Center>
+          <Title order={1}>Edit blog</Title>
+        </Center>
+        <Group justify='center' className='w-full'>
+          {/* To use update form please provide isEditing and updateValues*/}
+          <BlogForm
+            handleSubmitForm={handleEdit}
+            workSpaceList={workSpaceList ? workSpaceList : []}
+            isEditing
+            updateValues={updateValues}
+          />
+        </Group>
+      </Flex>
+    </>
   );
 };
 

@@ -59,7 +59,10 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     <AppShell
       header={{ height: 80 }}
       navbar={{
-        width: 300,
+        width: {
+          base: 200,
+          lg: 240
+        },
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened }
       }}
@@ -80,7 +83,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       <AppShell.Main>
         {children}
         <Affix position={{ bottom: 20, right: 20 }}>
-          <Transition transition='slide-up' mounted={scroll.y > 50}>
+          <Transition transition='slide-up' mounted={scroll.y > 80}>
             {(transitionStyles) => (
               <Button
                 leftSection={<FaArrowUp style={{ width: rem(16), height: rem(16) }} />}

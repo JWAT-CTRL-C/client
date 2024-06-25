@@ -15,6 +15,7 @@ import { Divider, LoadingOverlay, Spoiler, Stack, Text, Tooltip } from '@mantine
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect } from 'react';
@@ -46,54 +47,65 @@ const Page: NextPageWithLayout = () => {
       router.push('/workspaces');
     }
   }, [workspace]);
-  return (
-    <div className='px-5 py-2 md:px-20'>
-      {_.isEmpty(workspace) ? (
-        <LoadingOverlay
-          visible={_.isEmpty(workspace)}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
-      ) : (
-        <>
-          <div className='flex-between'>
-            <div className='pb-4'>
-              <h1 className='mb-3 py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
-              <Spoiler
-                showLabel='Show more'
-                hideLabel='Hide'
-                transitionDuration={200}
-                className='pl-3 text-sm'
-                maxHeight={20}
-                maw={'80%'}
-                c='gray.7'>
-                {workspace?.wksp_desc}
-              </Spoiler>
-            </div>
-            <Can I='edit' this={subject('workspace', workspace)}>
-              <Tooltip label='Edit workspace' color='black' withArrow>
-                <Link
-                  className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
-                  href={`/workspaces/${router.query.id}/edit`}>
-                  <FaEdit size={16} />
-                  <span className='hidden md:inline'>Edit</span>
-                </Link>
-              </Tooltip>
-            </Can>
+  return _.isEmpty(workspace) ? (
+    <>
+      <Head>
+        <title>Loading... | Synergy</title>
+        <meta name='description' content='Loading...' />
+      </Head>
+
+      <LoadingOverlay visible={_.isEmpty(workspace)} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />
+    </>
+  ) : (
+    <>
+      <Head>
+        <title>
+          {workspace.wksp_name.slice(0, 20) + (workspace.wksp_name.length > 20 ? '...' : '') ?? 'Blog'} |
+          Synergy
+        </title>
+        <meta name='description' content={workspace.wksp_name.slice(0, 20) ?? 'Blog'} />
+      </Head>
+
+      <div className='px-5 py-2 md:px-20'>
+        <div className='flex-between'>
+          <div className='pb-4'>
+            <h1 className='mb-3 py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
+            <Spoiler
+              showLabel='Show more'
+              hideLabel='Show less'
+              transitionDuration={200}
+              className='pl-3 text-sm'
+              classNames={{
+                control: 'text-xs'
+              }}
+              maxHeight={20}
+              c='gray.7'>
+              {workspace?.wksp_desc}
+            </Spoiler>
           </div>
-          <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
-            <Divider my='xs' label='Resources' labelPosition='left' />
-            <SourceList resources={workspace?.resources} />
-            <Divider my='xs' label='Notifications' labelPosition='left' />
-            <NotificationList notifications={workspace?.notifications} />
-            <Divider my='xs' label='Blogs' labelPosition='left' />
-            <BlogList blogs={workspace?.blogs} />
-            <Divider />
-            <MemberList members={workspace?.users} />
-          </Stack>
-        </>
-      )}
-    </div>
+          <Can I='edit' this={subject('workspace', workspace)}>
+            <Tooltip label='Edit workspace' color='black' withArrow>
+              <Link
+                className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
+                href={`/workspaces/${router.query.id}/edit`}>
+                <FaEdit size={16} />
+                <span className='hidden md:inline'>Edit</span>
+              </Link>
+            </Tooltip>
+          </Can>
+        </div>
+        <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
+          <Divider my='xs' label='Resources' labelPosition='left' />
+          <SourceList resources={workspace?.resources} />
+          <Divider my='xs' label='Notifications' labelPosition='left' />
+          <NotificationList notifications={workspace?.notifications} />
+          <Divider my='xs' label='Blogs' labelPosition='left' />
+          <BlogList blogs={workspace?.blogs} />
+          <Divider />
+          <MemberList members={workspace?.users} />
+        </Stack>
+      </div>
+    </>
   );
 };
 
