@@ -11,16 +11,16 @@ import {
 
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { useDebouncedValue } from '@mantine/hooks';
 import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
 import { workspacesType } from '@/libs/types/workspacesType';
+import { useDebouncedValue } from '@mantine/hooks';
 
 export const useFetchBlogs = () => {
   return useInfiniteQuery({
     queryKey: [BlogQueryEnum.BLOGS],
     queryFn: ({ pageParam }) => fetchBlogs(pageParam),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 12 ? null : lastPageParam + 1),
+    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage?.length < 12 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
 };
@@ -35,7 +35,8 @@ export const useFetchRecentBlogs = () => {
 export const useFetchBlogById = (blog_id: string) => {
   return useQuery<BlogResponse>({
     queryKey: [BlogQueryEnum.BLOGS, blog_id],
-    queryFn: () => fetchBlogById(blog_id)
+    queryFn: () => fetchBlogById(blog_id),
+    enabled: !!blog_id
   });
 };
 
@@ -59,7 +60,8 @@ export const useFetchBlogsCurrentUserByTitle = (blog_tle: string) => {
 export const useFetchRelatedBlog = (blog_id: string) => {
   return useQuery<BlogResponse[]>({
     queryKey: [BlogQueryEnum.BLOGS_RELATED, blog_id],
-    queryFn: () => fetchRelatedBlogs(blog_id)
+    queryFn: () => fetchRelatedBlogs(blog_id),
+    enabled: !!blog_id
   });
 };
 
