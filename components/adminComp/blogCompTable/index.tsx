@@ -17,7 +17,8 @@ import {
   Loader,
   Pagination,
   Button,
-  Collapse
+  Collapse,
+  Badge
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -29,7 +30,7 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FaAngleDown, FaAngleRight, FaAngleUp } from 'react-icons/fa';
 
 const BlogCompTable = ({
@@ -52,7 +53,7 @@ const BlogCompTable = ({
   const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
 
-  const [opened, { toggle }] = useDisclosure(true);
+  const [opened, { toggle }] = useDisclosure(false);
 
   const columns: ColumnDef<blogTableType>[] = [
     {
@@ -69,7 +70,7 @@ const BlogCompTable = ({
     {
       accessorKey: 'blog_tle',
       header: 'Title',
-      size: 100,
+      size: 150,
 
       cell: ({ row }) => row.original.blog_tle
       // filterFn: (row, columnId, filterValue) => {
@@ -133,6 +134,7 @@ const BlogCompTable = ({
 
       cell: ({ row }) => (
         <BlogPopover
+          isLoading={isPending}
           blog_id={row.original.blog_id}
           onClickEditFunction={handleToEditBlogPage}
           onClickDeleteFunction={handleDeleteBlog}></BlogPopover>
@@ -190,8 +192,8 @@ const BlogCompTable = ({
 
   return (
     <Group className='flex flex-col py-1'>
-      <Flex className='self-start'>
-        <Button onClick={toggle}>
+      <Flex className='w-full self-start'>
+        <Button onClick={toggle} className='w-1/3 lg:w-1/5'>
           {opened && <FaAngleDown />}
           {!opened && <FaAngleRight />}
           Blogs
@@ -261,7 +263,13 @@ const BlogCompTable = ({
           <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
         </Flex>
       </Collapse>
-      {!opened && <Flex justify={'center'}>Click Blogs button to show a list of all blog</Flex>}
+      {!opened && (
+        <Flex justify={'center'} className='w-full'>
+          <Badge className='w-full py-4' variant='outline'>
+            Click Blogs button to show a list of all blog
+          </Badge>
+        </Flex>
+      )}
     </Group>
   );
 };

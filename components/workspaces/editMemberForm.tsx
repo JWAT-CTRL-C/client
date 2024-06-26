@@ -141,7 +141,7 @@ export function WpsMemberTable({
       id: 'franchise',
       header: 'Franchise',
       cell: (info) => {
-        return info.getValue() !== 'EM' && info.row.original.user_id !== member.owner.user_id ? (
+        return info.getValue() !== 'EM' && info.row.original.user_id !== member?.owner?.user_id ? (
           <PopoverConfirm
             key={info.row.original.user_id}
             title={`Franchise to ${info.row.original.fuln}?`}
@@ -157,7 +157,7 @@ export function WpsMemberTable({
       id: 'actions',
       header: 'Remove',
       cell: (info) => {
-        return info.row.original.user_id !== member.owner.user_id ? (
+        return info.row.original.user_id !== member?.owner?.user_id ? (
           <PopoverConfirm
             key={info.row.original.user_id}
             title='Remove Member'

@@ -20,7 +20,8 @@ import {
   Loader,
   Pagination,
   Button,
-  Collapse
+  Collapse,
+  Badge
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -83,7 +84,7 @@ const WorkspaceCompTable = ({
     {
       accessorKey: 'wksp_name',
       header: 'Name',
-      size: 100,
+      size: 150,
 
       cell: ({ row }) => row.original.wksp_name
     },
@@ -176,8 +177,8 @@ const WorkspaceCompTable = ({
 
   return (
     <Group className='flex flex-col py-1'>
-      <Flex className='self-start'>
-        <Button onClick={toggle}>
+      <Flex className='w-full self-start'>
+        <Button onClick={toggle} className='w-1/3 lg:w-1/5'>
           {opened && <FaAngleDown />}
           {!opened && <FaAngleRight />}
           Workspaces
@@ -247,7 +248,13 @@ const WorkspaceCompTable = ({
           <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
         </Flex>
       </Collapse>
-      {!opened && <Flex justify={'center'}>Click Workspaces button to show a list of all workspace</Flex>}
+      {!opened && (
+        <Flex justify={'center'} className='w-full'>
+          <Badge className='w-full py-4' variant='outline'>
+            Click Workspaces button to show a list of all workspace
+          </Badge>
+        </Flex>
+      )}
     </Group>
   );
 };

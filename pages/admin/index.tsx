@@ -64,7 +64,7 @@ const AdminPage: NextPageWithLayout = () => {
         allowed ? (
           <Flex direction='column' gap={3}>
             AdminPage
-            <div>
+            <div className='mb-3'>
               <BlogCompTable
                 currentPage={pageBlogs}
                 dataTable={blogs as BlogResponseWithPagination}
@@ -72,7 +72,7 @@ const AdminPage: NextPageWithLayout = () => {
                 isLoading={isLoadingBlogs}
               />
             </div>
-            <div>
+            <div className='mb-3'>
               <WorkspaceCompTable
                 currentPage={pageWorkspaces}
                 dataTable={workspaces as WorkspacesResponseWithPagination}

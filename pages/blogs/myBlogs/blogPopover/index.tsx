@@ -7,9 +7,10 @@ type Props = {
   blog_id: string;
   onClickEditFunction: (id: string | number) => void;
   onClickDeleteFunction: (blog_id: string) => void;
+  isLoading?: boolean;
 };
 
-const BlogPopover = ({ blog_id, onClickEditFunction, onClickDeleteFunction }: Props) => {
+const BlogPopover = ({ blog_id, onClickEditFunction, onClickDeleteFunction, isLoading }: Props) => {
   const [opened, setOpened] = useState(false);
   return (
     <Popover width={100} position='bottom' withArrow shadow='md' opened={opened} onChange={setOpened}>
@@ -18,8 +19,8 @@ const BlogPopover = ({ blog_id, onClickEditFunction, onClickDeleteFunction }: Pr
           ...
         </Button>
       </Popover.Target>
-      <Popover.Dropdown>
-        <div className=''>
+      <Popover.Dropdown className='overflow-clip'>
+        <div className='overflow-clip'>
           <Flex justify={'space-between'}>
             <Tooltip label='Edit'>
               <IconColumn blog_id={blog_id} onClick={onClickEditFunction}>
@@ -27,7 +28,11 @@ const BlogPopover = ({ blog_id, onClickEditFunction, onClickDeleteFunction }: Pr
               </IconColumn>
             </Tooltip>
             <Tooltip label='Delete'>
-              <IconColumn isRed={true} blog_id={blog_id} onClick={onClickDeleteFunction}>
+              <IconColumn
+                isLoading={isLoading}
+                isRed={true}
+                blog_id={blog_id}
+                onClick={onClickDeleteFunction}>
                 <FaRegTrashAlt />
               </IconColumn>
             </Tooltip>
