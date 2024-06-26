@@ -57,7 +57,9 @@ const getCookieValue = (cookies: string, cookieName: string) => {
 // Response interceptor to handle unauthorized errors and retry request
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError & { response: { config: { __isRetryRequest: boolean } } }) => {
+  async (
+    error: AxiosError & { response: { config: { __isRetryRequest: boolean; __isUnauthorized: boolean } } }
+  ) => {
     if (
       error.response &&
       error.response.status === 419 && // Token expired code
@@ -66,10 +68,30 @@ api.interceptors.response.use(
       !error.response.config.__isRetryRequest // Prevent infinite loop
     ) {
       return refreshToken(error);
+    } else if (error.response && error.response.status === 401 && !error.response.config.__isUnauthorized) {
+      return unauthorized(error);
     }
     return Promise.reject(error);
   }
 );
+
+const unauthorized = (error: AxiosError & { response: { config: { __isUnauthorized: boolean } } }) => {
+  error.response.config.__isUnauthorized = true;
+
+  if (!isServer()) {
+    removeUserAuth();
+    Router.push('/auth');
+  } else if (context && !context.res.headersSent) {
+    context.res.setHeader('Set-Cookie', [
+      `user_id=; Max-Age=0; SameSite=Lax; Path=/`,
+      `access_token=; Max-Age=0; SameSite=Lax; Path=/`,
+      `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`
+    ]);
+    context.res.setHeader('location', '/auth');
+    context.res.statusCode = 302;
+    context.res.end();
+  }
+};
 
 let isRefreshing = false;
 let failedQueue: any[] = [];

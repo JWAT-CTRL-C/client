@@ -41,8 +41,8 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
       notificationSocket.on(NotificationType.SUCCESS, handleSuccess);
       notificationSocket.on(NotificationType.ERROR, handleFail);
     } else {
-      notificationSocket.off(NotificationType.SUCCESS, handleSuccess);
-      notificationSocket.off(NotificationType.ERROR, handleFail);
+      notificationSocket.off(NotificationType.SUCCESS);
+      notificationSocket.off(NotificationType.ERROR);
     }
   }, [opened]);
 
