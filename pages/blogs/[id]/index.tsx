@@ -24,6 +24,7 @@ import {
   BackgroundImage,
   Divider,
   Flex,
+  Image,
   LoadingOverlay,
   ScrollArea,
   Skeleton,
@@ -115,10 +116,13 @@ const BlogInfo = () => {
           justify={'center'}
           flex={{ base: 'auto', lg: 8 }}>
           <Skeleton visible={isLoading}>
-            <BackgroundImage
-              className='flex min-h-60 items-center justify-center object-cover object-center'
+            <Image
+              className='object-contain'
               radius='md'
-              src={blog?.blogImage?.blog_img_url ?? defaultImage}></BackgroundImage>
+              src={blog?.blogImage?.blog_img_url ?? defaultImage}
+              mah={500}
+              w={'100%'}
+            />
           </Skeleton>
 
           <Text

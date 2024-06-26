@@ -179,7 +179,6 @@ export default function EditGeneralWorkspaceForm({
             mt='lg'
             withAsterisk
             inputSize='lg'
-            value={form.values.wksp_desc}
             label='Workspace Description'
             {...form.getInputProps('wksp_desc')}
           />

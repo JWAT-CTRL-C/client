@@ -5,7 +5,14 @@ import { SPECIFIC_WORKSPACE_RESPONSE } from '@/services/workspaceServices';
 import { BlogResponse } from './types/blogResponse';
 
 type Action = 'create' | 'read' | 'edit' | 'delete' | 'reach' | 'do';
-type Subject = 'AdminPage' | 'blog' | 'workspace' | 'all' | SPECIFIC_WORKSPACE_RESPONSE | BlogResponse;
+type Subject =
+  | 'AdminPage'
+  | 'blog'
+  | 'workspace'
+  | 'notification'
+  | 'all'
+  | SPECIFIC_WORKSPACE_RESPONSE
+  | BlogResponse;
 type AppAbility = MongoAbility<[Action, Subject], MongoQuery>;
 
 export function defineAbilities() {
@@ -19,14 +26,13 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
   switch (user.role) {
     case 'MA':
       can('reach', 'AdminPage');
-      can('create', ['blog', 'workspace']);
+      can('create', ['blog', 'workspace','notification']);
       can('edit', ['blog', 'workspace']);
       break;
     case 'HM':
       can('create', ['blog', 'workspace']);
       can('edit', ['blog', 'workspace']);
       cannot('reach', 'AdminPage');
-
       break;
     case 'PM':
       can('create', 'blog');
