@@ -35,6 +35,7 @@ export const useGetAllUsers = () => {
     queryKey: [GET_ALL_USERS_KEY],
     queryFn: async () => await getAllUsers()
   });
+  
   return {
     users: data,
     isError,

@@ -1,5 +1,5 @@
 import { User } from './userType';
-import { WorkspacePayloadType } from './workspace';
+import { workspacesType } from './workspacesType';
 
 export type Noti = {
   noti_id: string;
@@ -10,7 +10,9 @@ export type Noti = {
 
   user: User;
 
-  workspace: WorkspacePayloadType;
+  workspace: workspacesType;
 
   crd_at: string;
+
+  is_read: boolean;
 };

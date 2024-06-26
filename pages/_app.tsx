@@ -62,7 +62,7 @@ export default function App({
             </AbilityProvider>
           </StoreProvider>
         </HydrationBoundary>
-        <ReactQueryDevtools initialIsOpen={false} />
+        <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
       </QueryClientProvider>
     </MantineProvider>
   );

@@ -1,21 +1,25 @@
+import 'highlight.js/styles/default.css';
+
 import { ReactNode, useEffect, useState } from 'react';
-
-import { Affix, AppShell, Burger, Button, Group, LoadingOverlay, rem, Transition } from '@mantine/core';
-import { useDisclosure, useWindowScroll } from '@mantine/hooks';
-import { NotificationType } from '@/libs/types';
-
-import Header from './header';
-import Sidebar from './sidebar';
-import { useStore } from '@/providers/StoreProvider';
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { FaArrowUp } from 'react-icons/fa';
 
-import 'highlight.js/styles/default.css';
+import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { NotificationType } from '@/libs/types';
+import { Noti } from '@/libs/types/notiType';
+import { useStore } from '@/providers/StoreProvider';
+import { Affix, AppShell, Burger, Button, Group, LoadingOverlay, rem, Transition } from '@mantine/core';
+import { useDisclosure, useWindowScroll } from '@mantine/hooks';
+
+import FloatingButton from '../FloatingButton';
+import Header from './header';
+import Sidebar from './sidebar';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setUser } = useStore((store) => store);
 
   const { user, isPending } = useMyInfo();
+  const { receiveNotification } = useReceiveNotifications();
 
   const [scroll, scrollTo] = useWindowScroll();
 
@@ -31,8 +35,9 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       for (const workspace of user.workspaces) {
         notificationSocket.emit(NotificationType.SETUP_WORKSPACE, { wksp_id: workspace.wksp_id });
       }
-      notificationSocket.on(NotificationType.NEW, (data: any) => {
-        console.log(data);
+      notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
+        console.log('new notification', notification);
+        receiveNotification(notification);
       });
       setIsListening(true);
     }
@@ -94,6 +99,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
             )}
           </Transition>
         </Affix>
+        <FloatingButton />
       </AppShell.Main>
     </AppShell>
   );

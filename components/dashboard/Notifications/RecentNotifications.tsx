@@ -15,7 +15,9 @@ export default function RecentNotifications({}: IRecentNotificationsProps) {
         verticalSpacing={{ xs: 'md', sm: 'md', md: 'lg' }}>
         {notifications
           ?.slice(0, 6)
-          ?.map((noti) => <NotificationItem key={noti.noti_id} notification={noti} />)}
+          ?.map((notification) => (
+            <NotificationItem key={notification.noti_id} notification={notification} />
+          ))}
       </SimpleGrid>
     </div>
   );
