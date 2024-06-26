@@ -175,3 +175,14 @@ export const fetchWorkspacesInfo = async (): Promise<
       });
   });
 };
+
+export const fetchBlogsForMasterAdmin = async (page: number): Promise<BlogResponseWithPagination> => {
+  return new Promise((resolve, reject) => {
+    api
+      .get(`/blogs/for/master-admin?page=${page}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        reject(new Error(error.response?.data?.message || error.message));
+      });
+  });
+};

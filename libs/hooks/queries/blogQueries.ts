@@ -3,6 +3,7 @@ import {
   fetchBlogById,
   fetchBlogs,
   fetchBlogsForCurrentUser,
+  fetchBlogsForMasterAdmin,
   fetchRecentBlogs,
   fetchRelatedBlogs,
   fetchWorkspacesInfo,
@@ -73,5 +74,13 @@ export const useFetchWorkSpaceInfo = () => {
   return useQuery<Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[]>({
     queryKey: [BlogQueryEnum.BLOGS_WORKSPACES_INFO],
     queryFn: () => fetchWorkspacesInfo()
+  });
+};
+
+export const useFetchBlogsMasterAdmin = (page: number) => {
+  return useQuery<BlogResponseWithPagination>({
+    queryKey: [BlogQueryEnum.BLOGS_MASTER_ADMIN, page],
+    queryFn: () => fetchBlogsForMasterAdmin(page),
+    staleTime: Infinity
   });
 };

@@ -33,3 +33,4 @@ export type BlogResponseWithPagination = {
   currentPage: number;
  
 };
+

@@ -5,6 +5,7 @@ import { USER_TYPE } from './userServices';
 import { ResourceType } from '@/libs/types/sourcesType';
 import { BlogCardType } from '@/libs/types/blogCardType';
 import { BlogResponse } from '@/libs/types/blogResponse';
+import { WorkspacesResponseWithPagination } from '@/libs/types/workspacesType';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -138,6 +139,15 @@ export const getWorkspaceMembers = (wksp_id: string) => {
   return new Promise<WORKSPACE_MEMBER>((resolve, reject) => {
     api
       .get<WORKSPACE_MEMBER>(`/workspaces/${wksp_id}/member`)
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
+export const getWorkspacesForMasterAdmin = (page: number) => {
+  return new Promise<WorkspacesResponseWithPagination>((resolve, reject) => {
+    api
+      .get<WorkspacesResponseWithPagination>(`/workspaces/for/master-admin?page=${page}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
   });

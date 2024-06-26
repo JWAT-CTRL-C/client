@@ -58,7 +58,8 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
     blog_tag: blog.tags,
     blog_cmt: blog.blogComments,
     blog_rtg: blog.blogRatings,
-    blog_img_url: blog.blogImage?.blog_img_url
+    blog_img_url: blog.blogImage?.blog_img_url,
+    user: blog.user
   }));
 };
 

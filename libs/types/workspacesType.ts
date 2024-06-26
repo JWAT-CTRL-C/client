@@ -7,6 +7,8 @@ export type workspacesType = {
   wksp_desc: string;
   users: User[];
   owner: Owner;
+  crd_at: string | Date;
+
   resources: ResourceType[] | [];
 };
 
@@ -21,4 +23,10 @@ export type Owner = {
   user_id: number;
   usrn: string;
   role: RolesType;
+};
+
+export type WorkspacesResponseWithPagination = {
+  data: workspacesType[];
+  totalPages: number;
+  currentPage: number;
 };
