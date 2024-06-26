@@ -31,12 +31,11 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     setLoader(true);
 
     if (notificationSocket && user && !isListening) {
-      notificationSocket.emit(NotificationType.SETUP_USER, { user_id: user.user_id });
+      notificationSocket.emit(NotificationType.SETUP_USER, user.user_id);
       for (const workspace of user.workspaces) {
-        notificationSocket.emit(NotificationType.SETUP_WORKSPACE, { wksp_id: workspace.wksp_id });
+        notificationSocket.emit(NotificationType.SETUP_WORKSPACE, workspace.wksp_id);
       }
       notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
-        console.log('new notification', notification);
         receiveNotification(notification);
       });
       setIsListening(true);
@@ -47,7 +46,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     }
 
     return () => {
-      if (notificationSocket) {
+      if (notificationSocket && isListening) {
         notificationSocket.off(NotificationType.NEW);
       }
     };

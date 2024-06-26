@@ -29,7 +29,7 @@ export default function FloatingButton() {
         transitionProps={{ duration: 300 }}
         offset={10}>
         <div
-          className='duration-[0.2s] flex-center absolute scale-100 scale-y-0 rounded-full bg-green-400 p-2 text-white transition-all ease-out hover:bg-green-500 hover:p-3 group-hover:-translate-y-16 group-hover:scale-y-100'
+          className='flex-center absolute scale-100 scale-y-0 rounded-full bg-green-400 p-2 text-white transition-all duration-200 ease-out hover:bg-green-500 hover:p-3 group-hover:-translate-y-16 group-hover:scale-y-100'
           onClick={() => router.push('/blogs/create')}>
           <FaBlog className='size-6' />
         </div>
@@ -46,7 +46,7 @@ export default function FloatingButton() {
           transitionProps={{ duration: 300 }}
           offset={10}>
           <div
-            className='duration-[0.2s] flex-center absolute scale-x-0 rounded-full bg-blue-400 p-2 text-white transition-all ease-out hover:bg-blue-500 hover:p-3 group-hover:-translate-x-14 group-hover:-translate-y-14 group-hover:scale-x-100'
+            className='flex-center absolute scale-x-0 rounded-full bg-blue-400 p-2 text-white transition-all duration-200 ease-out hover:bg-blue-500 hover:p-3 group-hover:-translate-x-14 group-hover:-translate-y-14 group-hover:scale-x-100'
             onClick={toggleCreateWksp}>
             <FaBriefcase className='size-6' />
           </div>
@@ -65,7 +65,7 @@ export default function FloatingButton() {
           transitionProps={{ duration: 300 }}
           offset={10}>
           <div
-            className='duration-[0.2s] flex-center absolute scale-x-0 rounded-full bg-yellow-400 p-2 text-white transition-all ease-out hover:bg-yellow-500 hover:p-3 group-hover:-translate-x-16 group-hover:scale-x-100'
+            className='flex-center absolute scale-x-0 rounded-full bg-yellow-400 p-2 text-white transition-all duration-200 ease-out hover:bg-yellow-500 hover:p-3 group-hover:-translate-x-16 group-hover:scale-x-100'
             onClick={() => setOpenedCreateNoti(true)}>
             <FaBullhorn className='size-6' />
           </div>
