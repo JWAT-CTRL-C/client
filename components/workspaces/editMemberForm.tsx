@@ -68,7 +68,7 @@ export function WpsMemberTable({
         onSuccess: () => {
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'Remove Member',
-            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed `,
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed from`,
             wksp_id
           });
         }
@@ -104,7 +104,7 @@ export function WpsMemberTable({
         onSuccess: () => {
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'New Owner',
-            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner`,
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner of`,
             wksp_id
           });
         }
@@ -262,7 +262,7 @@ export default function EditWorkspaceMemberForm({
   const handleSubmit = (value: typeof form.values) => {
     notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
       noti_tle: 'New Member',
-      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added`,
+      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added into`,
       wksp_id: router.query.id?.toString() ?? ''
     });
     addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });
