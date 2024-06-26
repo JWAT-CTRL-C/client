@@ -37,14 +37,14 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
   const { user } = useMyInfo();
 
   useEffect(() => {
-    notificationSocket.on(NotificationType.SUCCESS, handleSuccess);
-    notificationSocket.on(NotificationType.ERROR, handleFail);
-
-    return () => {
+    if (opened) {
+      notificationSocket.on(NotificationType.SUCCESS, handleSuccess);
+      notificationSocket.on(NotificationType.ERROR, handleFail);
+    } else {
       notificationSocket.off(NotificationType.SUCCESS);
       notificationSocket.off(NotificationType.ERROR);
-    };
-  }, []);
+    }
+  }, [opened]);
 
   const handleCancel = () => {
     handleClose();
