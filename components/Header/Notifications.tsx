@@ -1,5 +1,5 @@
 import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
-import { Indicator, Menu, Tooltip } from '@mantine/core';
+import { Indicator, Menu, ScrollArea, Tooltip } from '@mantine/core';
 
 import { useState } from 'react';
 import { FaBell } from 'react-icons/fa';
@@ -32,19 +32,23 @@ const Notifications = () => {
         </Indicator>
       </Menu.Target>
 
-      <Menu.Dropdown>
+      <Menu.Dropdown className='py-4'>
         <Menu.Label>Notifications</Menu.Label>
-        {notifications?.map((noti) => (
-          <Menu.Item key={noti.noti_id} className='flex items-center'>
-            <div className='flex items-center gap-4'>
-              <Indicator color='blue' />
-              <div>
-                <div className='text-sm'>{noti.noti_tle}</div>
-                <div className='text-xs text-gray-500'>{noti.noti_cont + ' ' + noti.workspace.wksp_name}</div>
+        <ScrollArea h={250} scrollHideDelay={500} scrollbarSize={3}>
+          {notifications?.map((noti) => (
+            <Menu.Item key={noti.noti_id} className='flex items-center py-3 pl-7'>
+              <div className='flex items-center gap-4'>
+                <Indicator color='blue' />
+                <div>
+                  <div className='text-sm'>{noti.noti_tle}</div>
+                  <div className='text-xs text-gray-500'>
+                    {noti.noti_cont + ' ' + noti.workspace.wksp_name}
+                  </div>
+                </div>
               </div>
-            </div>
-          </Menu.Item>
-        ))}
+            </Menu.Item>
+          ))}
+        </ScrollArea>
       </Menu.Dropdown>
     </Menu>
   );

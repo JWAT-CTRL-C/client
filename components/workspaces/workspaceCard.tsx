@@ -12,12 +12,12 @@ export default function WorkspaceCard({ value }: { value: WorkspaceCardPropsExpa
       padding='lg'
       onClick={() => router.push(`/workspaces/${wksp_id}`)}
       radius='md'
-      className={cn('min-w-[70%] hover:cursor-pointer hover:shadow-lg', 'md:min-w-[33%] lg:min-w-[30%]')}>
+      className={cn('min-w-80 hover:cursor-pointer hover:shadow-lg', 'md:min-w-[33%] lg:min-w-[30%]')}>
       <Card.Section>
         <Image
-          h='300px'
+          h='200px'
           fit='cover'
-          fallbackSrc={`https://placehold.co/550x300/${colors.backgroundWorkspaceTheme[index]}/404040/png?text=${wksp_name.toUpperCase()}&font=roboto`}
+          fallbackSrc={`https://placehold.co/550x200/${colors.backgroundWorkspaceTheme[index]}/404040/png?text=${wksp_name.toUpperCase()}&font=roboto`}
           alt='Workspace Image'
         />
       </Card.Section>

@@ -5,6 +5,8 @@ import { showErrorToast, showSuccessToast } from '../shared/toast';
 import { useRouter } from 'next/router';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
 import _ from 'lodash';
+import { useStore } from '@/providers/StoreProvider';
+import { NotificationType } from '@/libs/types';
 
 export type EditResourceFormType = {
   data: RESOURCE_TYPE;
@@ -12,6 +14,8 @@ export type EditResourceFormType = {
   handleClose: () => void;
 };
 export default function EditResourceForm({ data, opened, handleClose }: EditResourceFormType) {
+  const { notificationSocket } = useStore((state) => state);
+
   const router = useRouter();
   const wksp_id = router.query.id as string;
   const form = useForm({
@@ -33,7 +37,23 @@ export default function EditResourceForm({ data, opened, handleClose }: EditReso
   };
   const { updateResource, isPending, isError } = useUpdateResource(handleSuccess, handleFail);
   const handleSubmit = (value: typeof form.values) => {
-    updateResource({ wksp_id, resrc_id: value.resrc_id, resource: _.omit(value, 'resrc_id') });
+    updateResource(
+      { wksp_id, resrc_id: value.resrc_id, resource: _.omit(value, 'resrc_id') },
+      {
+        onSuccess: () => {
+          let content = `Resource ${data.resrc_name} has been updated`;
+
+          if (value.resrc_name !== data.resrc_name) {
+            content = `Resource ${data.resrc_name} has been renamed to ${value.resrc_name}`;
+          }
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'Update Resource',
+            noti_cont: content,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handleCancel = () => {
     handleClose();

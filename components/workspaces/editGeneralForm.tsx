@@ -1,6 +1,6 @@
 import { useDeleteResource } from '@/libs/hooks/mutations/resourceMutations';
 import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
-import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { GENERAL_RESPONSE_TYPE, NotificationType } from '@/libs/types';
 import { ResourceItemType } from '@/libs/types/workspace';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
 import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
@@ -15,8 +15,10 @@ import { showErrorToast, showSuccessToast } from '../shared/toast';
 import AddResourceForm from './addResourceForm';
 import EditResourceForm from './editResourceForm';
 import { useRouter } from 'next/router';
+import { useStore } from '@/providers/StoreProvider';
 
 const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: string }) => {
+  const { notificationSocket } = useStore((state) => state);
   const [opened, { toggle }] = useDisclosure(false);
   const router = useRouter();
   const handleSuccess = () => {
@@ -31,7 +33,18 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
     toggle();
   };
   const handleRemoveResource = () => {
-    deleteResource({ wksp_id, resrc_id: item.resrc_id });
+    deleteResource(
+      { wksp_id, resrc_id: item.resrc_id },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'Update Resource',
+            noti_cont: `Resource ${item.resrc_name} has been removed `,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handeCreateResourceBlog = () => {
     router.push(`/blogs/create?wksp_id=${wksp_id}&resrc_id=${item.resrc_id}`);
@@ -90,6 +103,7 @@ export default function EditGeneralWorkspaceForm({
   resources: RESOURCE_TYPE[];
 }) {
   const [opened, { toggle }] = useDisclosure(false);
+  const { notificationSocket } = useStore((state) => state);
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -134,7 +148,20 @@ export default function EditGeneralWorkspaceForm({
   const { updateWorkspace, isPending } = useUpdateWorkspace(handleSuccess, handleFail);
   const handleSubmit = (value: typeof form.values) => {
     // console.log(value)
-    updateWorkspace(value as unknown as UPDATE_WORKSPACE_REQUEST);
+    updateWorkspace(value as unknown as UPDATE_WORKSPACE_REQUEST, {
+      onSuccess: () => {
+        let content = `Resource ${value.wksp_name} has been updated`;
+
+        if (value.wksp_name !== workspace?.wksp_name) {
+          content = `Resource ${value.wksp_name} has been renamed to ${workspace?.wksp_name}`;
+        }
+        notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+          noti_tle: 'Update Resource',
+          noti_cont: content,
+          wksp_id: workspace?.wksp_id
+        });
+      }
+    });
   };
   return (
     <div>
