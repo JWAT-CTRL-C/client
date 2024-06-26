@@ -1,4 +1,4 @@
-import { BlogResponse } from '@/libs/types/blogResponse';
+import { BlogResponse, BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import {
   fetchBlogById,
   fetchBlogs,
@@ -40,10 +40,14 @@ export const useFetchBlogById = (blog_id: string) => {
   });
 };
 
-export const useFetchBlogsCurrentUser = () => {
-  return useQuery<BlogResponse[]>({
-    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
-    queryFn: () => fetchBlogsForCurrentUser()
+export const useFetchBlogsCurrentUser = (page: number, blog_tle: string) => {
+  const [debounced] = useDebouncedValue(blog_tle, 300);
+
+  return useQuery<BlogResponseWithPagination>({
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, page, debounced],
+    queryFn: () => fetchBlogsForCurrentUser(page, debounced),
+    staleTime: Infinity
+    // enabled:  !!debounced
   });
 };
 

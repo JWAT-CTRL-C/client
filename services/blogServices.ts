@@ -2,7 +2,7 @@ import api from '@/libs/api';
 import { UploadImageResponse } from '@/libs/types/UploadImageResponse';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { BlogResponse } from '@/libs/types/blogResponse';
+import { BlogResponse, BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { workspacesType } from '@/libs/types/workspacesType';
 
 export const fetchBlogs = async (pageParam: number): Promise<BlogResponse[]> => {
@@ -76,10 +76,13 @@ export const fetchBlogById = async (blog_id: string): Promise<BlogResponse> => {
   });
 };
 
-export const fetchBlogsForCurrentUser = async (): Promise<BlogResponse[]> => {
+export const fetchBlogsForCurrentUser = async (
+  page: number,
+  blog_tle: string = ''
+): Promise<BlogResponseWithPagination> => {
   return new Promise((resolve, reject) => {
     api
-      .get(`/blogs/for/user`)
+      .get(`/blogs/for/user?page=${page}&blog_tle=${blog_tle}`)
       .then((response) => resolve(response.data))
       .catch((error) => {
         reject(new Error(error.response?.data?.message || error.message));

@@ -299,6 +299,7 @@ const BlogForm = ({
                     ? form.getValues().blog_img
                     : URL.createObjectURL(form.values.blog_img! as File)
                 }
+                fallbackSrc='https://placehold.co/600x400?text=Placeholder'
                 alt='Background Image Preview'
               />
               {!isEditing && (

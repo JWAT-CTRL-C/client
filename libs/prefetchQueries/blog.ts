@@ -17,8 +17,8 @@ export const prefetchBlogs = async (queryClient: QueryClient) =>
 
 export const prefetchCurrentUserBlogs = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
-    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
-    queryFn: async () => await fetchBlogsForCurrentUser()
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, 1, ''],
+    queryFn: async () => await fetchBlogsForCurrentUser(1, '')
   });
 
 export const prefetchBlogById = async (queryClient: QueryClient, id: string) =>
