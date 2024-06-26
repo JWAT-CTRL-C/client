@@ -31,6 +31,7 @@ import {
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import IconColumn from './iconColumn';
 import TextColumn from './textColumn';
+import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 
 const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   const [filterField, setFilterField] = useState('');
@@ -63,7 +64,6 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_id',
       header: 'Blog ID',
-      enableResizing: true,
 
       cell: ({ row }) => (
         <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
@@ -74,7 +74,6 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_tle',
       header: 'Title',
-      enableResizing: true,
 
       cell: ({ row }) => row.original.blog_tle
       // filterFn: (row, columnId, filterValue) => {
@@ -84,35 +83,30 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_cmt',
       header: 'Comments',
-      enableResizing: true,
 
       cell: ({ row }) => row.original.blog_cmt?.length ?? 0
     },
     {
       accessorKey: 'blog_rtg',
       header: 'Like',
-      enableResizing: true,
 
       cell: ({ row }) => (row.original.blog_rtg?.length > 0 ? row.original.blog_rtg?.length : 0)
     },
     {
       accessorKey: 'crd_at',
       header: 'Created At',
-      enableResizing: true,
 
       cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
-      enableResizing: true,
 
       cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',
       header: 'Tags',
-      enableResizing: true,
 
       cell: ({ row }) => {
         return (
@@ -131,38 +125,23 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         );
       }
     },
-    {
-      id: 'edit',
-      header: 'Edit',
-      enableResizing: true,
-
-      cell: ({ row, cell, column }) => (
-        <IconColumn blog_id={row.original.blog_id} onClick={handleToEditBlogPage}>
-          <FaRegEdit />
-        </IconColumn>
-      )
-    },
 
     {
-      id: 'delete',
-      header: 'Delete',
-      enableResizing: true,
+      id: 'actions',
+      header: 'Actions',
 
       cell: ({ row }) => (
-        <IconColumn isRed={true} blog_id={row.original.blog_id} onClick={handleDeleteBlogPage}>
-          <FaRegTrashAlt />
-        </IconColumn>
+        <BlogPopover
+          blog_id={row.original.blog_id}
+          onClickEditFunction={handleToEditBlogPage}
+          onClickDeleteFunction={handleDeleteBlogPage}></BlogPopover>
       )
     }
   ];
 
   const table = useReactTable({
     data: tableValues,
-    defaultColumn: {
-      size: 112, //starting column size
-      minSize: 50, //enforced during column resizing
-      maxSize: 500 //enforced during column resizing
-    },
+
     columns,
     state: {
       // columnFilters
@@ -170,12 +149,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     // getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: getSortedRowModel()
 
-    columnResizeDirection: 'ltr',
     // onColumnFiltersChange: setColumnFilters,
-
-    columnResizeMode: 'onChange'
   });
 
   useEffect(() => {
@@ -259,6 +235,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         style={{
           width: `${table.getCenterTotalSize()}px`
         }}
+        className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
@@ -271,24 +248,12 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th
-                  key={header.id}
-                  c={theme.primaryColor}
-                  fw={'bolder'}
-                  className='group relative'
-                  style={{ width: `${header.getSize()}px` }}>
+                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                   )}
-                  <div
-                    className='absolute right-0 top-0 hidden h-full cursor-col-resize group-hover:block'
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                    onDoubleClick={() => header.column.resetSize()}
-                    style={{ width: '4px' }}
-                  />
                 </Table.Th>
               ))}
             </Table.Tr>
@@ -311,7 +276,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
             table.getRowModel().rows.map((row) => (
               <Table.Tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <Table.Td key={cell.id} style={{ width: `${cell.column.getSize()}px` }}>
+                  <Table.Td key={cell.id}>
                     <Text size='sm' lineClamp={4}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Text>
