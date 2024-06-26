@@ -2,17 +2,17 @@ import DefaultLayout from '@/components/layouts/DefaultLayout';
 import CreateWorkspaceForm from '@/components/workspaces/createForm';
 import WorkspaceList from '@/components/workspaces/workspaceList';
 import { setContext } from '@/libs/api';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { Can } from '@/providers/AbilityProvider';
 import { Button } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { ReactElement } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import { NextPageWithLayout } from '../_app';
-import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
-import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
-import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);

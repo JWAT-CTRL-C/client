@@ -62,13 +62,18 @@ export function WpsMemberTable({
     handleRemoveMemberFail
   );
   const handleDeleteMember = (user_id: number) => {
-    notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
-      noti_tle: 'Remove Member',
-      noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed from the workspace`,
-      user_id: currentUser.user_id,
-      wksp_id
-    });
-    removeMember({ wksp_id, user_id });
+    removeMember(
+      { wksp_id, user_id },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'Remove Member',
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed from`,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handleConfirmRemoveMember = (user_id: number) => {
     handleDeleteMember(user_id);
@@ -93,7 +98,18 @@ export function WpsMemberTable({
     handleFranchiseMemberFail
   );
   const handleFranchise = (user_id: number) => {
-    franchise({ wksp_id, user_id });
+    franchise(
+      { wksp_id, user_id },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'New Owner',
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner of`,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handleConfirmFranchiseMember = (user_id: number) => {
     handleFranchise(user_id);
@@ -244,10 +260,9 @@ export default function EditWorkspaceMemberForm({
   };
   const { addMember, isPending } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
-    notificationSocket.emit(NotificationType.CREATE_WORKSPACE, {
+    notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
       noti_tle: 'New Member',
-      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added to the workspace`,
-      user_id: currentUser.user_id,
+      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added into`,
       wksp_id: router.query.id?.toString() ?? ''
     });
     addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });

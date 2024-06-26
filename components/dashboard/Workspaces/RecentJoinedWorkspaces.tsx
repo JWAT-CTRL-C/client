@@ -11,7 +11,7 @@ export default function RecentJoinedWorkspaces({}: IRecentJoinedWorkspacesProps)
 
   return (
     <div className='flex w-full justify-center px-1 py-2 md:px-3 md:py-5'>
-      <div className='grid min-h-24 w-full grid-cols-1 gap-6 md:grid-cols-2 md:gap-4 lg:grid-cols-3'>
+      <div className='grid min-h-24 w-full grid-cols-1 gap-6 md:grid-cols-2 md:gap-4'>
         {isPending || _.isNil(workspaces) ? (
           <Skeleton />
         ) : (
