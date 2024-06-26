@@ -17,7 +17,7 @@ export default function NotificationListItem({ item }: { item: NOTIFICATION_TYPE
       <div className='flex-start gap-4'>
         <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
         <div className='w-full'>
-          <Text className='text-xl font-bold'>{item.noti_tle} </Text>
+          <Text className='line-clamp-1 text-xl font-bold'>{item.noti_tle} </Text>
           <div className='mb-3 pl-2 text-xs text-slate-500'>
             Creator: {item.user?.fuln ?? 'System'}
             <Badge

@@ -42,8 +42,8 @@ const Workspace: NextPageWithLayout = () => {
               <FaPlusCircle />
               <span className='ml-2 hidden md:inline'>New Workspace</span>
             </Button>
+            <CreateWorkspaceForm opened={opened} handleClose={toggle} />
           </Can>
-          <CreateWorkspaceForm opened={opened} handleClose={toggle} />
         </div>
         <WorkspaceList />
       </div>

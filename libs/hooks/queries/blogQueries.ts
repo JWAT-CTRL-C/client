@@ -20,7 +20,7 @@ export const useFetchBlogs = () => {
     queryKey: [BlogQueryEnum.BLOGS],
     queryFn: ({ pageParam }) => fetchBlogs(pageParam),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage?.length < 12 ? null : lastPageParam + 1),
+    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 12 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
 };
