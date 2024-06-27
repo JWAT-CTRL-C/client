@@ -3,6 +3,7 @@ import { AbilityBuilder, AbilityTuple, createMongoAbility, MongoAbility, MongoQu
 import { User } from './types/userType';
 import { SPECIFIC_WORKSPACE_RESPONSE } from '@/services/workspaceServices';
 import { BlogResponse } from './types/blogResponse';
+import { BlogQueryEnum } from './constants/queryKeys/blog';
 
 type Action = 'create' | 'read' | 'edit' | 'delete' | 'reach' | 'do';
 type Subject =
@@ -12,7 +13,9 @@ type Subject =
   | 'notification'
   | 'all'
   | SPECIFIC_WORKSPACE_RESPONSE
-  | BlogResponse;
+  | BlogResponse
+  | 'BlogsAdminPage'
+  | 'WorkspacesAdminPage';
 type AppAbility = MongoAbility<[Action, Subject], MongoQuery>;
 
 export function defineAbilities() {
@@ -26,13 +29,19 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
   switch (user.role) {
     case 'MA':
       can('reach', 'AdminPage');
-      can('create', ['blog', 'workspace','notification']);
+      can('create', ['blog', 'workspace', 'notification']);
       can('edit', ['blog', 'workspace']);
+      can('reach', 'BlogsAdminPage');
+      can('reach', 'WorkspacesAdminPage');
+
       break;
     case 'HM':
       can('create', ['blog', 'workspace']);
       can('edit', ['blog', 'workspace']);
       cannot('reach', 'AdminPage');
+      cannot('reach', 'BlogsAdminPage');
+      cannot('reach', 'WorkspacesAdminPage');
+
       break;
     case 'PM':
       can('create', 'blog');
@@ -40,12 +49,18 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       can('edit', 'workspace', { 'owner.user_id': user.user_id });
       can('edit', 'blog', { 'user.user_id': user.user_id });
       cannot('reach', 'AdminPage');
+      cannot('reach', 'BlogsAdminPage');
+      cannot('reach', 'WorkspacesAdminPage');
+
       break;
     case 'EM':
       can('create', 'blog');
       can('edit', 'blog', { 'user.user_id': user.user_id });
       cannot('create', 'workspace');
       cannot('reach', 'AdminPage');
+      cannot('reach', 'BlogsAdminPage');
+      cannot('reach', 'WorkspacesAdminPage');
+
       break;
     default:
       cannot('do', 'all');

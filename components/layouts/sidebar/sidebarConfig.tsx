@@ -1,5 +1,15 @@
 import { SidebarConfig } from '@/libs/types/sidebarType';
-import { FaHistory, FaHome, FaNetworkWired, FaNewspaper, FaPlusSquare, FaTasks } from 'react-icons/fa';
+import {
+  FaBlog,
+  FaBriefcase,
+  FaHistory,
+  FaHome,
+  FaNetworkWired,
+  FaNewspaper,
+  FaPlusSquare,
+  FaTasks,
+  FaUser
+} from 'react-icons/fa';
 
 export const sidebarConfig: SidebarConfig = {
   blogConfig: [
@@ -14,5 +24,9 @@ export const sidebarConfig: SidebarConfig = {
     // { link: '/workspaces/create', label: 'New workspace', icon: <FaNetworkWired size={20} /> }
   ],
   dashboardConfig: [{ link: '/dashboard', label: 'Home', icon: <FaHome size={20} /> }],
-  adminConfig: [{ link: '/admin', label: 'Home', icon: <FaHome size={20} /> }]
+  adminConfig: [
+    { link: '/admin', label: 'Users', icon: <FaUser size={20} /> },
+    { link: '/admin/blogs', label: 'Blogs', icon: <FaBlog size={20} /> },
+    { link: '/admin/workspaces', label: 'Workspaces', icon: <FaBriefcase size={20} /> }
+  ]
 };

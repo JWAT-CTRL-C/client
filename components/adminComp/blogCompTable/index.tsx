@@ -53,8 +53,6 @@ const BlogCompTable = ({
   const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
 
-  const [opened, { toggle }] = useDisclosure(false);
-
   const columns: ColumnDef<blogTableType>[] = [
     {
       accessorKey: 'blog_id',
@@ -133,11 +131,13 @@ const BlogCompTable = ({
       header: 'Actions',
 
       cell: ({ row }) => (
-        <BlogPopover
-          isLoading={isPending}
-          blog_id={row.original.blog_id}
-          onClickEditFunction={handleToEditBlogPage}
-          onClickDeleteFunction={handleDeleteBlog}></BlogPopover>
+        <Flex justify='center'>
+          <BlogPopover
+            isLoading={isPending}
+            id={row.original.blog_id}
+            onClickEditFunction={handleToEditBlogPage}
+            onClickDeleteFunction={handleDeleteBlog}></BlogPopover>
+        </Flex>
       )
     }
   ];
@@ -193,83 +193,71 @@ const BlogCompTable = ({
   return (
     <Group className='flex flex-col py-1'>
       <Flex className='w-full self-start'>
-        <Button onClick={toggle} className='w-1/3 lg:w-1/5'>
-          {opened && <FaAngleDown />}
-          {!opened && <FaAngleRight />}
-          Blogs
-        </Button>
+        <Title>Blogs</Title>
       </Flex>
       <Space h='xl' />
-      <Collapse in={opened} transitionDuration={500}>
-        <Table
-          // style={{
-          //   width: `${table.getCenterTotalSize()}px`
-          // }}
-          className='overflow-x-auto'
-          horizontalSpacing='md'
-          verticalSpacing='md'
-          striped
-          highlightOnHover
-          withTableBorder
-          withColumnBorders
-          stickyHeader
-          stickyHeaderOffset={60}>
-          <Table.Thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
-                    {header.isPlaceholder ? null : (
-                      <div className='my-1'>
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                      </div>
-                    )}
-                  </Table.Th>
+
+      <Table
+        // style={{
+        //   width: `${table.getCenterTotalSize()}px`
+        // }}
+        className='overflow-x-auto'
+        horizontalSpacing='md'
+        verticalSpacing='md'
+        striped
+        highlightOnHover
+        withTableBorder
+        withColumnBorders
+        stickyHeader
+        stickyHeaderOffset={60}>
+        <Table.Thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Table.Tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
+                  {header.isPlaceholder ? null : (
+                    <div className='my-1'>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </div>
+                  )}
+                </Table.Th>
+              ))}
+            </Table.Tr>
+          ))}
+        </Table.Thead>
+        <Table.Tbody>
+          {isLoading ? (
+            <Table.Tr>
+              <Table.Td colSpan={columns.length} className='text-center'>
+                <Loader c={theme.primaryColor} />
+              </Table.Td>
+            </Table.Tr>
+          ) : table?.getRowModel()?.rows?.length === 0 ? (
+            <Table.Tr>
+              <Table.Td colSpan={columns.length} className='text-center'>
+                <Text c={theme.primaryColor} fw={'bold'}>
+                  Not Found
+                </Text>
+              </Table.Td>
+            </Table.Tr>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <Table.Tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Td key={cell.id}>
+                    <Text size='sm' lineClamp={2}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Text>
+                  </Table.Td>
                 ))}
               </Table.Tr>
-            ))}
-          </Table.Thead>
-          <Table.Tbody>
-            {isLoading ? (
-              <Table.Tr>
-                <Table.Td colSpan={columns.length} className='text-center'>
-                  <Loader c={theme.primaryColor} />
-                </Table.Td>
-              </Table.Tr>
-            ) : table?.getRowModel()?.rows?.length === 0 ? (
-              <Table.Tr>
-                <Table.Td colSpan={columns.length} className='text-center'>
-                  <Text c={theme.primaryColor} fw={'bold'}>
-                    Not Found
-                  </Text>
-                </Table.Td>
-              </Table.Tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <Table.Tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <Table.Td key={cell.id}>
-                      <Text size='sm' lineClamp={2}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </Text>
-                    </Table.Td>
-                  ))}
-                </Table.Tr>
-              ))
-            )}
-          </Table.Tbody>
-        </Table>
-        <Flex className='mt-5 w-full justify-start lg:justify-center'>
-          <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
-        </Flex>
-      </Collapse>
-      {!opened && (
-        <Flex justify={'center'} className='w-full'>
-          <Badge className='w-full py-4' variant='outline'>
-            Click Blogs button to show a list of all blog
-          </Badge>
-        </Flex>
-      )}
+            ))
+          )}
+        </Table.Tbody>
+      </Table>
+      <Flex className='mt-5 w-full justify-start lg:justify-center'>
+        <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
+      </Flex>
     </Group>
   );
 };

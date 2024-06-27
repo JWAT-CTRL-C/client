@@ -2,31 +2,22 @@ import { GetServerSideProps } from 'next';
 
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { prefetchMyInfo, prefetchUsersAdmin } from '@/libs/prefetchQueries/user';
 import { Can } from '@/providers/AbilityProvider';
 import { Flex } from '@mantine/core';
-import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 import { NextPageWithLayout } from '../_app';
-import { useFetchBlogsMasterAdmin } from '@/libs/hooks/queries/blogQueries';
-import { prefetchMasterAdminBlogs } from '@/libs/prefetchQueries/blog';
 import { useState } from 'react';
-import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
-import BlogCompTable from '@/components/adminComp/blogCompTable';
-import { useGetWorkspaceForMasterAdmin } from '@/libs/hooks/queries/workspaceQueries';
-import { preFetchAllWorkspaceMasterAdmin } from '@/libs/prefetchQueries/workspace';
-import WorkspaceCompTable from '@/components/adminComp/workspacesCompTable';
-import { WorkspacesResponseWithPagination } from '@/libs/types/workspacesType';
+import { useGetAllUsersForAdmin } from '@/libs/hooks/queries/userQueries';
+import UserCompTable from '@/components/adminComp/usersCompTable';
+import { UserResponseWithPagination } from '@/libs/types/userType';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
 
   const queryClient = new QueryClient();
-  await Promise.all([
-    prefetchMyInfo(queryClient),
-    prefetchMasterAdminBlogs(queryClient),
-    preFetchAllWorkspaceMasterAdmin(queryClient)
-  ]);
+  await Promise.all([prefetchMyInfo(queryClient), prefetchUsersAdmin(queryClient)]);
 
   return {
     props: {
@@ -36,48 +27,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const AdminPage: NextPageWithLayout = () => {
-  const [pageBlogs, setPageBlogs] = useState<number>(1);
-  const [pageWorkspaces, setPageWorkspaces] = useState<number>(1);
-
-  const {
-    data: blogs,
-    isError: isErrorBlogs,
-    isLoading: isLoadingBlogs
-  } = useFetchBlogsMasterAdmin(pageBlogs);
-  const {
-    workspaces,
-    isError: isErrorWorkspaces,
-    isPending: isLoadingWorkspaces
-  } = useGetWorkspaceForMasterAdmin(pageWorkspaces);
-
-  const handlePagingBlogs = (newPage: number) => {
-    setPageBlogs(newPage);
+  const [page, setPage] = useState<number>(1);
+  const { users, isError, isPending } = useGetAllUsersForAdmin(page);
+  const handlePaging = (newPage: number) => {
+    setPage(newPage);
   };
-  const handlePagingWorkspaces = (newPage: number) => {
-    setPageWorkspaces(newPage);
-  };
-  console.log(workspaces);
+ 
 
   return (
     <Can I='reach' a='AdminPage' passThrough>
       {(allowed) =>
         allowed ? (
           <Flex direction='column' gap={3}>
-            AdminPage
             <div className='mb-3'>
-              <BlogCompTable
-                currentPage={pageBlogs}
-                dataTable={blogs as BlogResponseWithPagination}
-                onPagination={handlePagingBlogs}
-                isLoading={isLoadingBlogs}
-              />
-            </div>
-            <div className='mb-3'>
-              <WorkspaceCompTable
-                currentPage={pageWorkspaces}
-                dataTable={workspaces as WorkspacesResponseWithPagination}
-                onPagination={handlePagingWorkspaces}
-                isLoading={isLoadingWorkspaces}
+              <UserCompTable
+                currentPage={page}
+                dataTable={users as UserResponseWithPagination}
+                onPagination={handlePaging}
+                isLoading={isPending}
               />
             </div>
           </Flex>

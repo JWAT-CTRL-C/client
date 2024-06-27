@@ -132,7 +132,7 @@ const BlogTable = ({
 
       cell: ({ row }) => (
         <BlogPopover
-          blog_id={row.original.blog_id}
+          id={row.original.blog_id}
           onClickEditFunction={handleToEditBlogPage}
           onClickDeleteFunction={handleDeleteBlogPage}></BlogPopover>
       )

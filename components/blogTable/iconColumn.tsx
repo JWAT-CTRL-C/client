@@ -8,9 +8,10 @@ const IconColumn = forwardRef<
     onClick: Function;
     blog_id: string | number;
     isRed?: boolean;
+    isYellow?: boolean;
     isLoading?: boolean;
   }
->(({ children, onClick, blog_id, isRed = false, isLoading }, ref) => {
+>(({ children, onClick, blog_id, isRed = false, isLoading, isYellow = false }, ref) => {
   return (
     <Flex justify='center' ref={ref}>
       {isRed ? (
@@ -18,7 +19,7 @@ const IconColumn = forwardRef<
           {children}
         </ActionIcon>
       ) : (
-        <ActionIcon loading={isLoading} onClick={() => onClick(blog_id)}>
+        <ActionIcon bg={isYellow ? 'yellow' : 'violet'} loading={isLoading} onClick={() => onClick(blog_id)}>
           {children}
         </ActionIcon>
       )}
