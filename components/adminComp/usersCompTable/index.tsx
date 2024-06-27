@@ -206,7 +206,7 @@ const UserCompTable = ({
       await restoreUser(id as number);
       showSuccessToast('Restore user successfully');
     } catch (error: AxiosError | any) {
-      const message = error.response.data.message;
+      const message = error?.response?.data.message;
       showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
     }
   };

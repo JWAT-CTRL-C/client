@@ -59,6 +59,10 @@ const FormModalAdmin = ({ user }: Props) => {
           return val && isEmpty(val) ? 'Password is required' : null;
         }
       },
+      fuln: (val) => {
+        if (!val) return 'Full name is required';
+        return val && isEmpty(val) ? 'Full name is required' : null;
+      },
       usrn: (val) => {
         if (!val) return 'User name is required';
         if (/\s/.test(val)) return 'User name cannot contain spaces';
@@ -157,6 +161,7 @@ const FormModalAdmin = ({ user }: Props) => {
               />
               <TextInput
                 label='Full Name'
+                withAsterisk
                 name='fuln'
                 placeholder='Enter your full name'
                 key={form.key('fuln')}
