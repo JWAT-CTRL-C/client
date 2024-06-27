@@ -26,7 +26,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 const MyBlogs = () => {
-  const { data: blogs, isLoading, isError } = useFetchBlogsCurrentUser();
+  const { data: blogs, isLoading } = useFetchBlogsCurrentUser();
+
   if (isLoading)
     return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
