@@ -29,7 +29,7 @@ export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
         <NoData title='No blogs found' />
       ) : (
         <>
-          <Box className='mb-5 flex justify-end'>
+          <Box className='mb-5 flex justify-self-end'>
             <Button
               onClick={toggle}
               variant='outline'

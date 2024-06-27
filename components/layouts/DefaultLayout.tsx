@@ -14,6 +14,8 @@ import { useDisclosure, useWindowScroll } from '@mantine/hooks';
 import FloatingButton from '../FloatingButton';
 import Header from './header';
 import Sidebar from './sidebar';
+import { showNotifyToast } from '../shared/toast';
+import { NotificationItem } from '../dashboard/Notifications/NotificationItem';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setUser } = useStore((store) => store);
@@ -37,6 +39,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       }
       notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
         receiveNotification(notification);
+        showNotifyToast(<NotificationItem notification={notification} toast />);
       });
       setIsListening(true);
     }
