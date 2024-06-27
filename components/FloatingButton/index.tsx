@@ -13,6 +13,10 @@ export default function FloatingButton() {
   const [openedCreateWksp, { toggle: toggleCreateWksp }] = useDisclosure(false);
   const [openedCreateNoti, setOpenedCreateNoti] = useState(false);
 
+  const handleOpenCreateNoti = () => setOpenedCreateNoti(true);
+
+  const handleCloseCreateNoti = () => setOpenedCreateNoti(false);
+
   return (
     <div className='group fixed bottom-16 right-10 flex h-24 w-24 items-end justify-end p-2 *:cursor-pointer'>
       <div className='flex-center absolute z-50 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-3 text-white shadow-xl'>
@@ -66,12 +70,12 @@ export default function FloatingButton() {
           offset={10}>
           <div
             className='flex-center absolute scale-x-0 rounded-full bg-yellow-400 p-2 text-white transition-all duration-200 ease-out hover:bg-yellow-500 hover:p-3 group-hover:-translate-x-16 group-hover:scale-x-100'
-            onClick={() => setOpenedCreateNoti(true)}>
+            onClick={handleOpenCreateNoti}>
             <FaBullhorn className='size-6' />
           </div>
         </Tooltip>
 
-        <CreateNotificationForm opened={openedCreateNoti} handleClose={() => setOpenedCreateNoti(false)} />
+        <CreateNotificationForm opened={openedCreateNoti} handleClose={handleCloseCreateNoti} />
       </Can>
     </div>
   );

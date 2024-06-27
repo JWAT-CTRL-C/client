@@ -6,7 +6,7 @@ import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogsCurrentUserByTitle } from '@/libs/hooks/queries/blogQueries';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
-import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
+import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
   Flex,
   Group,
@@ -100,14 +100,14 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
       header: 'Created At',
       enableResizing: true,
 
-      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
       enableResizing: true,
 
-      cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',

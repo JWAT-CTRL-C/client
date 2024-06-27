@@ -1,15 +1,22 @@
-import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
-import { Badge, Indicator, Menu, ScrollArea, Tooltip } from '@mantine/core';
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
-import ShowContent from '../EditorContent';
+import { useInView } from 'react-intersection-observer';
+
+import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
+import { Indicator, Loader, Menu, ScrollArea, Tooltip } from '@mantine/core';
+
 import NotificationItem from './NotificationItem';
 
 const Notifications = () => {
   const [opened, setOpened] = useState(false);
 
-  const { data: notifications } = useFetchNotifications();
+  const { data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchNotifications();
+
+  const [ref, inView] = useInView({ threshold: 0 });
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [inView]);
 
   return (
     <Menu
@@ -42,6 +49,11 @@ const Notifications = () => {
               <NotificationItem notification={notification} />
             </Menu.Item>
           ))}
+          {hasNextPage && (
+            <div className='flex-center my-3 w-full p-3' ref={ref}>
+              {isFetchingNextPage && <Loader size={20} />}
+            </div>
+          )}
         </ScrollArea.Autosize>
       </Menu.Dropdown>
     </Menu>

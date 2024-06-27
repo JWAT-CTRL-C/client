@@ -5,6 +5,7 @@ import ShowContent from '@/components/EditorContent';
 import { useDisclosure } from '@mantine/hooks';
 import ModalContent from '@/components/Notifications/ModalContent';
 import { avatarSrc } from '@/libs/constants/avatarSrc';
+import { convertIsoToDateTime } from '@/libs/utils';
 
 interface INotificationItemProps {
   notification: Noti;
@@ -22,7 +23,7 @@ export function NotificationItem({ notification }: INotificationItemProps) {
             <Text fz='sm'>{notification.user?.fuln ?? 'System'}</Text>
             <div className='flex-start gap-2'>
               <Text fz='xs' c='dimmed'>
-                {new Date(notification.crd_at).toDateString()}
+                {convertIsoToDateTime(notification.crd_at)}
               </Text>
 
               <Badge color={notification.workspace ? 'green.6' : 'blue'} variant='filled' size='xs'>

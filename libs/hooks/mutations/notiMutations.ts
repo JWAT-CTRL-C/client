@@ -9,7 +9,9 @@ export const useReceiveNotifications = () => {
 
   const { mutateAsync, isPending, isError } = useMutation({
     mutationFn: async (notification: Noti) => await Promise.resolve(notification),
-    onSuccess: (newNotification) => {
+    onSuccess: (notification) => {
+      const newNotification = { ...notification, is_read: false };
+
       queryClient.setQueryData([NotiQueryEnum.GLOBAL_NOTIFICATIONS], (old: Noti[]) => {
         if (!old) return;
 
