@@ -1,15 +1,15 @@
-import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
-import { Badge, Indicator, Menu, ScrollArea, Tooltip } from '@mantine/core';
+import { useFetchNotifications, useFetchUnreadAmount } from '@/libs/hooks/queries/notiQueries';
+import { Indicator, Menu, ScrollArea, Tooltip } from '@mantine/core';
 
 import { useState } from 'react';
 import { FaBell } from 'react-icons/fa';
-import ShowContent from '../EditorContent';
 import NotificationItem from './NotificationItem';
 
 const Notifications = () => {
   const [opened, setOpened] = useState(false);
 
   const { data: notifications } = useFetchNotifications();
+  const { unreadAmount } = useFetchUnreadAmount();
 
   return (
     <Menu
@@ -25,7 +25,7 @@ const Notifications = () => {
       position='bottom'
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
-        <Indicator inline label={notifications?.length ?? 0} size={16} className='cursor-pointer'>
+        <Indicator inline label={unreadAmount} disabled={!unreadAmount} size={16} className='cursor-pointer'>
           <Tooltip label='Notifications' openDelay={500}>
             <div>
               <FaBell className='size-6 max-md:size-5' />
