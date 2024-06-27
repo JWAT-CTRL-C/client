@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import { useInView } from 'react-intersection-observer';
 
-import { useFetchNotifications } from '@/libs/hooks/queries/notiQueries';
+import { useFetchNotifications, useFetchUnreadAmount } from '@/libs/hooks/queries/notiQueries';
 import { Indicator, Loader, Menu, ScrollArea, Tooltip } from '@mantine/core';
 
 import NotificationItem from './NotificationItem';
@@ -11,6 +11,7 @@ const Notifications = () => {
   const [opened, setOpened] = useState(false);
 
   const { data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchNotifications();
+  const { unreadAmount } = useFetchUnreadAmount();
 
   const [ref, inView] = useInView({ threshold: 0 });
 
@@ -32,7 +33,7 @@ const Notifications = () => {
       position='bottom'
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
-        <Indicator inline label={notifications?.length ?? 0} size={16} className='cursor-pointer'>
+        <Indicator inline label={unreadAmount} disabled={!unreadAmount} size={16} className='cursor-pointer'>
           <Tooltip label='Notifications' openDelay={500}>
             <div>
               <FaBell className='size-6 max-md:size-5' />

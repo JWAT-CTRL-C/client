@@ -4,8 +4,10 @@ import MemberList from '@/components/workspaces/memberList';
 import NotificationList from '@/components/workspaces/notifications/notificationList';
 import SourceList from '@/components/workspaces/sources/sourceList';
 import { setContext } from '@/libs/api';
+import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { prefetchWorkspaceNotifications } from '@/libs/prefetchQueries/noti';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
 import { NextPageWithLayout } from '@/pages/_app';
@@ -27,7 +29,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   const isExist = await Promise.all([
     fetchSpecificWorkspace(queryClient, wksp_id),
-    prefetchMyInfo(queryClient)
+    prefetchMyInfo(queryClient),
+    prefetchWorkspaceNotifications(queryClient, wksp_id)
   ]).then((res) => res[0]);
   return {
     props: {
@@ -40,6 +43,7 @@ const Page: NextPageWithLayout = () => {
   const router = useRouter();
   const { workspace } = useFetchWorkspaceById(router.query.id as string);
   const { user } = useMyInfo();
+  const { notifications } = useFetchWorkspaceNotifications(router.query.id as string);
 
   useEffect(() => {
     const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);
@@ -98,7 +102,7 @@ const Page: NextPageWithLayout = () => {
           <Divider label='Resources' labelPosition='left' />
           <SourceList resources={workspace?.resources} />
           <Divider label='Notifications' labelPosition='left' />
-          <NotificationList notifications={workspace?.notifications} />
+          <NotificationList notifications={notifications!} />
           <Divider label='Blogs' labelPosition='left' />
           <BlogList blogs={workspace?.blogs} />
           <Divider />
