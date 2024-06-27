@@ -26,6 +26,8 @@ export const useUpdateUser = () => {
     mutationFn: updateUser,
     onSuccess: async (_data, variable) => {
       await queryClient.invalidateQueries({ queryKey: [MY_INFO_KEY] });
+      await queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY] });
+
       await queryClient.invalidateQueries({ queryKey: ['user', variable.user_id] });
     }
   });

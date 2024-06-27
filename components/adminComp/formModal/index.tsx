@@ -3,7 +3,7 @@ import { FaPlusCircle, FaRegEdit } from 'react-icons/fa';
 import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
-import { useCreateUser } from '@/libs/hooks/mutations/userMutations';
+import { useCreateUser, useUpdateUser } from '@/libs/hooks/mutations/userMutations';
 import { ErrorResponseType } from '@/libs/types';
 import {
   ActionIcon,
@@ -19,7 +19,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { User, UserFormForAdmin } from '@/libs/types/userType';
+import { User, UserForm, UserFormForAdmin } from '@/libs/types/userType';
 import { isEmpty } from 'validator';
 
 type Props = {
@@ -38,6 +38,8 @@ const initialValues: Omit<UserFormForAdmin, 'user_id'> = {
 const FormModalAdmin = ({ user }: Props) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { createUser, isPending: isLoadingCreate } = useCreateUser();
+  const { updateUser, isPending: isLoadingUpdate } = useUpdateUser();
+
   const form = useForm<Omit<UserFormForAdmin, 'user_id'>>({
     initialValues: initialValues,
     transformValues(values) {
@@ -103,7 +105,28 @@ const FormModalAdmin = ({ user }: Props) => {
         handleClear();
       }
     } else {
-      console.log(data);
+      const value: UserForm = {
+        email: data.email,
+        user_id: user.user_id,
+        fuln: data.fuln ?? '',
+        phone: data.phone
+      };
+      try {
+        await updateUser(value);
+        showSuccessToast('Update user successfully');
+        handleClear();
+      } catch (error) {
+        const errorResponse = error as ErrorResponseType;
+        const message = errorResponse.response.data.message;
+        if (typeof message === 'string') {
+          showErrorToast(message);
+        } else {
+          message.forEach((msg) => {
+            form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
+          });
+        }
+        handleClear();
+      }
     }
   };
 
@@ -167,6 +190,7 @@ const FormModalAdmin = ({ user }: Props) => {
               <TextInput
                 label='Phone'
                 name='phone'
+                
                 placeholder='Enter your phone number'
                 key={form.key('phone')}
                 {...form.getInputProps('phone')}
@@ -175,7 +199,8 @@ const FormModalAdmin = ({ user }: Props) => {
 
               <Select
                 label='Role'
-                withAsterisk
+                
+                disabled={!!user}
                 allowDeselect={false}
                 name='role'
                 placeholder='Choose your role'
@@ -211,7 +236,7 @@ const FormModalAdmin = ({ user }: Props) => {
           </Box>
         </form>
 
-        <LoadingOverlay visible={isLoadingCreate} />
+        <LoadingOverlay visible={isLoadingCreate || isLoadingUpdate} />
       </Modal>
 
       {!user && (

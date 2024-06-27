@@ -32,7 +32,7 @@ const AdminPage: NextPageWithLayout = () => {
   const handlePaging = (newPage: number) => {
     setPage(newPage);
   };
- 
+  console.log(users);
 
   return (
     <Can I='reach' a='AdminPage' passThrough>

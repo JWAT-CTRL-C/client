@@ -79,13 +79,17 @@ const UserCompTable = ({
       )
     },
     {
+      accessorKey: 'fuln',
+      header: 'Full name',
+
+      cell: ({ row }) => row.original.fuln
+    },
+    {
       accessorKey: 'email',
       header: 'Email',
       size: 150,
 
-      cell: ({ row }) => {
-        row.original.email;
-      }
+      cell: ({ row }) => row.original.email
     },
 
     {
