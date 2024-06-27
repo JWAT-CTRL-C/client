@@ -17,15 +17,15 @@ export default function NotificationListItem({ item }: { item: Noti }) {
   const [opened, { toggle }] = useDisclosure(false);
   return (
     <>
-      <div className='mt-4 w-full bg-muted p-5 pb-7 shadow-md' onClick={toggle}>
+      <div className='mt-4 w-full rounded-xl bg-muted p-5 pb-7 shadow-md' onClick={toggle}>
         <div className='flex-start gap-4'>
           <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
           <div className='w-full'>
-            <Indicator color='blue' disabled={item.is_read} offset={10} label='New' size={16}>
+            <Indicator color='blue' disabled={item.is_read} label='New' size={16}>
               <Text className='line-clamp-1 w-full text-xl font-bold'>{item.noti_tle}</Text>
             </Indicator>
-            <div className='mb-3 pl-2 text-xs text-slate-500'>
-              Creator: {item.user?.fuln ?? 'System'}
+            <div className='mb-3 text-xs text-slate-500'>
+              {item.user?.fuln ?? null}
               <Badge
                 size='sm'
                 variant='light'

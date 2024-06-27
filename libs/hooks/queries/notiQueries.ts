@@ -12,12 +12,15 @@ export const useFetchNotifications = () => {
   });
 };
 export const useFetchWorkspaceNotifications = (wksp_id: string) => {
-  const { data } = useQuery({
+  const { data, isFetching, isFetched, isPending } = useQuery({
     queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],
     queryFn: async () => await fetchWorkspaceNotifications(wksp_id)
   });
   return {
-    notifications: data
+    notifications: data,
+    isFetching,
+    isFetched,
+    isPending
   };
 };
 export const useFetchUnreadAmount = () => {
