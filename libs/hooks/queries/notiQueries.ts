@@ -7,7 +7,7 @@ export const useFetchNotifications = () => {
     queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS],
     queryFn: async ({ pageParam }) => await fetchNotifications(pageParam),
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => (lastPage.length < 20 ? undefined : lastPage.length + 1),
+    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
 };

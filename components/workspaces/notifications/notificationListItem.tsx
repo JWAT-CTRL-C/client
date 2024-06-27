@@ -17,7 +17,7 @@ export default function NotificationListItem({ item }: { item: Noti }) {
   const [opened, { toggle }] = useDisclosure(false);
   return (
     <>
-      <div className='mt-4 w-full bg-card p-5 pb-7 shadow-md' onClick={toggle}>
+      <div className='mt-4 w-full bg-muted p-5 pb-7 shadow-md' onClick={toggle}>
         <div className='flex-start gap-4'>
           <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
           <div className='w-full'>

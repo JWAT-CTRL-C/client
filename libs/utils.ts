@@ -80,7 +80,7 @@ export const getTimeDifference = (timestamp: string): string => {
   const vietnamTime = moment.tz(timestamp, 'Asia/Ho_Chi_Minh');
   const now = moment();
 
-  const duration = moment.duration(now.diff(vietnamTime));
+  const duration = moment.duration(now.diff(vietnamTime.subtract(offset, 'minutes')));
   const minutes = duration.asMinutes();
   const hours = duration.asHours();
   const days = duration.asDays();
