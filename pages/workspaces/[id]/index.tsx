@@ -43,7 +43,6 @@ const Page: NextPageWithLayout = () => {
   const router = useRouter();
   const { workspace } = useFetchWorkspaceById(router.query.id as string);
   const { user } = useMyInfo();
-  const { notifications } = useFetchWorkspaceNotifications(router.query.id as string);
 
   useEffect(() => {
     const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);
@@ -102,7 +101,7 @@ const Page: NextPageWithLayout = () => {
           <Divider label='Resources' labelPosition='left' />
           <SourceList resources={workspace?.resources} />
           <Divider label='Notifications' labelPosition='left' />
-          <NotificationList notifications={notifications!} />
+          <NotificationList />
           <Divider label='Blogs' labelPosition='left' />
           <BlogList blogs={workspace?.blogs} />
           <Divider />
