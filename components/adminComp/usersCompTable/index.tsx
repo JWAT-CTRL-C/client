@@ -4,7 +4,7 @@ import { memberAttribute } from '@/libs/constants/memberAttribute';
 import { userAttribute } from '@/libs/constants/userAttribute';
 import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
-import { convertIsoToDate } from '@/libs/utils';
+import { convertIsoToDateTime } from '@/libs/utils';
 import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 import {
   Avatar,
@@ -125,7 +125,7 @@ const UserCompTable = ({
       accessorKey: 'crd_at',
       header: 'Created At',
 
-      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
 
     {

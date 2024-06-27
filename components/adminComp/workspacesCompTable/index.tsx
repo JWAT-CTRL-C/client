@@ -7,7 +7,7 @@ import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { WorkspacesResponseWithPagination, workspacesType } from '@/libs/types/workspacesType';
-import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
+import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 import {
   Flex,
@@ -107,7 +107,7 @@ const WorkspaceCompTable = ({
       accessorKey: 'crd_at',
       header: 'Created At',
 
-      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
 
     {
