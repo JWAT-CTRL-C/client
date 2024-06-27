@@ -3,7 +3,7 @@ import * as React from 'react';
 import ShowContent from '@/components/EditorContent';
 import ModalContent from '@/components/Notifications/ModalContent';
 import { Noti } from '@/libs/types/notiType';
-import { Badge, Indicator } from '@mantine/core';
+import { Badge, Indicator, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export interface INotificationItemProps {
@@ -16,7 +16,7 @@ export default function NotificationItem({ notification }: INotificationItemProp
   return (
     <>
       <div className='flex items-center gap-4' onClick={toggle}>
-        <Indicator color='blue' />
+        <Indicator color='blue' disabled={notification.is_read} style={{ width: rem(12) }} />
         <div className='w-full'>
           <div className='space-x-2 text-sm'>
             <span className='truncate font-semibold'>{notification.noti_tle}</span>

@@ -39,7 +39,7 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
         onSuccess: () => {
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'Update Resource',
-            noti_cont: `Resource ${item.resrc_name} has been removed from`,
+            noti_cont: `Resource ${item.resrc_name} has been removed`,
             wksp_id
           });
         }
