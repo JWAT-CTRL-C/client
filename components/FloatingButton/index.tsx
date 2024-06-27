@@ -19,7 +19,7 @@ export default function FloatingButton() {
 
   return (
     <div className='group fixed bottom-16 right-10 flex h-24 w-24 items-end justify-end p-2 *:cursor-pointer'>
-      <div className='flex-center absolute z-50 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 p-3 text-white shadow-xl'>
+      <div className='flex-center absolute z-50 rounded-full bg-gradient-to-r from-blue-800 to-violet-800 p-3 text-white shadow-xl'>
         <FaPlus className='size-6' />
       </div>
 

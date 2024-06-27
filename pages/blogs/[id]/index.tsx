@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ReactNode } from 'react';
-import { FaRegArrowAltCircleUp, FaRegCommentAlt, FaUserTie } from 'react-icons/fa';
+import { FaRegArrowAltCircleUp, FaRegCommentAlt } from 'react-icons/fa';
 
 import CommentCard from '@/components/comment/commentCard';
 import CommentInput from '@/components/comment/commentInput';
@@ -21,7 +21,6 @@ import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { convertIsoToDateTime } from '@/libs/utils';
 import {
   Avatar,
-  BackgroundImage,
   Divider,
   Flex,
   Image,
@@ -35,6 +34,7 @@ import {
 } from '@mantine/core';
 import { upperFirst } from '@mantine/hooks';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import NoData from '@/components/shared/EmptyData';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -77,8 +77,6 @@ const BlogInfo = () => {
 
   const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true);
   const defaultImage = 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-6.png';
-  if (isLoading)
-    return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   const handleCommentBlog = async (comment: string) => {
     try {
@@ -145,7 +143,7 @@ const BlogInfo = () => {
               <FaRegArrowAltCircleUp /> &nbsp; {convertIsoToDateTime(blog?.crd_at!)}
             </Flex>
           </Flex>
-          <Divider />
+          {/* <Divider /> */}
 
           {blog?.tags.length !== 0 && (
             <Flex direction={'column'} gap={'md'} wrap={'wrap'}>
@@ -169,7 +167,7 @@ const BlogInfo = () => {
               <Text>{blog?.resource?.resrc_name}</Text>
             </Flex>
           )}
-          {(blog?.tags.length !== 0 || blog?.workspace || blog?.resource) && <Divider />}
+          {/* {(blog?.tags.length !== 0 || blog?.workspace || blog?.resource) && <Divider />} */}
 
           <Spoiler maxHeight={800} showLabel='Show more' hideLabel='Show less' transitionDuration={0}>
             {blog?.blog_cont && <ShowContent content={blog.blog_cont} />}
@@ -177,8 +175,8 @@ const BlogInfo = () => {
 
           <Divider />
 
-          <Flex align={'center'} justify='space-between'>
-            <Flex align={'center'}>
+          <Flex align={'center'} justify='start' gap={5}>
+            <Flex justify='center' align={'center'}>
               <LoveIcon
                 onRating={handleRating}
                 isLoveBlog={isLoveBlog as boolean}
@@ -186,21 +184,21 @@ const BlogInfo = () => {
               />
               <Text>&nbsp;{totalLoveBlog?.length ?? 0}</Text>
             </Flex>
-            <Flex align={'center'}>
+            <Flex justify='center' align={'center'}>
               <ThemeIcon variant='subtle'>
                 <FaRegCommentAlt />
               </ThemeIcon>
 
-              <Text>&nbsp;({blog?.blogComments.length ?? 0})</Text>
+              <Text>&nbsp;{blog?.blogComments.length ?? 0}</Text>
             </Flex>
           </Flex>
-          <Divider />
+          {/* <Divider /> */}
           <CommentInput
             loading={isLoadingComments}
             isSuccess={isSuccessComment}
             onComment={handleCommentBlog}
           />
-          <Divider />
+          {/* <Divider /> */}
           <Text size='lg' fw={'bold'}>
             COMMENTS :
           </Text>
@@ -211,20 +209,18 @@ const BlogInfo = () => {
               ))}
               {blog?.blogComments.length === 0 && (
                 <Flex justify={'center'} className='my-10'>
-                  <Title className='text-3xl' fw={'bold'}>
-                    No comments
-                  </Title>
+                  <NoData title='No comments found' />
                 </Flex>
               )}
             </Flex>
           </ScrollArea>
         </Flex>
-        <Divider orientation='vertical' />
+        {/* <Divider orientation='vertical' /> */}
         <Flex
           direction={'column'}
           gap={'xl'}
           w={'1/6'}
-          className='top-20 h-full lg:sticky'
+          className='top-4 h-full lg:sticky'
           flex={{ base: 'auto', md: 'auto', sm: 'auto', lg: 3 }}>
           <Title>Related Blogs</Title>
           {relatedBlogs && <RelatedBlogs blogs={relatedBlogs} />}

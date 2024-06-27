@@ -8,7 +8,18 @@ import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { NotificationType } from '@/libs/types';
 import { Noti } from '@/libs/types/notiType';
 import { useStore } from '@/providers/StoreProvider';
-import { Affix, AppShell, Burger, Button, Group, LoadingOverlay, rem, Transition } from '@mantine/core';
+import {
+  Affix,
+  AppShell,
+  Burger,
+  Button,
+  Group,
+  LoadingOverlay,
+  rem,
+  ScrollArea,
+  ScrollAreaAutosize,
+  Transition
+} from '@mantine/core';
 import { useDisclosure, useWindowScroll } from '@mantine/hooks';
 
 import FloatingButton from '../FloatingButton';
@@ -88,9 +99,12 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main>
-        {children}
+        <ScrollArea h={`calc(100vh - ${rem(80)} - 2rem)`} scrollHideDelay={500} scrollbarSize={5}>
+          {children}
+        </ScrollArea>
+
         <Affix position={{ bottom: 20, right: 20 }}>
-          <Transition transition='slide-up' mounted={scroll.y > 80}>
+          <Transition transition='slide-up' mounted={scroll.y > 100}>
             {(transitionStyles) => (
               <Button
                 leftSection={<FaArrowUp style={{ width: rem(16), height: rem(16) }} />}

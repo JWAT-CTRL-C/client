@@ -21,7 +21,7 @@ export default function NotificationListItem({ item }: { item: Noti }) {
         <div className='flex-start gap-4'>
           <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
           <div className='w-full'>
-            <Indicator color='blue' disabled={item.is_read} offset={10} label='New' size={16}>
+            <Indicator color='blue' disabled={item.is_read} offset={10} label='New' size={16} zIndex={20}>
               <Text className='line-clamp-1 w-full text-xl font-bold'>{item.noti_tle}</Text>
             </Indicator>
             <div className='mb-3 pl-2 text-xs text-slate-500'>
