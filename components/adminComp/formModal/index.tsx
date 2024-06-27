@@ -21,6 +21,7 @@ import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { User, UserForm, UserFormForAdmin } from '@/libs/types/userType';
 import { isEmpty } from 'validator';
+import { AxiosError } from 'axios';
 
 type Props = {
   user?: User;
@@ -39,7 +40,6 @@ const FormModalAdmin = ({ user }: Props) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { createUser, isPending: isLoadingCreate } = useCreateUser();
   const { updateUser, isPending: isLoadingUpdate } = useUpdateUser();
-
   const form = useForm<Omit<UserFormForAdmin, 'user_id'>>({
     initialValues: initialValues,
     transformValues(values) {
@@ -64,8 +64,14 @@ const FormModalAdmin = ({ user }: Props) => {
         if (/\s/.test(val)) return 'User name cannot contain spaces';
         return val && isEmpty(val) ? 'User name is required' : null;
       },
-      email: (val) => (!val ? null : isEmail(val) ? null : 'Invalid email format'),
-      phone: (val) => (!val ? null : isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format')
+      email: (val) => {
+        if (!val) return 'Email is required';
+        return isEmail(val) ? null : 'Invalid email format';
+      },
+      phone: (val) => {
+        if (!val) return 'Phone number is required';
+        return isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format';
+      }
     }
   });
 
@@ -87,45 +93,35 @@ const FormModalAdmin = ({ user }: Props) => {
   }, [user, opened]);
 
   const handleSave = async (data: typeof form.values) => {
-    if (!user) {
-      try {
+    try {
+      if (!user) {
         await createUser(data);
         showSuccessToast('Create user successfully');
-        handleClear();
-      } catch (error) {
-        const errorResponse = error as ErrorResponseType;
-        const message = errorResponse.response.data.message;
-        if (typeof message === 'string') {
-          showErrorToast(message);
-        } else {
-          message.forEach((msg) => {
-            form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
-          });
-        }
-        handleClear();
-      }
-    } else {
-      const value: UserForm = {
-        email: data.email,
-        user_id: user.user_id,
-        fuln: data.fuln ?? '',
-        phone: data.phone
-      };
-      try {
+      } else {
+        const value: UserForm = {
+          email: data.email,
+          user_id: user.user_id,
+          fuln: data.fuln ?? '',
+          phone: data.phone,
+          role: data.role
+        };
         await updateUser(value);
         showSuccessToast('Update user successfully');
-        handleClear();
-      } catch (error) {
-        const errorResponse = error as ErrorResponseType;
-        const message = errorResponse.response.data.message;
-        if (typeof message === 'string') {
-          showErrorToast(message);
-        } else {
-          message.forEach((msg) => {
-            form.setErrors({ [msg.split(' ')[0].toLowerCase()]: msg });
-          });
-        }
-        handleClear();
+      }
+      handleClear();
+    } catch (error) {
+      const errorResponse = error as AxiosError<ErrorResponseType>;
+      const message = errorResponse.response?.data?.message;
+      if (typeof message === 'string') {
+        showErrorToast(message);
+      } else if (Array.isArray(message)) {
+        (message as string[]).forEach((msg: string) => {
+          const field = msg.split(' ')[0].toLowerCase();
+          form.setErrors({ [field]: msg });
+        });
+        showErrorToast('Please check the form for errors.');
+      } else {
+        showErrorToast('An unexpected error occurred.');
       }
     }
   };
@@ -167,17 +163,18 @@ const FormModalAdmin = ({ user }: Props) => {
                 {...form.getInputProps('fuln')}
                 autoComplete='off'
               />
-
-              <PasswordInput
-                label='Password'
-                withAsterisk
-                disabled={!!user}
-                name='pass'
-                placeholder='Enter your password'
-                key={form.key('pass')}
-                {...form.getInputProps('pass')}
-                autoComplete='new-password'
-              />
+              {!user && (
+                <PasswordInput
+                  label='Password'
+                  withAsterisk
+                  disabled={!!user}
+                  name='pass'
+                  placeholder='Enter your password'
+                  key={form.key('pass')}
+                  {...form.getInputProps('pass')}
+                  autoComplete='new-password'
+                />
+              )}
 
               <TextInput
                 label='Email'
@@ -190,7 +187,6 @@ const FormModalAdmin = ({ user }: Props) => {
               <TextInput
                 label='Phone'
                 name='phone'
-                
                 placeholder='Enter your phone number'
                 key={form.key('phone')}
                 {...form.getInputProps('phone')}
@@ -199,8 +195,6 @@ const FormModalAdmin = ({ user }: Props) => {
 
               <Select
                 label='Role'
-                
-                disabled={!!user}
                 allowDeselect={false}
                 name='role'
                 placeholder='Choose your role'

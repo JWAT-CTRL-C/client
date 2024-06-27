@@ -32,6 +32,8 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaPlusCircle } from 'react-icons/fa';
 import FormModalAdmin from '../formModal';
+import { ErrorResponseType } from '@/libs/types';
+import { AxiosError } from 'axios';
 
 const UserCompTable = ({
   dataTable,
@@ -171,34 +173,28 @@ const UserCompTable = ({
     setPage(currentPage);
   }, [currentPage]);
 
-  const handleToEdit = (id: string | number) => {
-    //router.push(`/blogs/${id}/edit`);
-  };
+  const handleToEdit = (id: string | number) => {};
 
-  const handleToUserInfo = (id: string | number) => {
-    //router.push(`/blogs/${id}`);
-  };
+  const handleToUserInfo = (id: string | number) => {};
 
   const handleRestore = async (id: string | number) => {
-    await restoreUser(id as number, {
-      onError: (error) => {
-        showErrorToast(error.message);
-      },
-      onSuccess: () => {
-        showSuccessToast('Restore user successfully');
-      }
-    });
+    try {
+      await restoreUser(id as number);
+      showSuccessToast('Delete user successfully');
+    } catch (error: AxiosError | any) {
+      const message = error.response.data.message;
+      showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+    }
   };
 
   const handleDelete = async (id: string | number) => {
-    await removeUser(id as number, {
-      onError: (error) => {
-        showErrorToast(error.message);
-      },
-      onSuccess: () => {
-        showSuccessToast('Delete user successfully');
-      }
-    });
+    try {
+      await removeUser(id as number);
+      showSuccessToast('Delete user successfully');
+    } catch (error: AxiosError | any) {
+      const message = error.response.data.message;
+      showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+    }
   };
   const handlePagination = (page: number) => {
     setPage(page);
@@ -216,9 +212,6 @@ const UserCompTable = ({
       <Space h='xl' />
 
       <Table
-        // style={{
-        //   width: `${table.getCenterTotalSize()}px`
-        // }}
         className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'

@@ -25,10 +25,12 @@ export const useUpdateUser = () => {
   const mutation = useMutation<User, Error, UserForm>({
     mutationFn: updateUser,
     onSuccess: async (_data, variable) => {
-      await queryClient.invalidateQueries({ queryKey: [MY_INFO_KEY] });
-      await queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [MY_INFO_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY] }),
 
-      await queryClient.invalidateQueries({ queryKey: ['user', variable.user_id] });
+        queryClient.invalidateQueries({ queryKey: ['user', variable.user_id] })
+      ]);
     }
   });
 

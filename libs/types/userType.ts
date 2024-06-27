@@ -19,6 +19,7 @@ export type UserForm = {
   fuln: string;
   email: string | null;
   phone: string | null;
+  role?: RolesType;
 };
 
 export type UserResponseWithPagination = {

@@ -37,6 +37,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 };
 
 export const updateUser = async (user: UserForm): Promise<User> => {
+  console.log(user);
   return new Promise((resolve, reject) => {
     api
       .patch(`/users/${user.user_id}`, user)
