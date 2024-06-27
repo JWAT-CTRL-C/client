@@ -1,5 +1,5 @@
 import { blogCommentType } from '@/libs/types/blogCommentType';
-import { convertIsoToDate } from '@/libs/utils';
+import { convertIsoToDateTime } from '@/libs/utils';
 import { Avatar, Card, Flex, Text } from '@mantine/core';
 
 const CommentCard = ({ comment }: { comment: blogCommentType }) => {
@@ -17,7 +17,7 @@ const CommentCard = ({ comment }: { comment: blogCommentType }) => {
             {user?.fuln || user?.usrn}
           </Text>
         </Flex>
-        <Text>{convertIsoToDate(comment?.crd_at as string)}</Text>
+        <Text>{convertIsoToDateTime(comment?.crd_at as string)}</Text>
       </Flex>
 
       <Text mt={'lg'}>{comment?.blog_cmt_cont}</Text>

@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import colors from '@/assets/json/color_background_theme.json';
 import { memberAttribute } from '@/libs/constants/memberAttribute';
-import { convertIsoToDate } from '@/libs/utils';
+import { convertIsoToDateTime } from '@/libs/utils';
 import { Avatar, Badge, Divider, Indicator, rem, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ModalContent from '@/components/Notifications/ModalContent';
@@ -17,7 +17,7 @@ export default function NotificationListItem({ item }: { item: Noti }) {
   const [opened, { toggle }] = useDisclosure(false);
   return (
     <>
-      <div className='mt-4 w-full bg-card p-5 pb-7 shadow-md' onClick={toggle}>
+      <div className='mt-4 w-full bg-muted p-5 pb-7 shadow-md' onClick={toggle}>
         <div className='flex-start gap-4'>
           <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
           <div className='w-full'>
@@ -40,7 +40,7 @@ export default function NotificationListItem({ item }: { item: Noti }) {
         <div className='mt-2 grid gap-2 pl-[8%]'>
           <ShowContent content={item.noti_cont} className='line-clamp-2' />
           <Text size='xs' c='gray.6'>
-            {convertIsoToDate(item.crd_at)}
+            {convertIsoToDateTime(item.crd_at)}
           </Text>
         </div>
       </div>

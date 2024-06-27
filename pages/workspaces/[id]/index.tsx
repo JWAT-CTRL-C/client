@@ -99,11 +99,11 @@ const Page: NextPageWithLayout = () => {
           </Can>
         </div>
         <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
-          <Divider my='xs' label='Resources' labelPosition='left' />
+          <Divider label='Resources' labelPosition='left' />
           <SourceList resources={workspace?.resources} />
-          <Divider my='xs' label='Notifications' labelPosition='left' />
+          <Divider label='Notifications' labelPosition='left' />
           <NotificationList notifications={notifications!} />
-          <Divider my='xs' label='Blogs' labelPosition='left' />
+          <Divider label='Blogs' labelPosition='left' />
           <BlogList blogs={workspace?.blogs} />
           <Divider />
           <MemberList members={workspace?.users} />

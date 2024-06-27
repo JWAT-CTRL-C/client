@@ -11,7 +11,10 @@ export type UPDATE_RESOURCE_REQUEST = Partial<RESOURCE_REQUEST> & {};
 export type SPECIFIC_RESOURCE_RESPONSE = RESOURCE_TYPE & {
   blog: BlogResponse;
   workspace: {
-    owner: number;
+    wksp_id: string;
+    owner: {
+      user_id: number;
+    };
   };
 };
 export const getAllResources = (wksp_id: string) => {

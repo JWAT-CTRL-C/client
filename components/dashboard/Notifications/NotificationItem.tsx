@@ -5,17 +5,19 @@ import ShowContent from '@/components/EditorContent';
 import { useDisclosure } from '@mantine/hooks';
 import ModalContent from '@/components/Notifications/ModalContent';
 import { avatarSrc } from '@/libs/constants/avatarSrc';
+import { convertIsoToDateTime } from '@/libs/utils';
 
 interface INotificationItemProps {
   notification: Noti;
+  toast?: boolean;
 }
 
-export function NotificationItem({ notification }: INotificationItemProps) {
+export function NotificationItem({ notification, toast = false }: INotificationItemProps) {
   const [opened, { toggle }] = useDisclosure(false);
 
   return (
     <>
-      <Indicator color='blue' disabled={notification.is_read} size={16} label='New' offset={7}>
+      <Indicator color='blue' disabled={notification.is_read || toast} size={16} label='New' offset={7}>
         <Card withBorder radius='md' className='cursor-pointer px-5 py-4 shadow-md' onClick={toggle}>
           <Group>
             <Avatar src={avatarSrc(notification)} alt={notification.user?.fuln ?? 'System'} radius='xl' />
@@ -23,7 +25,7 @@ export function NotificationItem({ notification }: INotificationItemProps) {
               <Text fz='sm'>{notification.user?.fuln ?? 'System'}</Text>
               <div className='flex-start gap-2'>
                 <Text fz='xs' c='dimmed'>
-                  {new Date(notification.crd_at).toDateString()}
+                  {convertIsoToDateTime(notification.crd_at)}
                 </Text>
 
                 <Badge color={notification.workspace ? 'green.6' : 'blue'} variant='filled' size='xs'>

@@ -2,6 +2,7 @@ import { Noti } from '@/libs/types/notiType';
 import { Avatar, Badge, Button, Group, Modal, Text } from '@mantine/core';
 import ShowContent from '../EditorContent';
 import { avatarSrc } from '@/libs/constants/avatarSrc';
+import { convertIsoToDateTime } from '@/libs/utils';
 import { useMarkSeenNotification } from '@/libs/hooks/mutations/notiMutations';
 
 export interface IModalContentProps {
@@ -31,7 +32,7 @@ export default function ModalContent({ notification, handleClose, opened }: IMod
             </Text>
             <div className='flex-start gap-2'>
               <Text fz='xs' c='dimmed'>
-                {new Date(notification.crd_at).toDateString()}
+                {convertIsoToDateTime(notification.crd_at)}
               </Text>
 
               <Badge color={notification.workspace ? 'green.6' : 'blue'} variant='filled' size='xs'>

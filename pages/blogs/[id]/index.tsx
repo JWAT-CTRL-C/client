@@ -18,7 +18,7 @@ import { useFetchBlogById, useFetchRelatedBlog } from '@/libs/hooks/queries/blog
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { prefetchBlogById, prefetchRelatedBlogs } from '@/libs/prefetchQueries/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
-import { convertIsoToDate } from '@/libs/utils';
+import { convertIsoToDateTime } from '@/libs/utils';
 import {
   Avatar,
   BackgroundImage,
@@ -142,7 +142,7 @@ const BlogInfo = () => {
               {blog?.user?.fuln?.toLocaleUpperCase() ?? blog?.user?.usrn?.toLocaleUpperCase()}
             </Flex>
             <Flex align='center' c={'green'} className='text-lg'>
-              <FaRegArrowAltCircleUp /> &nbsp; {convertIsoToDate(blog?.crd_at!)}
+              <FaRegArrowAltCircleUp /> &nbsp; {convertIsoToDateTime(blog?.crd_at!)}
             </Flex>
           </Flex>
           <Divider />

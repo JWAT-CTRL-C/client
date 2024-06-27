@@ -1,18 +1,23 @@
 import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
 import { Noti } from '@/libs/types/notiType';
 import { markSeenNotification } from '@/services/notiServices';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
 
 export const useReceiveNotifications = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending, isError } = useMutation({
     mutationFn: async (notification: Noti) => await Promise.resolve(notification),
-    onSuccess: (newNotification) => {
-      queryClient.setQueryData([NotiQueryEnum.GLOBAL_NOTIFICATIONS], (old: Noti[]) => {
+    onSuccess: (notification) => {
+      const newNotification = { ...notification, is_read: false };
+
+      queryClient.setQueryData<InfiniteData<Noti[], number>>([NotiQueryEnum.GLOBAL_NOTIFICATIONS], (old) => {
         if (!old) return;
 
-        return [newNotification, ...old];
+        return {
+          pageParams: old.pageParams,
+          pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
+        };
       });
       if (newNotification.workspace) {
         queryClient.setQueryData(

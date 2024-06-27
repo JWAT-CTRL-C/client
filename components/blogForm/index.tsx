@@ -28,8 +28,8 @@ type BlogFormPropsBase = {
   handleSubmitForm: (values: blogFormType) => void;
   workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
   fromWorkspacesPage?: {
-    wksp_id?: string | string[];
-    resrc_id?: string | string[];
+    wksp_id?: string;
+    resrc_id?: string;
   };
 };
 
@@ -61,8 +61,7 @@ const BlogForm = ({
   workSpaceList,
   fromWorkspacesPage
 }: BlogFormProps) => {
-  const [indexSelectingField, setIndexSelectingField] = useState(0);
-  const [selectedSource, setSelectedSource] = useState<string | null>(null);
+  const [indexSelectingField, setIndexWorkspaceField] = useState(0);
   const [prevTag, setPrevTag] = useState<string[]>([]);
 
   const workSpaceListOptions = workSpaceList?.map((workSpace) => ({
@@ -108,7 +107,6 @@ const BlogForm = ({
   useEffect(() => {
     if (isEditing && updateValues) {
       form.setValues(updateValues);
-      setSelectedSource(updateValues.blog_src ?? null);
     }
   }, [isEditing, updateValues]);
 
@@ -120,7 +118,7 @@ const BlogForm = ({
       const indexSelecting = selectedWorkspace
         ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
         : 0;
-      setIndexSelectingField(indexSelecting);
+      setIndexWorkspaceField(indexSelecting);
     }
   }, [form.getValues().blog_wksp, workSpaceList]);
 
@@ -131,8 +129,9 @@ const BlogForm = ({
       );
 
       if (findWorkspaceFromWorkspacePage) {
-        handleSelectField(findWorkspaceFromWorkspacePage.wksp_id);
-        const findResourceFromWorkspacePage = sourceList[indexSelectingField].find(
+        const workspaceIndex = workSpaceList.findIndex((wksp) => wksp.wksp_id === fromWorkspacesPage.wksp_id);
+        handleWorkspaceField(findWorkspaceFromWorkspacePage.wksp_id);
+        const findResourceFromWorkspacePage = sourceList[workspaceIndex].find(
           (resrc) => resrc.resrc_id === fromWorkspacesPage.resrc_id
         );
         findResourceFromWorkspacePage &&
@@ -146,14 +145,13 @@ const BlogForm = ({
 
   function handleClearForm() {
     form.setValues(initialValues);
-    setSelectedSource(null);
   }
 
   const handleSubmit = (values: blogFormType) => {
-    handleSubmitForm({ ...values, blog_src: selectedSource });
+    handleSubmitForm({ ...values });
   };
 
-  const handleSelectField = (value: string | null) => {
+  const handleWorkspaceField = (value: string | null) => {
     const selectedWorkspace = workSpaceList.find((workspace) => workspace.wksp_id === value);
     form.setFieldValue('blog_wksp', selectedWorkspace ? selectedWorkspace.wksp_id : null);
 
@@ -161,7 +159,7 @@ const BlogForm = ({
       ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
       : 0;
 
-    setIndexSelectingField(indexSelecting);
+    setIndexWorkspaceField(indexSelecting);
 
     if (selectedWorkspace && !form.getValues().blog_tag.includes('workspaces')) {
       form.setFieldValue('blog_tag', (prevTag) => [...prevTag, 'workspaces']);
@@ -170,7 +168,6 @@ const BlogForm = ({
   };
 
   const handleSourceField = (value: string | null) => {
-    setSelectedSource(value);
     form.setFieldValue('blog_src', value);
   };
 
@@ -232,14 +229,13 @@ const BlogForm = ({
         clearable
         searchable
         maxDropdownHeight={200}
-        //allowDeselect={false}
         onClear={handleClearWorkspaceFiled}
         readOnly={isEditing}
         disabled={workSpaceList.length === 0 || isEditing}
         label='Workspaces'
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
         {...form.getInputProps('blog_wksp')}
-        onChange={(blog_wksp) => handleSelectField(blog_wksp)}
+        onChange={(blog_wksp) => handleWorkspaceField(blog_wksp)}
       />
 
       <Select
@@ -267,7 +263,7 @@ const BlogForm = ({
               }))
             : []
         }
-        value={selectedSource}
+        {...form.getInputProps('blog_src')}
         onChange={handleSourceField}
       />
 
