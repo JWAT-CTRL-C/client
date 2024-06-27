@@ -10,7 +10,7 @@ const TextColumn = ({
   blog_id: string | number;
 }) => {
   return (
-    <Text className='cursor-pointer' fw={500} onClick={() => onClick && onClick(blog_id)}>
+    <Text className='cursor-pointer' lineClamp={2} fw={500} onClick={() => onClick && onClick(blog_id)}>
       {children}
     </Text>
   );

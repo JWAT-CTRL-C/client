@@ -7,9 +7,11 @@ import { User, UserResponseWithPagination } from '@/libs/types/userType';
 import { convertIsoToDateTime } from '@/libs/utils';
 import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 import {
+  ActionIcon,
   Avatar,
   Badge,
   Button,
+  CopyButton,
   Flex,
   Group,
   Loader,
@@ -18,6 +20,8 @@ import {
   Table,
   Text,
   Title,
+  Tooltip,
+  rem,
   useMantineTheme
 } from '@mantine/core';
 import {
@@ -30,10 +34,12 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaPlusCircle } from 'react-icons/fa';
+import { FaCheck, FaPlusCircle, FaRegCopy, FaTimes, FaUserShield } from 'react-icons/fa';
 import FormModalAdmin from '../formModal';
 import { ErrorResponseType } from '@/libs/types';
 import { AxiosError } from 'axios';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import AdminPopover from '../adminPopOver';
 
 const UserCompTable = ({
   dataTable,
@@ -51,6 +57,7 @@ const UserCompTable = ({
 
   const { removeUser, isPending: isPendingRemoveUser } = useRemoveUser();
   const { restoreUser, isPending: isPendingRestoreUser } = useRestoreUser();
+  const { user: userInfo } = useMyInfo();
 
   const theme = useMantineTheme();
 
@@ -63,9 +70,20 @@ const UserCompTable = ({
       size: 50,
 
       cell: ({ row }) => (
-        <TextColumn onClick={handleToUserInfo} blog_id={row.original.user_id}>
-          {row.original.user_id}
-        </TextColumn>
+        <Flex align='center' gap={4}>
+          <CopyButton value={row.original.user_id.toString()} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
+                  {copied ? <FaCheck style={{ width: rem(16) }} /> : <FaRegCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+          <TextColumn onClick={handleToUserInfo} blog_id={row.original.user_id}>
+            {row.original.user_id}
+          </TextColumn>
+        </Flex>
       )
     },
     {
@@ -136,13 +154,19 @@ const UserCompTable = ({
 
       cell: ({ row }) => (
         <Flex justify='center'>
-          <BlogPopover
-            isLoading={isLoading}
-            user={row.original}
-            id={row.original.user_id.toString()}
-            onClickEditFunction={handleToEdit}
-            onClickDeleteFunction={handleDelete}
-            onClickRestore={handleRestore}></BlogPopover>
+          {userInfo?.role !== row.original.role && (
+            <AdminPopover
+              isLoading={isLoading}
+              user={row.original}
+              id={row.original.user_id.toString()}
+              onClickDeleteFunction={handleDelete}
+              onClickRestore={handleRestore}></AdminPopover>
+          )}
+          {userInfo?.role === row.original.role && (
+            <ActionIcon disabled className='text-2xl' bg={'transparent'}>
+              <FaUserShield />
+            </ActionIcon>
+          )}
         </Flex>
       )
     }
@@ -180,7 +204,7 @@ const UserCompTable = ({
   const handleRestore = async (id: string | number) => {
     try {
       await restoreUser(id as number);
-      showSuccessToast('Delete user successfully');
+      showSuccessToast('Restore user successfully');
     } catch (error: AxiosError | any) {
       const message = error.response.data.message;
       showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);

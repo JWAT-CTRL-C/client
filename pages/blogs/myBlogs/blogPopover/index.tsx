@@ -28,7 +28,8 @@ const BlogPopover = ({
   user
 }: Props) => {
   const [opened, setOpened] = useState(false);
-
+  const isActive = user ? (user.deleted_at ? false : true) : true;
+  console.log(isActive);
   return (
     <Popover
       closeOnClickOutside={true}
@@ -63,7 +64,12 @@ const BlogPopover = ({
               </Tooltip>
             )}
             <Tooltip label='Delete'>
-              <IconColumn isLoading={isLoading} isRed={true} blog_id={id} onClick={onClickDeleteFunction}>
+              <IconColumn
+                isActive={isActive}
+                isLoading={isLoading}
+                isRed={true}
+                blog_id={id}
+                onClick={onClickDeleteFunction}>
                 <FaRegTrashAlt />
               </IconColumn>
             </Tooltip>

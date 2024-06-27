@@ -1,3 +1,4 @@
+import { User } from '@/libs/types/userType';
 import { ActionIcon, Flex } from '@mantine/core';
 import { ReactNode, forwardRef } from 'react';
 
@@ -10,16 +11,24 @@ const IconColumn = forwardRef<
     isRed?: boolean;
     isYellow?: boolean;
     isLoading?: boolean;
+    isActive?: boolean;
   }
->(({ children, onClick, blog_id, isRed = false, isLoading, isYellow = false }, ref) => {
+>(({ children, onClick, blog_id, isRed = false, isLoading, isYellow = false, isActive }, ref) => {
   return (
     <Flex justify='center' ref={ref}>
       {isRed ? (
-        <ActionIcon bg={'red'} onClick={() => onClick(blog_id)}>
+        <ActionIcon
+          className={`${isActive ? 'bg-red-500' : 'pointer-events-none cursor-not-allowed bg-gray-400'}`}
+          disabled={!isActive}
+          onClick={() => onClick(blog_id)}>
           {children}
         </ActionIcon>
       ) : (
-        <ActionIcon bg={isYellow ? 'yellow' : 'violet'} loading={isLoading} onClick={() => onClick(blog_id)}>
+        <ActionIcon
+          className={`${!isActive ? 'bg-yellow-500' : 'pointer-events-none cursor-not-allowed bg-gray-400'} ${isYellow && 'bg-yellow-500'}`}
+          disabled={isActive === true}
+          loading={isLoading}
+          onClick={() => onClick(blog_id)}>
           {children}
         </ActionIcon>
       )}

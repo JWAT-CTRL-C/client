@@ -21,7 +21,11 @@ import {
   Pagination,
   Button,
   Collapse,
-  Badge
+  Badge,
+  CopyButton,
+  Tooltip,
+  ActionIcon,
+  rem
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -35,7 +39,7 @@ import {
 import { AxiosError, isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import { FaAngleDown, FaAngleRight, FaAngleUp } from 'react-icons/fa';
+import { FaAngleDown, FaAngleRight, FaAngleUp, FaCheck, FaRegCopy } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 const WorkspaceCompTable = ({
@@ -74,9 +78,20 @@ const WorkspaceCompTable = ({
       size: 50,
 
       cell: ({ row }) => (
-        <TextColumn onClick={handleToWorkspace} blog_id={row.original.wksp_id}>
-          {row.original.wksp_id}
-        </TextColumn>
+        <Flex align='center' gap={4}>
+          <CopyButton value={row.original.wksp_id} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
+                  {copied ? <FaCheck style={{ width: rem(16) }} /> : <FaRegCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+          <TextColumn onClick={handleToWorkspace} blog_id={row.original.wksp_id}>
+            {row.original.wksp_id}
+          </TextColumn>
+        </Flex>
       )
     },
     {

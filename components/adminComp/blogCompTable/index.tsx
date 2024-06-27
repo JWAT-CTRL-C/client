@@ -18,7 +18,11 @@ import {
   Pagination,
   Button,
   Collapse,
-  Badge
+  Badge,
+  CopyButton,
+  Tooltip,
+  ActionIcon,
+  rem
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -31,7 +35,7 @@ import {
 } from '@tanstack/react-table';
 import { useRouter } from 'next/router';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { FaAngleDown, FaAngleRight, FaAngleUp } from 'react-icons/fa';
+import { FaAngleDown, FaAngleRight, FaAngleUp, FaCheck, FaRegCopy } from 'react-icons/fa';
 
 const BlogCompTable = ({
   dataTable,
@@ -58,11 +62,21 @@ const BlogCompTable = ({
       accessorKey: 'blog_id',
       header: 'Blog ID',
       size: 50,
-
       cell: ({ row }) => (
-        <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
-          {row.original.blog_id}
-        </TextColumn>
+        <Flex align='center' gap={4}>
+          <CopyButton value={row.original.blog_id} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
+                  {copied ? <FaCheck style={{ width: rem(16) }} /> : <FaRegCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+          <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
+            {row.original.blog_id}
+          </TextColumn>
+        </Flex>
       )
     },
     {
