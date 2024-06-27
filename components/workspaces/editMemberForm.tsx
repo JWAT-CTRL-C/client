@@ -104,7 +104,7 @@ export function WpsMemberTable({
         onSuccess: () => {
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'New Owner',
-            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner of`,
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner`,
             wksp_id
           });
         }
@@ -146,7 +146,7 @@ export function WpsMemberTable({
             key={info.row.original.user_id}
             title={`Franchise to ${info.row.original.fuln}?`}
             onConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='orange' loading={franchisePending}>
+            <Button variant='subtle' color='orange' disabled={franchisePending}>
               <FaEdit size={15} />
             </Button>
           </PopoverConfirm>
@@ -162,7 +162,7 @@ export function WpsMemberTable({
             key={info.row.original.user_id}
             title='Remove Member'
             onConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='red' loading={removePending}>
+            <Button variant='subtle' color='red' disabled={removePending}>
               <FaTimes size={15} />
             </Button>
           </PopoverConfirm>
@@ -242,7 +242,7 @@ export default function EditWorkspaceMemberForm({
       user: null
     },
     validate: {
-      user: (value) => (value === '' ? 'User is required' : null)
+      user: (value) => (!value ? 'User is required' : null)
     }
   });
 
@@ -260,12 +260,18 @@ export default function EditWorkspaceMemberForm({
   };
   const { addMember, isPending } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
-    notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
-      noti_tle: 'New Member',
-      noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added`,
-      wksp_id: router.query.id?.toString() ?? ''
-    });
-    addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });
+    addMember(
+      { wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'New Member',
+            noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added`,
+            wksp_id: router.query.id?.toString() ?? ''
+          });
+        }
+      }
+    );
   };
   return (
     <div className='max-h-[90vh] px-[8%]'>

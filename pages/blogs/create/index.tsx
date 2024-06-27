@@ -95,8 +95,8 @@ const CreateBlog = () => {
           <BlogForm
             handleSubmitForm={handleCreateBlog}
             workSpaceList={workspaces ? workspaces : []}
-            fromWorkspacesPage={{ wksp_id: wksp_id, resrc_id: resrc_id }}
-          // isEditing
+            fromWorkspacesPage={{ wksp_id: wksp_id as string, resrc_id: resrc_id as string }}
+            // isEditing
             // updateValues={updateValues}
           />
         </Group>

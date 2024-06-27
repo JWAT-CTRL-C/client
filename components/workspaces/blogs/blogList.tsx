@@ -1,8 +1,9 @@
 import BlogCard from '@/components/blogCard';
 import { useDisclosure } from '@mantine/hooks';
-import { Box, Button, Collapse } from '@mantine/core';
+import { Box, Button, Collapse, Image } from '@mantine/core';
 import { cn, useBreakpoint } from '@/libs/utils';
 import { BlogResponse } from '@/libs/types/blogResponse';
+import NoData from '@/components/shared/EmptyData';
 
 export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
   const [opened, { toggle }] = useDisclosure(false);
@@ -25,10 +26,10 @@ export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
   return (
     <div className='py-3'>
       {blogs.length === 0 ? (
-        <div className='bg-slate-100 p-5'> No blogs</div>
+        <NoData title='No blogs found' />
       ) : (
         <>
-          <Box className='mb-5 flex justify-end'>
+          <Box className='mb-5 flex justify-self-end'>
             <Button
               onClick={toggle}
               variant='outline'

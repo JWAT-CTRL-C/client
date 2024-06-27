@@ -9,6 +9,7 @@ type Action = 'create' | 'read' | 'edit' | 'delete' | 'reach' | 'do';
 type Subject =
   | 'AdminPage'
   | 'blog'
+  | 'resrc_blog'
   | 'workspace'
   | 'notification'
   | 'all'
@@ -29,14 +30,14 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
   switch (user.role) {
     case 'MA':
       can('reach', 'AdminPage');
-      can('create', ['blog', 'workspace', 'notification']);
+      can('create', ['blog', 'workspace', 'notification', 'resrc_blog']);
       can('edit', ['blog', 'workspace']);
       can('reach', 'BlogsAdminPage');
       can('reach', 'WorkspacesAdminPage');
 
       break;
     case 'HM':
-      can('create', ['blog', 'workspace']);
+      can('create', ['blog', 'workspace', 'resrc_blog']);
       can('edit', ['blog', 'workspace']);
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
@@ -46,6 +47,7 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
     case 'PM':
       can('create', 'blog');
       can('create', 'workspace');
+      can('create', 'resrc_blog', { 'workspace.owner.user_id': user.user_id });
       can('edit', 'workspace', { 'owner.user_id': user.user_id });
       can('edit', 'blog', { 'user.user_id': user.user_id });
       cannot('reach', 'AdminPage');

@@ -39,14 +39,14 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
         onSuccess: () => {
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'Update Resource',
-            noti_cont: `Resource ${item.resrc_name} has been removed from`,
+            noti_cont: `Resource ${item.resrc_name} has been removed`,
             wksp_id
           });
         }
       }
     );
   };
-  const handeCreateResourceBlog = () => {
+  const handleCreateResourceBlog = () => {
     router.push(`/blogs/create?wksp_id=${wksp_id}&resrc_id=${item.resrc_id}`);
   };
   return (
@@ -56,7 +56,7 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
           <Text truncate='end'>{item.resrc_name}</Text>
           {!item?.blogs && (
             <Tooltip label='Add blog for this resource' withArrow position='right'>
-              <Button variant='transparent' className='p-0' color='violet' onClick={handeCreateResourceBlog}>
+              <Button variant='transparent' className='p-0' color='violet' onClick={handleCreateResourceBlog}>
                 <FaRegNewspaper />
               </Button>
             </Tooltip>

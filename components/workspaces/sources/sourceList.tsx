@@ -4,6 +4,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { cn, useBreakpoint } from '@/libs/utils';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
 import _ from 'lodash';
+import NoData from '@/components/shared/EmptyData';
 
 export default function SourceList({ resources = [] }: { resources?: RESOURCE_TYPE[] }) {
   const [opened, { toggle }] = useDisclosure(false);
@@ -23,7 +24,7 @@ export default function SourceList({ resources = [] }: { resources?: RESOURCE_TY
     }
   };
   if (_.isEmpty(resources)) {
-    return <div className='bg-slate-100 p-5'> No resources</div>;
+    return <NoData title='No sources found' />;
   }
   return (
     <div className='p-3'>

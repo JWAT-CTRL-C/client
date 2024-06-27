@@ -4,8 +4,10 @@ import MemberList from '@/components/workspaces/memberList';
 import NotificationList from '@/components/workspaces/notifications/notificationList';
 import SourceList from '@/components/workspaces/sources/sourceList';
 import { setContext } from '@/libs/api';
+import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { prefetchWorkspaceNotifications } from '@/libs/prefetchQueries/noti';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
 import { NextPageWithLayout } from '@/pages/_app';
@@ -27,7 +29,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   const isExist = await Promise.all([
     fetchSpecificWorkspace(queryClient, wksp_id),
-    prefetchMyInfo(queryClient)
+    prefetchMyInfo(queryClient),
+    prefetchWorkspaceNotifications(queryClient, wksp_id)
   ]).then((res) => res[0]);
   return {
     props: {
@@ -95,11 +98,11 @@ const Page: NextPageWithLayout = () => {
           </Can>
         </div>
         <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
-          <Divider my='xs' label='Resources' labelPosition='left' />
+          <Divider label='Resources' labelPosition='left' />
           <SourceList resources={workspace?.resources} />
-          <Divider my='xs' label='Notifications' labelPosition='left' />
-          <NotificationList notifications={workspace?.notifications} />
-          <Divider my='xs' label='Blogs' labelPosition='left' />
+          <Divider label='Notifications' labelPosition='left' />
+          <NotificationList />
+          <Divider label='Blogs' labelPosition='left' />
           <BlogList blogs={workspace?.blogs} />
           <Divider />
           <MemberList members={workspace?.users} />

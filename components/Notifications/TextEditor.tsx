@@ -5,7 +5,11 @@ import { RichTextEditor } from '@mantine/tiptap';
 import { BubbleMenu } from '@tiptap/react';
 import { useEffect } from 'react';
 
-const TextEditor = ({ form }: { form: UseFormReturnType<{ noti_tle: string; noti_cont: string }> }) => {
+const TextEditor = ({
+  form
+}: {
+  form: UseFormReturnType<{ noti_tle: string; noti_cont: string; wksp_id: string | null }>;
+}) => {
   const editor = useCustomEditor({
     onUpdate({ editor }) {
       form.setFieldValue('noti_cont', editor.getHTML());

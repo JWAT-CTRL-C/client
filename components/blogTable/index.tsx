@@ -5,7 +5,7 @@ import { FaSearch } from 'react-icons/fa';
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
-import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
+import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
   Flex,
   Group,
@@ -96,13 +96,13 @@ const BlogTable = ({
       accessorKey: 'crd_at',
       header: 'Created At',
 
-      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
 
-      cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
+      cell: ({ row }) => convertIsoToDateTime(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',

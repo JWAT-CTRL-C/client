@@ -1,10 +1,13 @@
 import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { BlogResponse } from '@/libs/types/blogResponse';
+import { Noti } from '@/libs/types/notiType';
+import { ResourceType } from '@/libs/types/sourcesType';
 import _ from 'lodash';
 import { USER_TYPE } from './userServices';
-import { ResourceType } from '@/libs/types/sourcesType';
+
 import { BlogCardType } from '@/libs/types/blogCardType';
-import { BlogResponse } from '@/libs/types/blogResponse';
+
 import { WorkspacesResponseWithPagination } from '@/libs/types/workspacesType';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
@@ -42,7 +45,7 @@ export type SPECIFIC_WORKSPACE_RESPONSE = {
     resrc_url: string;
   }[];
   blogs: BlogResponse[];
-  notifications: NOTIFICATION_TYPE[];
+  notifications: Noti[];
 };
 export type WORKSPACE_MEMBER = {
   wksp_id: string;
