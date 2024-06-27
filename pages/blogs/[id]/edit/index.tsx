@@ -76,7 +76,6 @@ const EditBlog = () => {
 
       await router.push('/blogs/myBlogs');
     } catch (error) {
-      console.error('Error Delete blog:', error);
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
     }

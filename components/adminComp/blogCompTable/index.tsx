@@ -180,7 +180,6 @@ const BlogCompTable = ({
       await removeBlog(blog_id);
       showSuccessToast('Delete blog successfully!');
     } catch (error) {
-      console.error('Error Delete blog:', error);
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
     }

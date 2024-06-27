@@ -72,9 +72,7 @@ export const useRemoveBlogById = () => {
         })
       ]);
     },
-    onError: (error) => {
-      console.error('Error removing blog:', error.message);
-    }
+    onError: (error) => {}
   });
 
   return {

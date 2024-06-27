@@ -96,7 +96,6 @@ export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
 };
 
 export const updateWorkspace = (wkspData: UPDATE_WORKSPACE_REQUEST) => {
-  console.log(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'));
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api
       .patch<GENERAL_RESPONSE_TYPE>(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'))
