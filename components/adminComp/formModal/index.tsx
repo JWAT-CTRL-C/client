@@ -69,12 +69,12 @@ const FormModalAdmin = ({ user }: Props) => {
         return val && isEmpty(val) ? 'User name is required' : null;
       },
       email: (val) => {
-        if (!val) return 'Email is required';
-        return isEmail(val) ? null : 'Invalid email format';
+        //if (!val) return 'Email is required';
+        return val && isEmail(val) ? null : 'Invalid email format';
       },
       phone: (val) => {
-        if (!val) return 'Phone number is required';
-        return isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format';
+        // if (!val) return 'Phone number is required';
+        return val && isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format';
       }
     }
   });
