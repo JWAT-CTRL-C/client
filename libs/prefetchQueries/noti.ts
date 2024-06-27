@@ -10,9 +10,10 @@ export const prefetchNotifications = async (queryClient: QueryClient) =>
   });
 
 export const prefetchWorkspaceNotifications = async (queryClient: QueryClient, wksp_id: string) =>
-  await queryClient.prefetchQuery({
+  await queryClient.prefetchInfiniteQuery({
     queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],
-    queryFn: async () => await fetchWorkspaceNotifications(wksp_id)
+    queryFn: async ({ pageParam }) => await fetchWorkspaceNotifications(pageParam, wksp_id),
+    initialPageParam: 1
   });
 export const prefetchUnreadAmount = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({

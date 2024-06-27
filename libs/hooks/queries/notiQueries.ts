@@ -12,15 +12,19 @@ export const useFetchNotifications = () => {
   });
 };
 export const useFetchWorkspaceNotifications = (wksp_id: string) => {
-  const { data, isFetching, isFetched, isPending } = useQuery({
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],
-    queryFn: async () => await fetchWorkspaceNotifications(wksp_id)
+    queryFn: async ({ pageParam }) => await fetchWorkspaceNotifications(pageParam, wksp_id),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
+    select: (data) => data.pages.flat()
   });
   return {
     notifications: data,
-    isFetching,
-    isFetched,
-    isPending
+    isPending,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
   };
 };
 export const useFetchUnreadAmount = () => {
