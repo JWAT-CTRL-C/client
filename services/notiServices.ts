@@ -9,10 +9,10 @@ export const fetchNotifications = async (pageParam: number): Promise<Noti[]> => 
       .catch((error) => reject(error));
   });
 };
-export const fetchWorkspaceNotifications = (wksp_id: string) => {
+export const fetchWorkspaceNotifications = (pageParam: number, wksp_id: string) => {
   return new Promise<Noti[]>((resolve, reject) => {
     api
-      .get(`/notifications/${wksp_id}`)
+      .get(`/notifications/${wksp_id}?page=${pageParam}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
