@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export const useReceiveNotifications = () => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending, isError } = useMutation({
+  const { mutate, isPending, isError } = useMutation({
     mutationFn: async (notification: Noti) => await Promise.resolve(notification),
     onSuccess: (notification) => {
       const newNotification = { ...notification, is_read: false };
@@ -42,7 +42,7 @@ export const useReceiveNotifications = () => {
   });
 
   return {
-    receiveNotification: mutateAsync,
+    receiveNotification: mutate,
     isPending,
     isError
   };

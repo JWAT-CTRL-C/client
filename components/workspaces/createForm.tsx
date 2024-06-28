@@ -1,6 +1,5 @@
 import { useCreateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { WorkspaceType } from '@/libs/types/workspace';
 import { CREATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
 import { Button, Group, Modal, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -14,7 +13,6 @@ export type WorkspaceCreateFormType = {
 
 export default function CreateWorkspaceForm({ opened, handleClose }: WorkspaceCreateFormType) {
   const form = useForm({
-    mode: 'uncontrolled',
     initialValues: {
       wksp_name: '',
       wksp_desc: ''

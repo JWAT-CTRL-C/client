@@ -11,7 +11,7 @@ export const useLogin = () => {
   });
 
   return {
-    login: mutation.mutateAsync,
+    login: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError
   };

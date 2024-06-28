@@ -21,7 +21,7 @@ export const useUploadImage = () => {
   });
 
   return {
-    uploadImage: mutation.mutateAsync,
+    uploadImage: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null,
@@ -47,7 +47,7 @@ export const useCreateBlog = () => {
   });
 
   return {
-    createBlog: mutation.mutateAsync,
+    createBlog: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null
@@ -76,7 +76,7 @@ export const useRemoveBlogById = () => {
   });
 
   return {
-    removeBlog: mutation.mutateAsync,
+    removeBlog: mutation.mutate,
     isPending: mutation.isPending, // Correct property name for loading state
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null
@@ -101,7 +101,7 @@ export const useUpdateBlog = () => {
   });
 
   return {
-    updateBlog: mutation.mutateAsync,
+    updateBlog: mutation.mutate,
     isSuccess: mutation.isSuccess,
     isPending: mutation.isPending,
     isError: mutation.isError,
@@ -124,7 +124,7 @@ export const useCreateBlogComment = () => {
   });
 
   return {
-    createBlogComment: mutation.mutateAsync,
+    createBlogComment: mutation.mutate,
     isSuccess: mutation.isSuccess,
     isPending: mutation.isPending,
     isError: mutation.isError,
@@ -169,7 +169,7 @@ export const useRatingBlog = () => {
   });
 
   return {
-    ratingBlog: mutation.mutateAsync,
+    ratingBlog: mutation.mutate,
     isSuccess: mutation.isSuccess,
     isPending: mutation.isPending,
     isError: mutation.isError,

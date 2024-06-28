@@ -237,7 +237,6 @@ export default function EditWorkspaceMemberForm({
     setData(dropDownData);
   }, [members]);
   const form = useForm({
-    mode: 'uncontrolled',
     initialValues: {
       user: null
     },
@@ -261,9 +260,10 @@ export default function EditWorkspaceMemberForm({
   const { addMember, isPending } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
     addMember(
-      { wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') },
+      { wksp_id: router.query.id as string, user_id: parseInt(value.user ?? '') },
       {
         onSuccess: () => {
+          form.setValues({ user: null });
           notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
             noti_tle: 'New Member',
             noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added`,
@@ -284,6 +284,7 @@ export default function EditWorkspaceMemberForm({
           data={data}
           searchable
           withAsterisk
+          clearable
           nothingFoundMessage='No member available'
           {...form.getInputProps('user')}
         />
