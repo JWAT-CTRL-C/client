@@ -5,7 +5,7 @@ import { userAttribute } from '@/libs/constants/userAttribute';
 import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
 import { convertIsoToDateTime } from '@/libs/utils';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import {
   ActionIcon,
   Avatar,

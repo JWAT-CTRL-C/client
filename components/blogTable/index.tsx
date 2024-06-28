@@ -32,7 +32,7 @@ import {
 } from '@tanstack/react-table';
 
 import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import TextColumn from './textColumn';
 

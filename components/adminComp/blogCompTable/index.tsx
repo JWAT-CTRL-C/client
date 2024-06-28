@@ -5,7 +5,7 @@ import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import {
   Flex,
   useMantineTheme,
