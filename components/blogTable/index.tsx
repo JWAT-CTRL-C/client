@@ -224,10 +224,7 @@ const BlogTable = ({
       </Flex>
       <Space h='xl' />
       <Table
-        style={{
-          width: `${table.getCenterTotalSize()}px`
-        }}
-        className='overflow-x-auto'
+        className='w-full overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
