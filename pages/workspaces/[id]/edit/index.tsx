@@ -1,53 +1,47 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import DangerZone from '@/components/workspaces/dangerZone';
 import EditGeneralWorkspaceForm from '@/components/workspaces/editGeneralForm';
 import EditWorkspaceMemberForm from '@/components/workspaces/editMemberForm';
 import { setContext } from '@/libs/api';
-import { GET_ALL_RESOURCES_KEY } from '@/libs/constants/queryKeys/resource';
-import { GET_ALL_USERS_KEY } from '@/libs/constants/queryKeys/user';
-import { GET_SPECIFIC_WORKSPACE_KEY, GET_WORKSPACE_MEMBERS_KEY } from '@/libs/constants/queryKeys/workspace';
 import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
-import { useGetAllUsers } from '@/libs/hooks/queries/userQueries';
+import { useGetAllUsers, useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById, useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
-import { getUserAuth, pushHash } from '@/libs/utils';
+import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import {
+  preFetchAllUser,
+  preFetchAllWorkspaceMembers,
+  fetchSpecificWorkspace
+} from '@/libs/prefetchQueries/workspace';
+import { User } from '@/libs/types/userType';
+import { pushHash } from '@/libs/utils';
 import { NextPageWithLayout } from '@/pages/_app';
-import { getAllResources } from '@/services/resourceServices';
-import { getAllUsers } from '@/services/userServices';
-import { getSpecificWorkspace, getWorkspaceMembers } from '@/services/workspaceServices';
 import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
-import { FaChevronLeft, FaCog, FaUsers } from 'react-icons/fa';
+import { FaBan, FaChevronLeft, FaCog, FaUsers } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
   const wksp_id = context.query.id as string;
   const queryClient = new QueryClient();
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
-      queryFn: async () => await getSpecificWorkspace(wksp_id)
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_RESOURCES_KEY + wksp_id],
-      queryFn: async () => await getAllResources(wksp_id)
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_USERS_KEY],
-      queryFn: async () => await getAllUsers()
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id],
-      queryFn: async () => await getWorkspaceMembers(wksp_id)
-    })
+  const [isExist] = await Promise.all([
+    fetchSpecificWorkspace(queryClient, wksp_id),
+    preFetchAllResources(queryClient, wksp_id),
+    preFetchAllUser(queryClient),
+    preFetchAllWorkspaceMembers(queryClient, wksp_id),
+    prefetchMyInfo(queryClient)
   ]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    notFound: !isExist
   };
 };
 
@@ -60,11 +54,11 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const { resources } = useGetAllResourcesByWorkspace(wksp_id);
   const { users } = useGetAllUsers();
   const { members } = useGetWorkspaceMember(wksp_id);
+  const { user } = useMyInfo();
 
   useEffect(() => {
-    const { user_id } = getUserAuth();
     if (!_.isEmpty(workspace)) {
-      if (workspace.owner.user_id !== parseInt(user_id.toString() ?? '')) {
+      if (workspace?.owner?.user_id !== user?.user_id && !['MA', 'HM'].includes(user?.role ?? '')) {
         router.replace('https://youtu.be/watch_popup?v=Ts2Nv8z0lo4');
       }
     }
@@ -80,13 +74,18 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-  return (
-    <div className='h-[84vh]'>
-      {_.isEmpty(workspace) && isFetching ? (
-        <div className='flex h-full w-full items-center justify-center'>
-          <Loader />
-        </div>
-      ) : (
+  return _.isEmpty(workspace) || isFetching ? (
+    <div className='flex h-full w-full items-center justify-center'>
+      <Loader />
+    </div>
+  ) : (
+    <>
+      <Head>
+        <title>Edit workspace | Synergy</title>
+        <meta name='description' content='Edit workspace' />
+      </Head>
+
+      <div className='h-[84vh]'>
         <Tabs
           defaultValue={'general'}
           value={activeTab}
@@ -109,6 +108,9 @@ const EditWorkSpace: NextPageWithLayout = () => {
             <Tabs.Tab value='collaborator' leftSection={<FaUsers style={iconStyle} />}>
               Collaborator
             </Tabs.Tab>
+            <Tabs.Tab value='danger-zone' c='red.5' leftSection={<FaBan style={iconStyle} />}>
+              Danger zone
+            </Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value='general' className='p-5'>
@@ -117,11 +119,14 @@ const EditWorkSpace: NextPageWithLayout = () => {
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='collaborator' className='p-5'>
-            <EditWorkspaceMemberForm members={members} users={users} />
+            <EditWorkspaceMemberForm members={members} users={users} currentUser={user ?? ({} as User)} />
+          </Tabs.Panel>
+          <Tabs.Panel value='danger-zone' className='p-5'>
+            <DangerZone wksp_id={wksp_id} />
           </Tabs.Panel>
         </Tabs>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 EditWorkSpace.getLayout = function getLayout(page: ReactElement) {

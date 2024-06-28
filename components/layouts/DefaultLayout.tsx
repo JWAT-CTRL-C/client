@@ -1,26 +1,86 @@
-import React, { ReactNode, useEffect } from 'react';
-import Sidebar from './sidebar';
-import { AppShell, Burger, Group } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import 'highlight.js/styles/default.css';
+
+import { ReactNode, useEffect, useState } from 'react';
+import { FaArrowUp } from 'react-icons/fa';
+
+import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { NotificationType } from '@/libs/types';
+import { Noti } from '@/libs/types/notiType';
+import { useStore } from '@/providers/StoreProvider';
+import {
+  Affix,
+  AppShell,
+  Burger,
+  Button,
+  Group,
+  LoadingOverlay,
+  rem,
+  ScrollArea,
+  ScrollAreaAutosize,
+  Transition
+} from '@mantine/core';
+import { useDisclosure, useWindowScroll } from '@mantine/hooks';
+
+import FloatingButton from '../FloatingButton';
 import Header from './header';
+import Sidebar from './sidebar';
+import { showNotifyToast } from '../shared/toast';
+import { NotificationItem } from '../dashboard/Notifications/NotificationItem';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
+  const { notificationSocket, setUser } = useStore((store) => store);
+
+  const { user, isPending } = useMyInfo();
+  const { receiveNotification } = useReceiveNotifications();
+
+  const [scroll, scrollTo] = useWindowScroll();
+
   // prevent hydration error
-  const [loader, setLoader] = React.useState(false);
+  const [loader, setLoader] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     setLoader(true);
-  }, []);
+
+    if (notificationSocket && user && !isListening) {
+      notificationSocket.emit(NotificationType.SETUP_USER, user.user_id);
+      for (const workspace of user.workspaces) {
+        notificationSocket.emit(NotificationType.SETUP_WORKSPACE, workspace.wksp_id);
+      }
+      notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
+        receiveNotification(notification);
+        showNotifyToast(<NotificationItem notification={notification} toast />);
+      });
+      setIsListening(true);
+    }
+
+    if (user) {
+      setUser(user);
+    }
+
+    return () => {
+      if (notificationSocket && isListening) {
+        notificationSocket.off(NotificationType.NEW);
+      }
+    };
+  }, [user]);
 
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+
   return !loader ? (
     <></>
+  ) : isPending ? (
+    <LoadingOverlay visible />
   ) : (
     <AppShell
       header={{ height: 80 }}
       navbar={{
-        width: 300,
+        width: {
+          base: 200,
+          lg: 240
+        },
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened }
       }}
@@ -38,7 +98,25 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         {/* Navbar */}
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>{children}</AppShell.Main>
+      <AppShell.Main>
+        <ScrollArea h={`calc(100vh - ${rem(80)} - 2rem)`} scrollHideDelay={500} scrollbarSize={5}>
+          {children}
+        </ScrollArea>
+
+        <Affix position={{ bottom: 20, right: 20 }}>
+          <Transition transition='slide-up' mounted={scroll.y > 100}>
+            {(transitionStyles) => (
+              <Button
+                leftSection={<FaArrowUp style={{ width: rem(16), height: rem(16) }} />}
+                style={transitionStyles}
+                onClick={() => scrollTo({ y: 0 })}>
+                Scroll to top
+              </Button>
+            )}
+          </Transition>
+        </Affix>
+        <FloatingButton />
+      </AppShell.Main>
     </AppShell>
   );
 };

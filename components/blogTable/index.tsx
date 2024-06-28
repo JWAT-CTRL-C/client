@@ -1,20 +1,17 @@
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaRegEdit, FaRegTrashAlt, FaSearch } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
-import { useFetchBlogsCurrentUserByTitle } from '@/libs/hooks/queries/blogQueries';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
-import { convertIsoToDate, transformBlogTableType } from '@/libs/utils';
+import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
-  ActionIcon,
   Flex,
   Group,
   Input,
   Loader,
-  LoadingOverlay,
-  Select,
+  Pagination,
   Space,
   Table,
   Text,
@@ -23,51 +20,50 @@ import {
 } from '@mantine/core';
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
 
-import IconColumn from './iconColumn';
-import TextColumn from './textColumn';
-import { toast } from 'react-toastify';
+import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
+import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 import { showErrorToast, showSuccessToast } from '../shared/toast';
+import TextColumn from './textColumn';
 
-const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
+const BlogTable = ({
+  dataTable,
+  onPagination,
+  onSearch,
+  isLoading,
+  currentPage
+}: {
+  dataTable: BlogResponseWithPagination;
+  onPagination: (page: number) => void;
+  onSearch: (title: string) => void;
+  isLoading: boolean;
+  currentPage: number;
+}) => {
   const [filterField, setFilterField] = useState('');
-  // const [filterByTag, setFilterByTag] = useState<Tag | null>(null);
-  const [tableValues, setTableValues] = useState<blogTableType[]>(dataTable);
-  // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [tableValues, setTableValues] = useState<blogTableType[]>([]);
   // hook delete blog:
   const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
   const theme = useMantineTheme();
   const router = useRouter();
+  const [activePage, setPage] = useState(currentPage);
 
   // Call hook to fetch filtered blogs
-  const { data: filteredBlogs, isLoading, isError } = useFetchBlogsCurrentUserByTitle(filterField.trim());
+  //const { data: filteredBlogs, isLoading, isError } = useFetchBlogsCurrentUserByTitle(filterField.trim());
 
-  let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
-  let displayData = filterField ? transformedBlogs : dataTable;
+  //let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
 
-  // fix : dupliate select field
-  // const allTagsSet = new Set<Tag>();
-
-  // dataTable.forEach((blog) => {
-  //   blog.blog_tag.forEach((tag) => {
-  //     allTagsSet.add(tag);
-  //   });
-  // });
-
-  // const allTags = Array.from(allTagsSet);
-  // const tagOptions = allTags.map((tag) => ({ value: tag.tag_id.toString(), label: tag.tag_name }));
   const columns: ColumnDef<blogTableType>[] = [
     {
       accessorKey: 'blog_id',
       header: 'Blog ID',
+      size: 50,
+
       cell: ({ row }) => (
         <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
           {row.original.blog_id}
@@ -77,6 +73,8 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_tle',
       header: 'Title',
+      size: 100,
+
       cell: ({ row }) => row.original.blog_tle
       // filterFn: (row, columnId, filterValue) => {
       //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
@@ -85,30 +83,31 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
     {
       accessorKey: 'blog_cmt',
       header: 'Comments',
+
       cell: ({ row }) => row.original.blog_cmt?.length ?? 0
     },
     {
       accessorKey: 'blog_rtg',
-      header: 'Rating',
-      cell: ({ row }) =>
-        row.original.blog_rtg?.length > 0
-          ? row.original.blog_rtg.map((rating) => rating.blog_rtg).reduce((a, b) => a + b, 0) /
-            row.original.blog_rtg.length
-          : 0
+      header: 'Like',
+
+      cell: ({ row }) => (row.original.blog_rtg?.length > 0 ? row.original.blog_rtg?.length : 0)
     },
     {
       accessorKey: 'crd_at',
       header: 'Created At',
-      cell: ({ row }) => convertIsoToDate(row.original.crd_at as string)
+
+      cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
     {
       accessorKey: 'upd_at',
       header: 'Updated At',
-      cell: ({ row }) => convertIsoToDate(row.original.upd_at as string)
+
+      cell: ({ row }) => convertIsoToDateTime(row.original.upd_at as string)
     },
     {
       accessorKey: 'blog_tag',
       header: 'Tags',
+
       cell: ({ row }) => {
         return (
           <Flex wrap={'wrap'} align='center' gap={'sm'}>
@@ -126,70 +125,49 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
         );
       }
     },
-    {
-      id: 'edit',
-      header: 'Edit',
-      cell: ({ row, cell, column }) => (
-        <IconColumn blog_id={row.original.blog_id} onClick={handleToEditBlogPage}>
-          <FaRegEdit />
-        </IconColumn>
-      )
-    },
 
     {
-      id: 'delete',
-      header: 'Delete',
+      id: 'actions',
+      header: 'Actions',
+
       cell: ({ row }) => (
-        <IconColumn isRed={true} blog_id={row.original.blog_id} onClick={handleDeleteBlogPage}>
-          <FaRegTrashAlt />
-        </IconColumn>
+        <BlogPopover
+          id={row.original.blog_id}
+          onClickEditFunction={handleToEditBlogPage}
+          onClickDeleteFunction={handleDeleteBlogPage}></BlogPopover>
       )
     }
   ];
 
   const table = useReactTable({
     data: tableValues,
+
     columns,
     state: {
       // columnFilters
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    // onColumnFiltersChange: setColumnFilters,
+    // getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel()
 
-    columnResizeMode: 'onChange'
+    // onColumnFiltersChange: setColumnFilters,
   });
 
   useEffect(() => {
-    let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
-    let displayData = filterField ? transformedBlogs : dataTable;
-    setTableValues(displayData);
-  }, [filterField, dataTable, tableValues]);
+    if (dataTable?.data) {
+      setTableValues(transformBlogTableType(dataTable.data));
+    }
+  }, [dataTable]);
+
+  useEffect(() => {
+    setPage(currentPage);
+  }, [currentPage]);
 
   const handleSetFilterField = (value: string) => {
     setFilterField(value);
-    // setColumnFilters([{ id: 'blog_tle', value }]);
+    onSearch(value);
   };
-
-  // const handleSetFilterByTag = (tag_id: string | null) => {
-  //   // if (tag_id === null) {
-  //   //   setFilterByTag(null);
-  //   //   setColumnFilters((prev) => [
-  //   //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
-  //   //     { id: 'blog_tag', value: '' }
-  //   //   ]);
-  //   // } else {
-  //   //   const selectedTag = allTags.find((tag) => tag.tag_id.toString() === tag_id);
-  //   //   setFilterByTag(selectedTag || null);
-  //   //   const tagName = selectedTag ? selectedTag.tag_name : '';
-  //   //   setColumnFilters((prev) => [
-  //   //     ...prev.filter((filter) => filter.id !== 'blog_tag'),
-  //   //     { id: 'blog_tag', value: tagName }
-  //   //   ]);
-  //   // }
-  // };
 
   const handleToEditBlogPage = (id: string | number) => {
     router.push(`/blogs/${id}/edit`);
@@ -200,44 +178,43 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
   };
 
   const handleDeleteBlogPage = async (blog_id: string) => {
-    await removeBlog(blog_id, {
-      onSuccess: async () => {
-        showSuccessToast('Delete blog successfully!');
+    try {
+      await removeBlog(blog_id);
+      showSuccessToast('Delete blog successfully!');
+    } catch (error) {
      
-      },
-      onError: async (err) => {
-        showErrorToast(err.message);
-        
-      }
-    });
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
+  };
+  const handlePagination = (page: number) => {
+    setPage(page);
+    onPagination(page);
   };
 
-  if (isPending)
-    return <LoadingOverlay visible={isPending} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
-
   return (
-    <Group>
-      <Flex align={'center'} justify={'space-between'} className='w-full'>
-        <Title>Your Blogs</Title>
-        <Group>
-          <Input
-            placeholder='Filter title...'
-            value={filterField}
-            onChange={(event) => handleSetFilterField(event.currentTarget.value)}
-            rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
-          />
-          {/* <Select
-            placeholder='Filter by tag...'
-            data={tagOptions}
-            clearable
-            checkIconPosition='right'
-            value={filterByTag ? filterByTag.tag_id.toString() : null}
-            onChange={(value) => handleSetFilterByTag(value)}
-          /> */}
-        </Group>
+    <Group className='py-3'>
+      <Flex
+        className={`flex flex-col gap-5`}
+        style={{
+          width: `${table.getCenterTotalSize()}px`
+        }}>
+        <Title>My Blogs</Title>
+
+        <Input
+          className='w-1/2'
+          placeholder='Filter title...'
+          value={filterField}
+          onChange={(event) => handleSetFilterField(event.currentTarget.value)}
+          rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
+        />
       </Flex>
       <Space h='xl' />
       <Table
+        style={{
+          width: `${table.getCenterTotalSize()}px`
+        }}
+        className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
@@ -250,7 +227,7 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'}>
+                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -262,16 +239,18 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           ))}
         </Table.Thead>
         <Table.Tbody>
-          {table.getRowModel().rows.length === 0 ? (
+          {isLoading ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className='text-center'>
-                {tableValues.length === 0 && !isLoading && (
-                  <Text c={theme.primaryColor} fw={'bold'}>
-                    Not Found
-                  </Text>
-                )}
-
-                {isLoading && <Loader c={theme.primaryColor} />}
+                <Loader c={theme.primaryColor} />
+              </Table.Td>
+            </Table.Tr>
+          ) : table?.getRowModel()?.rows?.length === 0 ? (
+            <Table.Tr>
+              <Table.Td colSpan={columns.length} className='text-center'>
+                <Text c={theme.primaryColor} fw={'bold'}>
+                  Not Found
+                </Text>
               </Table.Td>
             </Table.Tr>
           ) : (
@@ -279,7 +258,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
               <Table.Tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <Table.Td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <Text size='sm' lineClamp={2}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Text>
                   </Table.Td>
                 ))}
               </Table.Tr>
@@ -287,6 +268,9 @@ const BlogTable = ({ dataTable }: { dataTable: blogTableType[] }) => {
           )}
         </Table.Tbody>
       </Table>
+      <Flex className='w-full justify-start lg:justify-center'>
+        <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
+      </Flex>
     </Group>
   );
 };

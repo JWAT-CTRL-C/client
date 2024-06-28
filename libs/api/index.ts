@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { GetServerSidePropsContext } from 'next';
+import Cookies from 'js-cookie';
 import Router from 'next/router';
 
 import { RefreshTokenResponse } from '@/libs/types/RefreshTokenResponse';
@@ -17,7 +18,7 @@ export const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const api = axios.create({
   baseURL: baseURL,
-  timeout: 30000,
+  // timeout: 30000,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json'
@@ -56,7 +57,9 @@ const getCookieValue = (cookies: string, cookieName: string) => {
 // Response interceptor to handle unauthorized errors and retry request
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError & { response: { config: { __isRetryRequest: boolean } } }) => {
+  async (
+    error: AxiosError & { response: { config: { __isRetryRequest: boolean; __isUnauthorized: boolean } } }
+  ) => {
     if (
       error.response &&
       error.response.status === 419 && // Token expired code
@@ -65,10 +68,30 @@ api.interceptors.response.use(
       !error.response.config.__isRetryRequest // Prevent infinite loop
     ) {
       return refreshToken(error);
+    } else if (error.response && error.response.status === 401 && !error.response.config.__isUnauthorized) {
+      return unauthorized(error);
     }
     return Promise.reject(error);
   }
 );
+
+const unauthorized = (error: AxiosError & { response: { config: { __isUnauthorized: boolean } } }) => {
+  error.response.config.__isUnauthorized = true;
+
+  if (!isServer()) {
+    removeUserAuth();
+    Router.push('/auth');
+  } else if (context && !context.res.headersSent) {
+    context.res.setHeader('Set-Cookie', [
+      `user_id=; Max-Age=0; SameSite=Lax; Path=/`,
+      `access_token=; Max-Age=0; SameSite=Lax; Path=/`,
+      `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`
+    ]);
+    context.res.setHeader('location', '/auth');
+    context.res.statusCode = 302;
+    context.res.end();
+  }
+};
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -136,10 +159,11 @@ const refreshToken = async (error: AxiosError & { response: { config: { __isRetr
               context.res.setHeader('Set-Cookie', [
                 `user_id=${_user_id}; Max-Age=604800; SameSite=Lax; Path=/`,
                 `access_token=${access_token}; Max-Age=604800; SameSite=Lax; Path=/`,
-                `refresh_token=${refresh_token}; Max-Age=604800; SameSite=Lax; Path=/`
+                `refresh_token=${refresh_token}; Max-Age=604800; SameSite=Lax; Path=/`,
+                `expired=; Max-Age=0; SameSite=Lax; Path=/`
               ]);
             } else if (!isServer()) {
-              // Client-side: Update local storage
+              // Client-side: Update cookies
               setUserAuth({
                 user_id: _user_id.toString(),
                 access_token,
@@ -159,13 +183,15 @@ const refreshToken = async (error: AxiosError & { response: { config: { __isRetr
             processQueue(err, null, null);
             if (!isServer()) {
               removeUserAuth();
+              Cookies.set('expired', 'true', { expires: 7 });
               Router.push('/auth');
             } else if (context && !context.res.headersSent) {
               // Server-side redirect if headers haven't been sent yet
               context.res.setHeader('Set-Cookie', [
                 `user_id=; Max-Age=0; SameSite=Lax; Path=/`,
                 `access_token=; Max-Age=0; SameSite=Lax; Path=/`,
-                `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`
+                `refresh_token=; Max-Age=0; SameSite=Lax; Path=/`,
+                `expired=true; Max-Age=604800; SameSite=Lax; Path=/`
               ]);
               context.res.setHeader('location', '/auth');
               context.res.statusCode = 302;

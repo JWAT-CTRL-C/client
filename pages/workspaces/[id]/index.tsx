@@ -1,75 +1,120 @@
+import _ from 'lodash';
+import { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ReactElement, useEffect } from 'react';
+import { FaEdit } from 'react-icons/fa';
+
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import WorkspaceSkeleton from '@/components/skeletons/workspaceSkeleton';
 import BlogList from '@/components/workspaces/blogs/blogList';
 import MemberList from '@/components/workspaces/memberList';
 import NotificationList from '@/components/workspaces/notifications/notificationList';
 import SourceList from '@/components/workspaces/sources/sourceList';
 import { setContext } from '@/libs/api';
-import { GET_SPECIFIC_WORKSPACE_KEY } from '@/libs/constants/queryKeys/workspace';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
-import { getUserAuth } from '@/libs/utils';
-import { getSpecificWorkspace } from '@/services/workspaceServices';
-import { Divider, LoadingOverlay, Stack, Text, Tooltip } from '@mantine/core';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
+import { NextPageWithLayout } from '@/pages/_app';
+import { Can } from '@/providers/AbilityProvider';
+import { subject } from '@casl/ability';
+import { Divider, Spoiler, Stack, Tooltip } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import _ from 'lodash';
-import { GetServerSideProps } from 'next';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { FaEdit } from 'react-icons/fa';
+import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
   const wksp_id = context.query.id as string;
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id],
-    queryFn: async () => await getSpecificWorkspace(wksp_id)
-  });
+  const isExist = await Promise.all([
+    fetchSpecificWorkspace(queryClient, wksp_id),
+    prefetchMyInfo(queryClient)
+  ]).then((res) => res[0]);
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    notFound: !isExist
   };
 };
-export default function Page() {
+const Page: NextPageWithLayout = () => {
   const router = useRouter();
   const { workspace } = useFetchWorkspaceById(router.query.id as string);
-  const { user_id } = getUserAuth();
+  const { user } = useMyInfo();
+  const { notifications } = useFetchWorkspaceNotifications(router.query.id as string);
 
-  return (
-    <div className='px-20 py-5'>
-      {_.isEmpty(workspace) ? (
-        <LoadingOverlay
-          visible={_.isEmpty(workspace)}
-          zIndex={1000}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
-      ) : (
-        <>
-          <div className='grid gap-3'>
-            <div className='border-b pb-4'>
-              <h1 className='py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
-              <Text size='md'>{workspace?.wksp_desc}</Text>
-            </div>
-            {parseInt(user_id.toString() ?? '') === (workspace?.owner?.user_id ?? null) && (
-              <Tooltip label='Edit workspace' color='black'>
-                <Link className='mr-4 justify-self-end' href={`/workspaces/${router.query.id}/edit`}>
-                  <FaEdit size={16} />
-                </Link>
-              </Tooltip>
-            )}
+  useEffect(() => {
+    const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);
+    if (!isUserInWorkspace && !['MA', 'HM'].includes(user?.role ?? '')) {
+      router.push('/workspaces');
+    }
+  }, [workspace]);
+  return _.isEmpty(workspace) ? (
+    <>
+      <Head>
+        <title>Loading... | Synergy</title>
+        <meta name='description' content='Loading...' />
+      </Head>
+
+      <WorkspaceSkeleton />
+    </>
+  ) : (
+    <>
+      <Head>
+        <title>
+          {workspace.wksp_name.slice(0, 20) + (workspace.wksp_name.length > 20 ? '...' : '') ?? 'Blog'} |
+          Synergy
+        </title>
+        <meta name='description' content={workspace.wksp_name.slice(0, 20) ?? 'Blog'} />
+      </Head>
+
+      <div className='px-5 py-2 md:px-20'>
+        <div className='flex-between'>
+          <div className='pb-4'>
+            <h1 className='mb-3 py-1 text-2xl font-semibold uppercase'>{workspace?.wksp_name}</h1>
+            <Spoiler
+              showLabel='Show more'
+              hideLabel='Show less'
+              transitionDuration={200}
+              className='pl-3 text-sm'
+              classNames={{
+                control: 'text-xs'
+              }}
+              maxHeight={20}
+              c='gray.7'>
+              {workspace?.wksp_desc}
+            </Spoiler>
           </div>
-          <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
-            <SourceList resources={workspace?.resources} />
-            <BlogList />
-            <NotificationList />
-            <Divider />
-            {workspace.users && <MemberList members={workspace.users} />}
-          </Stack>
-        </>
-      )}
-    </div>
+          <Can I='edit' this={subject('workspace', workspace)}>
+            <Tooltip label='Edit workspace' color='black' withArrow>
+              <Link
+                className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
+                href={`/workspaces/${router.query.id}/edit`}>
+                <FaEdit size={16} />
+                <span className='hidden md:inline'>Edit</span>
+              </Link>
+            </Tooltip>
+          </Can>
+        </div>
+        <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
+          <Divider label='Resources' labelPosition='left' />
+          <SourceList resources={workspace?.resources} />
+          <Divider label='Notifications' labelPosition='left' />
+          <NotificationList />
+          <Divider label='Blogs' labelPosition='left' />
+          <BlogList blogs={workspace?.blogs} />
+          <Divider />
+          <MemberList members={workspace?.users} />
+        </Stack>
+      </div>
+    </>
   );
-}
-Page.getLayout = function getLayout(page: any) {
+};
+
+Page.getLayout = function getLayout(page: ReactElement) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
+
+export default Page;

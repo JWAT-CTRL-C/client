@@ -1,6 +1,6 @@
 import { Tooltip, Button, Text, Popover, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import React, { ReactNode, useState } from 'react';
+import { Children, cloneElement, ReactNode } from 'react';
 const PopoverConfirm = ({
   children,
   title,
@@ -37,13 +37,13 @@ const PopoverConfirm = ({
       radius='md'
       disabled={disabled}>
       <Popover.Target>
-        {React.cloneElement(React.Children.only(children) as React.ReactElement, { onClick: open })}
+        {cloneElement(Children.only(children) as React.ReactElement, { onClick: open })}
       </Popover.Target>
       <Popover.Dropdown>
         <div className='px-4 py-2'>
           <Text ta='center'>{title ?? 'Confirm'}</Text>
           <Group mt='md' justify='center'>
-            <Button onClick={() => onConfirm()} variant='filled' color='green'>
+            <Button onClick={() => onConfirm()} variant='filled' color='green' loading={disabled}>
               {confirmLable ?? 'Yes'}
             </Button>
             <Button onClick={() => handleCancel()} variant='outline' color='red'>

@@ -1,29 +1,49 @@
+import { useEffect, useState } from 'react';
+import { FaFileImage, FaTimes } from 'react-icons/fa';
+
+import { showErrorToast } from '@/components/shared/toast';
 import { blogFormType } from '@/libs/types/blogFormType';
+import { workspacesType } from '@/libs/types/workspacesType';
 import {
-  Autocomplete,
+  ActionIcon,
+  AspectRatio,
   Button,
   FileInput,
+  Flex,
   Group,
   Image,
   Input,
   Select,
   TagsInput,
+  Text,
   TextInput
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { FaFileImage } from 'react-icons/fa';
+
 import TextEditor from './textEditor';
-import { useEffect, useState } from 'react';
-import { WORKSPACES_RESPONSE } from '@/services/workspaceServices';
 
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024; //10 MB
+const MAX_IMAGE_SIZE = 1024 * 1024 * 3; // 3MB
 
-type BlogFormProps = {
-  updateValues?: blogFormType;
+type BlogFormPropsBase = {
   handleSubmitForm: (values: blogFormType) => void;
-  isEditing?: boolean;
-  workSpaceList: WORKSPACES_RESPONSE[];
+  workSpaceList: Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[];
+  fromWorkspacesPage?: {
+    wksp_id?: string;
+    resrc_id?: string;
+  };
 };
+
+type BlogFormPropsEditing = BlogFormPropsBase & {
+  isEditing: true;
+  updateValues: blogFormType;
+};
+
+type BlogFormPropsNotEditing = BlogFormPropsBase & {
+  isEditing?: false;
+  updateValues?: undefined;
+};
+
+type BlogFormProps = BlogFormPropsEditing | BlogFormPropsNotEditing;
 
 const initialValues: blogFormType = {
   blog_tle: '',
@@ -34,9 +54,14 @@ const initialValues: blogFormType = {
   blog_src: ''
 };
 
-const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpaceList }: BlogFormProps) => {
-  const [indexSelectingField, setIndexSelectingField] = useState(0);
-  const [selectedSource, setSelectedSource] = useState<string | null>(null);
+const BlogForm = ({
+  updateValues,
+  handleSubmitForm,
+  isEditing = false,
+  workSpaceList,
+  fromWorkspacesPage
+}: BlogFormProps) => {
+  const [indexSelectingField, setIndexWorkspaceField] = useState(0);
   const [prevTag, setPrevTag] = useState<string[]>([]);
 
   const workSpaceListOptions = workSpaceList?.map((workSpace) => ({
@@ -53,13 +78,16 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       blog_tag: (blog_tags) => {
         if (workSpaceList.length === 0 && blog_tags.includes('workspaces'))
           return "You don't belong to any workspace so remove it from tag field";
+        if (blog_tags.includes('workspaces') && !form.values.blog_wksp) return 'Select workspace first';
+        if (!blog_tags.includes('workspaces') && form.values.blog_wksp)
+          return 'You must add workspaces tag first';
         return null;
       },
       blog_wksp: (blog_wksp) => {
         if (blog_wksp && blog_wksp.trim().length === 0) return 'Workspace is required';
         return null;
       },
-      blog_src: (blog_src, values) => {
+      blog_src: (blog_src) => {
         if (blog_src && blog_src?.trim()?.length === 0) return 'Resource is required';
 
         return null;
@@ -69,7 +97,7 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
 
       blog_img: (blog_img) => {
         if (blog_img && typeof blog_img !== 'string' && blog_img.size > MAX_IMAGE_SIZE) {
-          return `Image size should be less than ${MAX_IMAGE_SIZE / (1024 * 1024)} MB`;
+          return `Image size should be less than ${MAX_IMAGE_SIZE / 1024 / 1024}MB`;
         }
         return null;
       }
@@ -79,7 +107,6 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
   useEffect(() => {
     if (isEditing && updateValues) {
       form.setValues(updateValues);
-      setSelectedSource(updateValues.blog_src ?? null);
     }
   }, [isEditing, updateValues]);
 
@@ -91,19 +118,40 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       const indexSelecting = selectedWorkspace
         ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
         : 0;
-      setIndexSelectingField(indexSelecting);
+      setIndexWorkspaceField(indexSelecting);
     }
   }, [form.getValues().blog_wksp, workSpaceList]);
+
+  useEffect(() => {
+    if (fromWorkspacesPage?.resrc_id && fromWorkspacesPage?.wksp_id) {
+      const findWorkspaceFromWorkspacePage = workSpaceList.find(
+        (wksp) => wksp.wksp_id === fromWorkspacesPage.wksp_id
+      );
+
+      if (findWorkspaceFromWorkspacePage) {
+        const workspaceIndex = workSpaceList.findIndex((wksp) => wksp.wksp_id === fromWorkspacesPage.wksp_id);
+        handleWorkspaceField(findWorkspaceFromWorkspacePage.wksp_id);
+        const findResourceFromWorkspacePage = sourceList[workspaceIndex].find(
+          (resrc) => resrc.resrc_id === fromWorkspacesPage.resrc_id
+        );
+        findResourceFromWorkspacePage &&
+          !findResourceFromWorkspacePage.blog &&
+          handleSourceField(findResourceFromWorkspacePage.resrc_id);
+      }
+    } else {
+      handleClearForm();
+    }
+  }, [fromWorkspacesPage?.resrc_id, fromWorkspacesPage?.wksp_id]);
 
   function handleClearForm() {
     form.setValues(initialValues);
   }
 
   const handleSubmit = (values: blogFormType) => {
-    handleSubmitForm({ ...values, blog_src: selectedSource });
+    handleSubmitForm({ ...values });
   };
 
-  const handleSelectField = (value: string | null) => {
+  const handleWorkspaceField = (value: string | null) => {
     const selectedWorkspace = workSpaceList.find((workspace) => workspace.wksp_id === value);
     form.setFieldValue('blog_wksp', selectedWorkspace ? selectedWorkspace.wksp_id : null);
 
@@ -111,37 +159,35 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
       ? workSpaceList.findIndex((workspace) => workspace.wksp_id === selectedWorkspace.wksp_id)
       : 0;
 
-    setIndexSelectingField(indexSelecting);
+    setIndexWorkspaceField(indexSelecting);
 
     if (selectedWorkspace && !form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue('blog_tag', [...form.getValues().blog_tag, 'workspaces']);
+      form.setFieldValue('blog_tag', (prevTag) => [...prevTag, 'workspaces']);
+      setPrevTag((prevTag) => [...prevTag, 'workspaces']);
     }
   };
 
   const handleSourceField = (value: string | null) => {
-    setSelectedSource(value);
     form.setFieldValue('blog_src', value);
   };
 
   const handleClearWorkspaceFiled = () => {
     form.setFieldValue('blog_wksp', '');
     if (form.getValues().blog_tag.includes('workspaces')) {
-      form.setFieldValue(
-        'blog_tag',
-        form.getValues().blog_tag.filter((blog_tag) => blog_tag !== 'workspaces')
-      );
+      form.setFieldValue('blog_tag', (prevTag) => prevTag.filter((tag) => tag !== 'workspaces'));
     }
   };
   const handleClearTagField = () => {
-    console.log(prevTag);
-
     if (prevTag.includes('workspaces')) {
       form.setFieldValue('blog_wksp', null);
-      console.log(form.values.blog_wksp);
     }
     setPrevTag([]);
 
     form.setFieldValue('blog_tag', []);
+  };
+
+  const handleClearImage = () => {
+    form.setFieldValue('blog_img', null);
   };
 
   return (
@@ -152,27 +198,44 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         label='Tag'
         clearable
         description='Optional'
+        onDuplicate={(tag) => showErrorToast(`Tag "${tag}" already exists`)}
         placeholder='Tag...'
+        splitChars={[',', ' ', '|']}
         {...form.getInputProps('blog_tag')}
         onChange={(blog_tag) => {
-          setPrevTag([...prevTag, ...blog_tag, 'to remove wksp']);
+          if (isEditing && blog_tag.includes('workspaces') && !form.values.blog_wksp) {
+            showErrorToast('You can not add workspaces tag in editing mode');
+            return;
+          }
+          if (isEditing && !blog_tag.includes('workspaces') && form.values.blog_wksp) {
+            showErrorToast('You can not remove workspaces tag in editing mode');
+            return;
+          }
+          setPrevTag((prevTag) => [...prevTag, ...blog_tag]);
           form.setFieldValue('blog_tag', blog_tag);
+          if (blog_tag.includes('workspaces') && workSpaceList.length > 0 && !form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', workSpaceList[0]?.wksp_id);
+          } else if (!blog_tag.includes('workspaces') && form.values.blog_wksp) {
+            form.setFieldValue('blog_wksp', null);
+          }
         }}
         onClear={handleClearTagField}
       />
+
       <Select
         data={workSpaceListOptions}
         checkIconPosition='right'
         description='Optional'
         clearable
+        searchable
         maxDropdownHeight={200}
-        //allowDeselect={false}
         onClear={handleClearWorkspaceFiled}
+        readOnly={isEditing}
         disabled={workSpaceList.length === 0 || isEditing}
         label='Workspaces'
         placeholder={`${workSpaceList.length === 0 ? "You don't belong to any workspace" : 'Workspace...'}`}
         {...form.getInputProps('blog_wksp')}
-        onChange={(blog_wksp) => handleSelectField(blog_wksp)}
+        onChange={(blog_wksp) => handleWorkspaceField(blog_wksp)}
       />
 
       <Select
@@ -182,8 +245,15 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
         checkIconPosition='right'
         clearable
         nothingFoundMessage='Nothing found...'
+        maxDropdownHeight={200}
         placeholder={`${sourceList[indexSelectingField]?.length === 0 ? 'No resource to find' : 'Resource...'}`}
-        disabled={workSpaceList.length === 0 || sourceList[indexSelectingField]?.length === 0}
+        readOnly={isEditing}
+        disabled={
+          workSpaceList.length === 0 ||
+          sourceList[indexSelectingField]?.length === 0 ||
+          isEditing ||
+          !form.getValues().blog_wksp
+        }
         data={
           form.getValues().blog_wksp
             ? sourceList[indexSelectingField]?.map((source) => ({
@@ -193,44 +263,82 @@ const BlogForm = ({ updateValues, handleSubmitForm, isEditing = false, workSpace
               }))
             : []
         }
-        value={selectedSource}
+        {...form.getInputProps('blog_src')}
         onChange={handleSourceField}
       />
 
-      <FileInput
-        clearable={!isEditing}
-        description='Optional'
-        leftSection={<FaFileImage />}
-        label='Background Image'
-        disabled={isEditing}
-        accept='image/*'
-        placeholder='Background Image...'
-        {...form.getInputProps('blog_img')}
-        onChange={(value) => {
-          form.setFieldValue('blog_img', value);
-        }}
-      />
-
-      {form.values.blog_img && (
-        <Image
-          radius={'md'}
-          src={
-            typeof form.getValues().blog_img === 'string'
-              ? form.getValues().blog_img
-              : URL.createObjectURL(form.values.blog_img! as File)
-          }
-          alt='Background Image Preview'
+      {!form.values.blog_img && (
+        <FileInput
+          clearable={!isEditing}
+          description='Optional'
+          leftSection={<FaFileImage />}
+          label='Background Image'
+          disabled={isEditing}
+          accept='image/*'
+          placeholder='Background Image...'
+          {...form.getInputProps('blog_img')}
+          onChange={(value) => {
+            form.setFieldValue('blog_img', value);
+          }}
         />
       )}
+
+      {form.values.blog_img && (
+        <Flex className='flex-col items-start lg:flex-row lg:items-center' gap='sm' mt={10}>
+          <AspectRatio ratio={1080 / 720} maw={350}>
+            <div className='relative'>
+              <Image
+                radius={'md'}
+                fit='cover'
+                src={
+                  typeof form.values.blog_img === 'string'
+                    ? form.values.blog_img
+                    : form.values.blog_img instanceof File
+                      ? URL.createObjectURL(form.values.blog_img)
+                      : 'https://placehold.co/600x400?text=Invalid+Image'
+                }
+                alt='Background Image Preview'
+              />
+              {!isEditing && (
+                <ActionIcon
+                  className='absolute -right-1 -top-1'
+                  variant='filled'
+                  color='red'
+                  size='xs'
+                  radius={'lg'}
+                  onClick={handleClearImage}>
+                  <FaTimes />
+                </ActionIcon>
+              )}
+            </div>
+          </AspectRatio>
+          {!isEditing && (
+            <Flex direction={'column'} className='mb-7'>
+              <Text fw={500}>Name: &nbsp;{(form.values.blog_img as File)?.name}</Text>
+              <Text fw={500}>
+                Size: &nbsp;{`${((form.values.blog_img as File)?.size / 1024).toFixed(2)} KB`}
+              </Text>
+            </Flex>
+          )}
+        </Flex>
+      )}
+
+      <Input.Wrapper error={form.errors.blog_img}>
+        <p></p>
+      </Input.Wrapper>
 
       <Input.Wrapper withAsterisk label='Content' error={form.errors.blog_cont}>
         <TextEditor form={form} />
       </Input.Wrapper>
 
       <Group justify='space-between' mt='md'>
-        <Button variant='outline' type='reset' onClick={handleClearForm}>
-          Clear
-        </Button>
+        {!isEditing ? (
+          <Button variant='outline' type='reset' onClick={handleClearForm}>
+            Clear
+          </Button>
+        ) : (
+          <div />
+        )}
 
         <Button type='submit'>Save</Button>
       </Group>

@@ -1,8 +1,14 @@
 import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
+import { BlogResponse } from '@/libs/types/blogResponse';
+import { Noti } from '@/libs/types/notiType';
+import { ResourceType } from '@/libs/types/sourcesType';
 import _ from 'lodash';
 import { USER_TYPE } from './userServices';
-import { ResourceType } from '@/libs/types/sourcesType';
+
+import { BlogCardType } from '@/libs/types/blogCardType';
+
+import { WorkspacesResponseWithPagination } from '@/libs/types/workspacesType';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -15,6 +21,13 @@ export type WORKSPACES_RESPONSE = {
   users: USER_TYPE[];
   owner: USER_TYPE;
   resources: ResourceType[] | [];
+};
+export type NOTIFICATION_TYPE = {
+  noti_id: string;
+  noti_tle: string;
+  noti_cont: string;
+  crd_at: string;
+  user: Partial<USER_TYPE>;
 };
 export type SPECIFIC_WORKSPACE_RESPONSE = {
   wksp_id: string;
@@ -31,6 +44,8 @@ export type SPECIFIC_WORKSPACE_RESPONSE = {
     resrc_name: string;
     resrc_url: string;
   }[];
+  blogs: BlogResponse[];
+  notifications: Noti[];
 };
 export type WORKSPACE_MEMBER = {
   wksp_id: string;
@@ -61,6 +76,16 @@ export const getSpecificWorkspace = (wksp_id: string) => {
       .catch((err) => reject(err));
   });
 };
+
+export const getRecentWorkspaces = () => {
+  return new Promise<WORKSPACES_RESPONSE[]>((resolve, reject) => {
+    api
+      .get<WORKSPACES_RESPONSE[]>('/workspaces/recent')
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
 export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api
@@ -71,7 +96,6 @@ export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
 };
 
 export const updateWorkspace = (wkspData: UPDATE_WORKSPACE_REQUEST) => {
-  console.log(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'));
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api
       .patch<GENERAL_RESPONSE_TYPE>(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'))
@@ -117,6 +141,15 @@ export const getWorkspaceMembers = (wksp_id: string) => {
   return new Promise<WORKSPACE_MEMBER>((resolve, reject) => {
     api
       .get<WORKSPACE_MEMBER>(`/workspaces/${wksp_id}/member`)
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
+export const getWorkspacesForMasterAdmin = (page: number) => {
+  return new Promise<WorkspacesResponseWithPagination>((resolve, reject) => {
+    api
+      .get<WorkspacesResponseWithPagination>(`/workspaces/for/master-admin?page=${page}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
   });

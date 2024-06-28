@@ -8,13 +8,14 @@ import { removeUserAuth } from '@/libs/utils';
 import ChangeInformation from '@/components/profile/ChangeInformation';
 
 const Sidebar = () => {
-  const { blogConfig, workspaceConfig } = sidebarConfig;
+  const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig;
   const [sidebarState, setSidebarState] = useState(blogConfig);
   const router = useRouter();
+  const isDashboard = router.pathname.startsWith('/dashboard');
   const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');
+  const isAdmin = router.pathname.startsWith('/admin');
 
-  const [active, setActive] = useState<number | null>(0);
   useEffect(() => {
     if (isBlog) {
       setSidebarState(blogConfig);
@@ -22,44 +23,43 @@ const Sidebar = () => {
     if (isWorkspace) {
       setSidebarState(workspaceConfig);
     }
-    if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
-      setActive(0);
+    if (isDashboard) {
+      setSidebarState(dashboardConfig);
     }
-    const sidebarStatePath = sidebarState.map((state) => state.link);
-
-    if (!sidebarStatePath.includes(router.pathname)) {
-      if (router.pathname === '/blogs' || router.pathname === '/workspaces') {
-        setActive(0);
-      } else {
-        setActive(null);
-      }
+    if (isAdmin) {
+      setSidebarState(adminConfig);
     }
   }, [router.pathname]);
 
-  const handleToPage = (link: string, index: number) => {
+  const handleToPage = (link: string) => {
     router.push(link);
-    setActive(index);
   };
 
   return (
-    <div className='my-auto flex  h-full flex-col justify-between   '>
+    <div className='my-auto flex h-full flex-col justify-between'>
       <div>
-        {sidebarState.map((item, index) => (
-          <NavLink
-            key={item.label}
-            active={index === active}
-            label={item.label}
-            className={`my-5 cursor-pointer rounded-md p-4 `}
-            onClick={() => handleToPage(item.link, index)}
-            leftSection={item.icon}></NavLink>
-        ))}
+        {sidebarState.map((item) => {
+          const isActive = router.pathname === item.link;
+
+          return (
+            <NavLink
+              key={item.label}
+              active={isActive}
+              label={item.label}
+              className={`my-5 cursor-pointer rounded-md p-4`}
+              onClick={() => handleToPage(item.link)}
+              leftSection={item.icon}
+            />
+          );
+        })}
       </div>
-      <div className=''>
+
+      <div>
         <ChangeInformation />
 
         <NavLink
           label={'Log out'}
-          className={`my-5 cursor-pointer rounded-md p-4 `}
+          className={`my-5 cursor-pointer rounded-md p-4`}
           onClick={() => {
             router.push('/auth');
             removeUserAuth();

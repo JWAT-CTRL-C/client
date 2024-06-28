@@ -1,30 +1,32 @@
 import { clsx, type ClassValue } from 'clsx';
+
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
+import _ from 'lodash';
 import { twMerge } from 'tailwind-merge';
 import { LoginResponse } from './types/authType';
-import { BlogCardType } from './types/blogCardType';
-import { BlogResponse } from './types/blogResponse';
 import { blogTableType } from './types/blogTableType';
-import _ from 'lodash';
+
+import moment from 'moment-timezone';
+import { createBreakpoint } from 'react-use';
+
+const today = new Date();
+const offset = today.getTimezoneOffset();
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const convertIsoToDate = (isoString: string): string => {
-  const date = new Date(isoString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
+export const convertIsoToDateTime = (isoString: string): string => {
+  const date = moment(isoString);
+  return date.subtract(offset, 'minutes').format('DD/MM/YYYY HH:mm');
 };
 
 export const setUserAuth = (data: LoginResponse) => {
   Cookies.set('user_id', data.user_id, { expires: 7 });
   Cookies.set('access_token', data.access_token, { expires: 7 });
   Cookies.set('refresh_token', data.refresh_token, { expires: 7 });
+  Cookies.remove('expired');
 };
 
 export const getUserAuth = () => {
@@ -39,23 +41,6 @@ export const removeUserAuth = () => {
   Cookies.remove('access_token');
   Cookies.remove('refresh_token');
 };
-export const transformBlogData = (blogs: BlogResponse[]): BlogCardType[] => {
-  return blogs.map((blog) => ({
-    blog_id: blog.blog_id,
-    blog_tle: blog.blog_tle,
-    blog_cont: blog.blog_cont,
-    crd_at: blog.crd_at,
-    blog_image: blog.blogImage ? blog.blogImage.blog_img_url : null,
-    auth_img: null,
-    auth_name: blog.user.fuln || blog.user.usrn,
-    blog_rtg:
-      blog.blogRatings.length > 0
-        ? blog.blogRatings.reduce((acc: any, rating: { blog_rtg: any }) => acc + rating.blog_rtg, 0) /
-          blog.blogRatings.length
-        : 0,
-    blog_tag: blog.tags
-  }));
-};
 
 export const isTokenExpired = (token: string): boolean => {
   const decodedToken: any = jwtDecode(token);
@@ -63,7 +48,7 @@ export const isTokenExpired = (token: string): boolean => {
 };
 
 export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
-  return blogs.map((blog) => ({
+  return blogs?.map((blog) => ({
     blog_id: blog.blog_id,
     blog_tle: blog.blog_tle,
     blog_cont: blog.blog_cont,
@@ -72,7 +57,8 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
     blog_tag: blog.tags,
     blog_cmt: blog.blogComments,
     blog_rtg: blog.blogRatings,
-    blog_img_url: blog.blogImage?.blog_img_url
+    blog_img_url: blog.blogImage?.blog_img_url,
+    user: blog.user
   }));
 };
 
@@ -91,3 +77,32 @@ export function filterFalsyFields<T extends object>(data: T): Partial<T> {
     return value === null || value === undefined || value === false || value === '';
   });
 }
+export const getTimeDifference = (timestamp: string): string => {
+  const vietnamTime = moment.tz(timestamp, 'Asia/Ho_Chi_Minh');
+  const now = moment();
+
+  const duration = moment.duration(now.diff(vietnamTime.subtract(offset, 'minutes')));
+  const minutes = duration.asMinutes();
+  const hours = duration.asHours();
+  const days = duration.asDays();
+  const weeks = duration.asWeeks();
+
+  if (weeks >= 1) {
+    return `posted ${Math.floor(weeks)} week${Math.floor(weeks) > 1 ? 's' : ''} ago`;
+  } else if (days >= 1) {
+    return `posted ${Math.floor(days)} day${Math.floor(days) > 1 ? 's' : ''} ago`;
+  } else if (hours >= 1) {
+    return `posted ${Math.floor(hours)} hour${Math.floor(hours) > 1 ? 's' : ''} ago`;
+  } else if (minutes >= 1) {
+    return `posted ${Math.floor(minutes)} minute${Math.floor(minutes) > 1 ? 's' : ''} ago`;
+  } else {
+    return 'posted just now';
+  }
+};
+
+export const useBreakpoint = createBreakpoint({
+  lg: 1024,
+  md: 768,
+  sm: 640,
+  xs: 320
+});

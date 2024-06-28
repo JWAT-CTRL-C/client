@@ -1,6 +1,7 @@
 import { blogCommentType } from './blogCommentType';
 import { blogRatingType } from './blogRatingType';
 import { Tag } from './tagType';
+import { User } from './userType';
 
 export type blogTableType = {
   blog_id: string;
@@ -12,5 +13,6 @@ export type blogTableType = {
   blog_cmt: blogCommentType[];
   blog_rtg: blogRatingType[];
   blog_img_url?: string;
+  user:User
 };
 

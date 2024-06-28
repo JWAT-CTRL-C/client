@@ -1,52 +1,50 @@
-import {
-  Badge,
-  Button,
-  Divider,
-  Loader,
-  Table as MTable,
-  ComboboxItem,
-  useMantineColorScheme,
-  Select
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
+import { AxiosError, isAxiosError } from 'axios';
+import _ from 'lodash';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaEdit, FaTimes, FaUserPlus } from 'react-icons/fa';
-import _ from 'lodash';
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useGetAllUsers } from '@/libs/hooks/queries/userQueries';
-import { useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
-import { useRouter } from 'next/router';
-import { useRouter as useNavRouter } from 'next/navigation';
-import { USER_TYPE } from '@/services/userServices';
+import { toast } from 'react-toastify';
+
+import { memberAttribute } from '@/libs/constants/memberAttribute';
 import {
   useAddMemberToWorkspace,
   useFranchiseWorkspace,
   useRemoveMemberFromWorkspace
 } from '@/libs/hooks/mutations/workspaceMutations';
-import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { toast } from 'react-toastify';
-import { AxiosError, isAxiosError } from 'axios';
-import PopoverConfirm from '../popoverConfirm';
+import { GENERAL_RESPONSE_TYPE, NotificationType } from '@/libs/types';
+import { User } from '@/libs/types/userType';
+import { useStore } from '@/providers/StoreProvider';
+import { USER_TYPE } from '@/services/userServices';
 import { WORKSPACE_MEMBER } from '@/services/workspaceServices';
+import {
+  Badge,
+  Button,
+  ComboboxItem,
+  Divider,
+  Select,
+  Table as MTable,
+  useMantineColorScheme
+} from '@mantine/core';
+import { useForm } from '@mantine/form';
+import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+
+import PopoverConfirm from '../popoverConfirm';
 
 export function WpsMemberTable({
   className,
   member,
-  wksp_id
+  wksp_id,
+  currentUser
 }: {
   className: string;
   member: WORKSPACE_MEMBER;
   wksp_id: string;
+  currentUser: User;
 }) {
   const theme = useMantineColorScheme();
-  const navRouter = useNavRouter();
-  // table config
-  const memeberAttribute = {
-    HM: { color: 'red', roleName: 'Head Master' },
-    MA: { color: 'red', roleName: 'Head Master' },
-    PM: { color: 'orange', roleName: 'Project Manager' },
-    EM: { color: 'rgba(255, 255, 255, 0)', roleName: 'Employee' }
-  };
+  const router = useRouter();
+  const { notificationSocket } = useStore((state) => state);
+
   // Remove member
   const handleRemoveMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
@@ -59,9 +57,23 @@ export function WpsMemberTable({
       toast.error(err.message);
     }
   };
-  const { removeMember } = useRemoveMemberFromWorkspace(handleRemoveMemberSuccess, handleRemoveMemberFail);
+  const { removeMember, isPending: removePending } = useRemoveMemberFromWorkspace(
+    handleRemoveMemberSuccess,
+    handleRemoveMemberFail
+  );
   const handleDeleteMember = (user_id: number) => {
-    removeMember({ wksp_id, user_id });
+    removeMember(
+      { wksp_id, user_id },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'Remove Member',
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has been removed`,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handleConfirmRemoveMember = (user_id: number) => {
     handleDeleteMember(user_id);
@@ -70,7 +82,8 @@ export function WpsMemberTable({
   // Franchise
   const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     toast.success(data.message);
-    navRouter.replace(`/workspaces/${wksp_id}`);
+    if (member.owner.user_id !== currentUser.user_id && !['MA', 'HM'].includes(currentUser.role))
+      router.replace(`/workspaces/${wksp_id}`);
     return { wksp_id };
   };
   const handleFranchiseMemberFail = (err: Error | AxiosError) => {
@@ -80,9 +93,23 @@ export function WpsMemberTable({
       toast.error(err.message);
     }
   };
-  const { franchise } = useFranchiseWorkspace(handleFranchiseMemberSuccess, handleFranchiseMemberFail);
+  const { franchise, isPending: franchisePending } = useFranchiseWorkspace(
+    handleFranchiseMemberSuccess,
+    handleFranchiseMemberFail
+  );
   const handleFranchise = (user_id: number) => {
-    franchise({ wksp_id, user_id });
+    franchise(
+      { wksp_id, user_id },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'New Owner',
+            noti_cont: `${member.users.find((user) => user.user_id === user_id)?.fuln} has become new owner`,
+            wksp_id
+          });
+        }
+      }
+    );
   };
   const handleConfirmFranchiseMember = (user_id: number) => {
     handleFranchise(user_id);
@@ -104,22 +131,22 @@ export function WpsMemberTable({
     columnHelper.accessor('role', {
       id: 'role',
       cell: (info) => (
-        <Badge variant='light' color={memeberAttribute[info.getValue()].color} size='sm' radius='md'>
-          {memeberAttribute[info.getValue()].roleName}
+        <Badge variant='light' color={memberAttribute[info.getValue()].color} size='sm' radius='md'>
+          {memberAttribute[info.getValue()].roleName}
         </Badge>
       ),
       header: 'Role'
     }),
     columnHelper.accessor('role', {
-      id: 'franchies',
+      id: 'franchise',
       header: 'Franchise',
       cell: (info) => {
-        return info.getValue() !== 'EM' && info.row.original.user_id !== member.owner.user_id ? (
+        return info.getValue() !== 'EM' && info.row.original.user_id !== member?.owner?.user_id ? (
           <PopoverConfirm
             key={info.row.original.user_id}
             title={`Franchise to ${info.row.original.fuln}?`}
             onConfirm={() => handleConfirmFranchiseMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='orange'>
+            <Button variant='subtle' color='orange' disabled={franchisePending}>
               <FaEdit size={15} />
             </Button>
           </PopoverConfirm>
@@ -130,12 +157,12 @@ export function WpsMemberTable({
       id: 'actions',
       header: 'Remove',
       cell: (info) => {
-        return info.row.original.user_id !== member.owner.user_id ? (
+        return info.row.original.user_id !== member?.owner?.user_id ? (
           <PopoverConfirm
             key={info.row.original.user_id}
             title='Remove Member'
             onConfirm={() => handleConfirmRemoveMember(info.row.original.user_id)}>
-            <Button variant='subtle' color='red'>
+            <Button variant='subtle' color='red' disabled={removePending}>
               <FaTimes size={15} />
             </Button>
           </PopoverConfirm>
@@ -186,14 +213,17 @@ export function WpsMemberTable({
 
 export default function EditWorkspaceMemberForm({
   users,
-  members
+  members,
+  currentUser
 }: {
   users: USER_TYPE[];
   members: WORKSPACE_MEMBER;
+  currentUser: User;
 }) {
   const router = useRouter();
-  const [data, setData] = useState<ComboboxItem[]>([]);
-  useEffect(() => {}, [users]);
+  const [data, setData] = useState<(ComboboxItem & { fuln: string })[]>([]);
+
+  const { notificationSocket } = useStore((state) => state);
 
   useEffect(() => {
     const listUserData = users.filter(
@@ -201,7 +231,8 @@ export default function EditWorkspaceMemberForm({
     );
     const dropDownData = listUserData.map((user) => ({
       value: user.user_id.toString(),
-      label: `${user.fuln} #${user.user_id}`
+      label: `${user.fuln} #${user.user_id}`,
+      fuln: user.fuln
     }));
     setData(dropDownData);
   }, [members]);
@@ -211,7 +242,7 @@ export default function EditWorkspaceMemberForm({
       user: null
     },
     validate: {
-      user: (value) => (value === '' ? 'User is required' : null)
+      user: (value) => (!value ? 'User is required' : null)
     }
   });
 
@@ -227,9 +258,20 @@ export default function EditWorkspaceMemberForm({
       toast.error(err.message);
     }
   };
-  const { addMember } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
+  const { addMember, isPending } = useAddMemberToWorkspace(handleAddMemberSuccess, handleAddMemberFail);
   const handleSubmit = (value: typeof form.values) => {
-    addMember({ wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') });
+    addMember(
+      { wksp_id: router.query.id?.toString() ?? '', user_id: parseInt(value.user ?? '') },
+      {
+        onSuccess: () => {
+          notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
+            noti_tle: 'New Member',
+            noti_cont: `${data.find((user) => user.value === value.user)?.fuln} has been added`,
+            wksp_id: router.query.id?.toString() ?? ''
+          });
+        }
+      }
+    );
   };
   return (
     <div className='max-h-[90vh] px-[8%]'>
@@ -238,14 +280,14 @@ export default function EditWorkspaceMemberForm({
         <Select
           leftSection={<FaUserPlus />}
           mt='lg'
-          label='Invite Members'
+          label='Invite a member'
           data={data}
           searchable
           withAsterisk
           nothingFoundMessage='No member available'
           {...form.getInputProps('user')}
         />
-        <Button type='submit' mt='lg' disabled={_.isEmpty(data)}>
+        <Button type='submit' mt='lg' disabled={_.isEmpty(data)} loading={isPending}>
           Save
         </Button>
       </form>
@@ -255,6 +297,7 @@ export default function EditWorkspaceMemberForm({
           className='max-h-96'
           member={members ?? ({} as WORKSPACE_MEMBER)}
           wksp_id={router.query.id as string}
+          currentUser={currentUser}
         />
       </div>
     </div>

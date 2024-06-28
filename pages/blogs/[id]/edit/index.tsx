@@ -1,23 +1,22 @@
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 
 import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { setContext } from '@/libs/api';
 import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
+import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
+import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import { preFetchMyWorkspace } from '@/libs/prefetchQueries/workspace';
 import { blogFormType } from '@/libs/types/blogFormType';
 import { filterFalsyFields } from '@/libs/utils';
-import { fetchBlogById } from '@/services/blogServices';
-import { fetchUserById } from '@/services/userServices';
 import { Center, Flex, Group, LoadingOverlay, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { GET_ALL_WORKSPACES_BY_USER_KEY } from '@/libs/constants/queryKeys/workspace';
-import { getWorkspacesByUser } from '@/services/workspaceServices';
-import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
-import { BlogQueryEnum } from '@/libs/constants/queryKeys/blog';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -27,18 +26,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
 
   await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: [BlogQueryEnum.BLOGS, id as string],
-      queryFn: async () => await fetchBlogById(id as string)
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [MY_INFO_KEY],
-      queryFn: async () => await fetchUserById('me')
-    }),
-    queryClient.prefetchQuery({
-      queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY],
-      queryFn: async () => await getWorkspacesByUser()
-    })
+    prefetchBlogById(queryClient, id as string),
+    prefetchMyInfo(queryClient),
+    preFetchMyWorkspace(queryClient)
   ]);
 
   return {
@@ -52,7 +42,7 @@ const EditBlog = () => {
   const router = useRouter();
   const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
   const { workspaces: workSpaceList } = useFetchWorkspacesByUser();
-  //const { uploadImage, imageUrl, isPending: IspendingImage } = useUploadImage();
+  //const { uploadImage, imageUrl, isPending: IsPendingImage } = useUploadImage();
 
   const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();
 
@@ -77,22 +67,18 @@ const EditBlog = () => {
       // blog_img: imageUrlResponse || values.blog_img
     });
 
-    await updateBlog(
-      {
+    try {
+      await updateBlog({
         blog_id: router.query.id as string,
         blogData: filteredValues as blogFormType
-      },
-      {
-        onSuccess: async () => {
-          showSuccessToast('Update blog successfully!');
+      });
+      showSuccessToast('Update blog successfully!');
 
-          await router.push('/blogs/yourBlog');
-        },
-        onError: async (err) => {
-          showErrorToast(err.message);
-        }
-      }
-    );
+      await router.push('/blogs/myBlogs');
+    } catch (error) {
+      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      return;
+    }
   };
 
   if (isPendingUpdateBlog || isLoading)
@@ -105,25 +91,32 @@ const EditBlog = () => {
     );
 
   return (
-    <Flex direction='column' gap={3}>
-      <Center>
-        <Title order={1}>Edit blog</Title>
-      </Center>
-      <Group justify='center' className='w-full'>
-        {/* To use updateform please provide isEditing and updateValues*/}
-        <BlogForm
-          handleSubmitForm={handleEdit}
-          workSpaceList={workSpaceList ? workSpaceList : []}
-          isEditing
-          updateValues={updateValues}
-        />
-      </Group>
-    </Flex>
+    <>
+      <Head>
+        <title>Edit blog | Synergy</title>
+        <meta name='description' content={blog?.blog_tle?.slice(0, 20) ?? 'Blog'} />
+      </Head>
+
+      <Flex direction='column' gap={3} className='px-10 py-12'>
+        <Center>
+          <Title order={1}>Edit blog</Title>
+        </Center>
+        <Group justify='center' className='w-full'>
+          {/* To use update form please provide isEditing and updateValues*/}
+          <BlogForm
+            handleSubmitForm={handleEdit}
+            workSpaceList={workSpaceList ? workSpaceList : []}
+            isEditing
+            updateValues={updateValues}
+          />
+        </Group>
+      </Flex>
+    </>
   );
 };
 
 export default EditBlog;
 
-EditBlog.getLayout = function getLayout(page: any) {
+EditBlog.getLayout = function getLayout(page: ReactNode) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
