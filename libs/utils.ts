@@ -48,7 +48,7 @@ export const isTokenExpired = (token: string): boolean => {
 };
 
 export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
-  return blogs.map((blog) => ({
+  return blogs?.map((blog) => ({
     blog_id: blog.blog_id,
     blog_tle: blog.blog_tle,
     blog_cont: blog.blog_cont,
@@ -57,7 +57,8 @@ export const transformBlogTableType = (blogs: any[]): blogTableType[] => {
     blog_tag: blog.tags,
     blog_cmt: blog.blogComments,
     blog_rtg: blog.blogRatings,
-    blog_img_url: blog.blogImage?.blog_img_url
+    blog_img_url: blog.blogImage?.blog_img_url,
+    user: blog.user
   }));
 };
 

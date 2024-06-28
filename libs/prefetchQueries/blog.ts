@@ -4,6 +4,7 @@ import {
   fetchBlogById,
   fetchBlogs,
   fetchBlogsForCurrentUser,
+  fetchBlogsForMasterAdmin,
   fetchRelatedBlogs,
   fetchWorkspacesInfo
 } from '@/services/blogServices';
@@ -17,8 +18,8 @@ export const prefetchBlogs = async (queryClient: QueryClient) =>
 
 export const prefetchCurrentUserBlogs = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
-    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
-    queryFn: async () => await fetchBlogsForCurrentUser()
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, 1, ''],
+    queryFn: async () => await fetchBlogsForCurrentUser(1, '')
   });
 
 export const prefetchBlogById = async (queryClient: QueryClient, id: string) =>
@@ -37,4 +38,10 @@ export const prefetchWorkspaceInfo = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
     queryKey: [BlogQueryEnum.BLOGS_WORKSPACES_INFO],
     queryFn: async () => await fetchWorkspacesInfo()
+  });
+
+export const prefetchMasterAdminBlogs = async (queryClient: QueryClient) =>
+  await queryClient.prefetchQuery({
+    queryKey: [BlogQueryEnum.BLOGS_MASTER_ADMIN, 1],
+    queryFn: async () => await fetchBlogsForMasterAdmin(1)
   });

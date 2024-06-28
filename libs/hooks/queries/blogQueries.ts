@@ -1,8 +1,9 @@
-import { BlogResponse } from '@/libs/types/blogResponse';
+import { BlogResponse, BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import {
   fetchBlogById,
   fetchBlogs,
   fetchBlogsForCurrentUser,
+  fetchBlogsForMasterAdmin,
   fetchRecentBlogs,
   fetchRelatedBlogs,
   fetchWorkspacesInfo,
@@ -40,10 +41,14 @@ export const useFetchBlogById = (blog_id: string) => {
   });
 };
 
-export const useFetchBlogsCurrentUser = () => {
-  return useQuery<BlogResponse[]>({
-    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER],
-    queryFn: () => fetchBlogsForCurrentUser()
+export const useFetchBlogsCurrentUser = (page: number, blog_tle: string) => {
+  const [debounced] = useDebouncedValue(blog_tle, 300);
+
+  return useQuery<BlogResponseWithPagination>({
+    queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER, page, debounced],
+    queryFn: () => fetchBlogsForCurrentUser(page, debounced),
+    staleTime: Infinity
+    // enabled:  !!debounced
   });
 };
 
@@ -69,5 +74,13 @@ export const useFetchWorkSpaceInfo = () => {
   return useQuery<Pick<workspacesType, 'wksp_id' | 'wksp_name' | 'resources'>[]>({
     queryKey: [BlogQueryEnum.BLOGS_WORKSPACES_INFO],
     queryFn: () => fetchWorkspacesInfo()
+  });
+};
+
+export const useFetchBlogsMasterAdmin = (page: number) => {
+  return useQuery<BlogResponseWithPagination>({
+    queryKey: [BlogQueryEnum.BLOGS_MASTER_ADMIN, page],
+    queryFn: () => fetchBlogsForMasterAdmin(page),
+    staleTime: Infinity
   });
 };

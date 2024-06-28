@@ -85,7 +85,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         arrowSize={4}
         maw={300}
         multiline
-        transitionProps={{ duration: 200 }}
+        transitionProps={{ duration: 500 }}
         offset={5}>
         <Text fw={700} mt='md' className='overflow-clip' lineClamp={1} onClick={handleToBlog}>
           {upperFirst(blog.blog_tle)}

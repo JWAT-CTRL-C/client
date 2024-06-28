@@ -1,6 +1,6 @@
 import { QueryClient } from '@tanstack/react-query';
-import { getRecentWorkspaces } from '@/services/workspaceServices';
-import { GET_RECENT_WORKSPACES_KEY } from '../constants/queryKeys/workspace';
+import { getRecentWorkspaces, getWorkspacesForMasterAdmin } from '@/services/workspaceServices';
+import { GET_MASTER_ADMIN_WORKSPACES_KEY, GET_RECENT_WORKSPACES_KEY } from '../constants/queryKeys/workspace';
 
 export const prefetchRecentWorkspaces = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({
@@ -41,5 +41,13 @@ export const preFetchAllWorkspaceMembers = async (queryClient: QueryClient, wksp
   return queryClient.prefetchQuery({
     queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id],
     queryFn: async () => await getWorkspaceMembers(wksp_id)
+  });
+};
+
+
+export const preFetchAllWorkspaceMasterAdmin = async (queryClient: QueryClient,) => {
+  return queryClient.prefetchQuery({
+    queryKey: [GET_MASTER_ADMIN_WORKSPACES_KEY , 1],
+    queryFn: async () => await getWorkspacesForMasterAdmin(1)
   });
 };

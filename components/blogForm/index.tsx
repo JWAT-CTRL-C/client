@@ -291,9 +291,11 @@ const BlogForm = ({
                 radius={'md'}
                 fit='cover'
                 src={
-                  typeof form.getValues().blog_img === 'string'
-                    ? form.getValues().blog_img
-                    : URL.createObjectURL(form.values.blog_img! as File)
+                  typeof form.values.blog_img === 'string'
+                    ? form.values.blog_img
+                    : form.values.blog_img instanceof File
+                      ? URL.createObjectURL(form.values.blog_img)
+                      : 'https://placehold.co/600x400?text=Invalid+Image'
                 }
                 alt='Background Image Preview'
               />
