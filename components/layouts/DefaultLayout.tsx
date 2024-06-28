@@ -1,40 +1,30 @@
 import 'highlight.js/styles/default.css';
 
-import { ReactNode, useEffect, useState } from 'react';
-import { FaArrowUp } from 'react-icons/fa';
+import { debounce } from 'lodash';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 
+import { NotificationItem } from '@/components/dashboard/Notifications/NotificationItem';
+import FloatingButton from '@/components/FloatingButton';
+import { showNotifyToast } from '@/components/shared/toast';
+import ToTopButton from '@/components/ToTopButton';
 import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { NotificationType } from '@/libs/types';
 import { Noti } from '@/libs/types/notiType';
 import { useStore } from '@/providers/StoreProvider';
-import {
-  Affix,
-  AppShell,
-  Burger,
-  Button,
-  Group,
-  LoadingOverlay,
-  rem,
-  ScrollArea,
-  ScrollAreaAutosize,
-  Transition
-} from '@mantine/core';
-import { useDisclosure, useWindowScroll } from '@mantine/hooks';
+import { AppShell, Burger, Group, LoadingOverlay, rem, ScrollArea } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
-import FloatingButton from '../FloatingButton';
 import Header from './header';
 import Sidebar from './sidebar';
-import { showNotifyToast } from '../shared/toast';
-import { NotificationItem } from '../dashboard/Notifications/NotificationItem';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
-  const { notificationSocket, setUser } = useStore((store) => store);
+  const { notificationSocket, setUser, setScrollY } = useStore((store) => store);
 
   const { user, isPending } = useMyInfo();
   const { receiveNotification } = useReceiveNotifications();
 
-  const [scroll, scrollTo] = useWindowScroll();
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   // prevent hydration error
   const [loader, setLoader] = useState(false);
@@ -99,22 +89,17 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main>
-        <ScrollArea h={`calc(100vh - ${rem(80)} - 2rem)`} scrollHideDelay={500} scrollbarSize={5}>
+        <ScrollArea
+          viewportRef={viewportRef}
+          h={`calc(100vh - ${rem(80)} - 2rem)`}
+          scrollHideDelay={500}
+          scrollbarSize={5}
+          onScrollPositionChange={debounce((position) => setScrollY(position.y), 200)}>
           {children}
         </ScrollArea>
 
-        <Affix position={{ bottom: 20, right: 20 }}>
-          <Transition transition='slide-up' mounted={scroll.y > 100}>
-            {(transitionStyles) => (
-              <Button
-                leftSection={<FaArrowUp style={{ width: rem(16), height: rem(16) }} />}
-                style={transitionStyles}
-                onClick={() => scrollTo({ y: 0 })}>
-                Scroll to top
-              </Button>
-            )}
-          </Transition>
-        </Affix>
+        <ToTopButton viewportRef={viewportRef} />
+
         <FloatingButton />
       </AppShell.Main>
     </AppShell>

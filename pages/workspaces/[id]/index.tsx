@@ -22,7 +22,6 @@ import { Can } from '@/providers/AbilityProvider';
 import { subject } from '@casl/ability';
 import { Divider, Spoiler, Stack, Tooltip } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
-import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -43,7 +42,6 @@ const Page: NextPageWithLayout = () => {
   const router = useRouter();
   const { workspace } = useFetchWorkspaceById(router.query.id as string);
   const { user } = useMyInfo();
-  const { notifications } = useFetchWorkspaceNotifications(router.query.id as string);
 
   useEffect(() => {
     const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);
