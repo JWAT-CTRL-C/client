@@ -10,17 +10,16 @@ import { useEffect } from 'react';
 
 export default function NotificationList() {
   const router = useRouter();
+  const [ref, inView] = useInView({ threshold: 0 });
 
   const { notifications, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFetchWorkspaceNotifications(router.query.id as string);
-
-  if (isPending) return <NotificationSkeleton />;
-
-  if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
-  const [ref, inView] = useInView({ threshold: 0 });
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [inView]);
+  if (isPending) return <></>;
+
+  if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
 
   return (
     <div className=''>
