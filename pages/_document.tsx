@@ -5,8 +5,6 @@ export default function Document() {
   return (
     <Html lang='en'>
       <Head>
-        <title>Synergy</title>
-        <meta name='description' content='Synergy' />
         <ColorSchemeScript defaultColorScheme='auto' />
       </Head>
       <body>

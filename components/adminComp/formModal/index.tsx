@@ -70,11 +70,11 @@ const FormModalAdmin = ({ user }: Props) => {
       },
       email: (val) => {
         //if (!val) return 'Email is required';
-        return val && isEmail(val) ? null : 'Invalid email format';
+        return val ? (isEmail(val) ? null : 'Invalid email format') : null;
       },
       phone: (val) => {
         // if (!val) return 'Phone number is required';
-        return val && isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format';
+        return val ? (isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format') : null;
       },
       role: (val) => {
         if (val === 'MA') return 'This role cannot select';
