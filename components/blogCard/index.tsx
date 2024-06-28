@@ -40,12 +40,15 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
     setImageSrc(defaultBackground);
   };
 
-  const handleRating = async () => {
-    try {
-      await ratingBlog({ blog_id: blog.blog_id });
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-    }
+  const handleRating = () => {
+    ratingBlog(
+      { blog_id: blog.blog_id },
+      {
+        onError: (error) => {
+          showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        }
+      }
+    );
   };
 
   const handleToBlog = async () => {

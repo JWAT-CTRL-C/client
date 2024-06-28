@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const CreateBlog = () => {
-  const { uploadImage, imageUrl, isPending: isPendingImage } = useUploadImage();
+  const { uploadImage, isPending: isPendingImage } = useUploadImage();
   const { createBlog, isPending: isPendingCreateBlog } = useCreateBlog();
   // const { workspaces, isPending, isError } = useFetchWorkspacesByUser();
   const { data: workspaces } = useFetchWorkSpaceInfo();
@@ -59,15 +59,15 @@ const CreateBlog = () => {
       blog_img: imageUrlResponse || values.blog_img
     };
 
-    try {
-      await createBlog(filteredValues as blogFormType);
-      showSuccessToast('Create blog successfully!');
-
-      await router.push('/blogs');
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-      return;
-    }
+    createBlog(filteredValues as blogFormType, {
+      onSuccess: () => {
+        showSuccessToast('Create blog successfully!');
+        router.push('/blogs');
+      },
+      onError: (error) => {
+        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      }
+    });
   };
 
   if (isPendingCreateBlog || isPendingImage)

@@ -68,7 +68,12 @@ api.interceptors.response.use(
       !error.response.config.__isRetryRequest // Prevent infinite loop
     ) {
       return refreshToken(error);
-    } else if (error.response && error.response.status === 401 && !error.response.config.__isUnauthorized) {
+    } else if (
+      error.response &&
+      error.response.status === 401 &&
+      !error.response.config.url?.includes('auth') &&
+      !error.response.config.__isUnauthorized
+    ) {
       return unauthorized(error);
     }
     return Promise.reject(error);

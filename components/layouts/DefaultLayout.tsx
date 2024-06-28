@@ -40,7 +40,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       }
       notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
         receiveNotification(notification);
-        if (notification.user.user_id !== user.user_id)
+        if (notification.user && notification.user.user_id !== user.user_id)
           showNotifyToast(<NotificationItem notification={notification} toast />);
       });
       setIsListening(true);

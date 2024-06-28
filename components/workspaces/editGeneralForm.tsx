@@ -105,7 +105,6 @@ export default function EditGeneralWorkspaceForm({
   const [opened, { toggle }] = useDisclosure(false);
   const { notificationSocket } = useStore((state) => state);
   const form = useForm({
-    mode: 'uncontrolled',
     initialValues: {
       wksp_id: workspace?.wksp_id,
       wksp_name: workspace?.wksp_name ?? '',

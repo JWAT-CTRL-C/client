@@ -50,7 +50,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const [activeTab, setActiveTab] = useState<string>('general');
   const router = useRouter();
   const wksp_id = router.query.id as string;
-  const { workspace, isFetching } = useFetchWorkspaceById(wksp_id);
+  const { workspace, isPending } = useFetchWorkspaceById(wksp_id);
   const { resources } = useGetAllResourcesByWorkspace(wksp_id);
   const { users } = useGetAllUsers();
   const { members } = useGetWorkspaceMember(wksp_id);
@@ -74,7 +74,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-  return _.isEmpty(workspace) || isFetching ? (
+  return _.isEmpty(workspace) || isPending ? (
     <div className='flex h-full w-full items-center justify-center'>
       <Loader />
     </div>

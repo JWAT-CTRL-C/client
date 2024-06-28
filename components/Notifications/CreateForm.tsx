@@ -29,7 +29,6 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
     noti_cont: string;
     wksp_id: string | null;
   }>({
-    mode: 'uncontrolled',
     initialValues: {
       noti_tle: '',
       noti_cont: '',

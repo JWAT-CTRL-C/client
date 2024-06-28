@@ -13,7 +13,7 @@ export const useUploadImage = () => {
   });
 
   return {
-    uploadImage: mutation.mutateAsync,
+    uploadImage: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError,
     imageUrl: mutation.data
@@ -35,7 +35,7 @@ export const useUpdateUser = () => {
   });
 
   return {
-    updateUser: mutation.mutateAsync,
+    updateUser: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError
   };
@@ -51,7 +51,7 @@ export const useRemoveUser = () => {
   });
 
   return {
-    removeUser: mutation.mutateAsync,
+    removeUser: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError
   };
@@ -67,7 +67,7 @@ export const useRestoreUser = () => {
   });
 
   return {
-    restoreUser: mutation.mutateAsync,
+    restoreUser: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError
   };
@@ -83,7 +83,7 @@ export const useCreateUser = () => {
   });
 
   return {
-    createUser: mutation.mutateAsync,
+    createUser: mutation.mutate,
     isPending: mutation.isPending,
     isError: mutation.isError
   };

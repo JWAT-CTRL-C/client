@@ -39,21 +39,25 @@ export default function BlogItem({ blog }: IBlogItemProps) {
   const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true);
 
   const handleCommentBlog = async (comment: string) => {
-    try {
-      await createBlogComment({ blog_id: blog.blog_id, blog_cmt_cont: comment });
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-      return;
-    }
+    createBlogComment(
+      { blog_id: blog.blog_id, blog_cmt_cont: comment },
+      {
+        onError: (error) => {
+          showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        }
+      }
+    );
   };
 
-  const handleRating = async () => {
-    try {
-      await ratingBlog({ blog_id: blog.blog_id });
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-      return;
-    }
+  const handleRating = () => {
+    ratingBlog(
+      { blog_id: blog.blog_id },
+      {
+        onError: (error) => {
+          showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        }
+      }
+    );
   };
 
   return (
