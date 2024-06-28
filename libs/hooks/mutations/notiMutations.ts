@@ -1,7 +1,7 @@
 import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
 import { Noti } from '@/libs/types/notiType';
 import { markSeenNotification } from '@/services/notiServices';
-import { useMutation, useQueryClient, InfiniteData } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useReceiveNotifications = () => {
   const queryClient = useQueryClient();
@@ -11,30 +11,33 @@ export const useReceiveNotifications = () => {
     onSuccess: (notification) => {
       const newNotification = { ...notification, is_read: false };
 
-      queryClient.setQueryData<InfiniteData<Noti[], number>>([NotiQueryEnum.GLOBAL_NOTIFICATIONS], (old) => {
-        if (!old) return;
+      // queryClient.setQueryData<InfiniteData<Noti[], number>>([NotiQueryEnum.GLOBAL_NOTIFICATIONS], (old) => {
+      //   if (!old) return;
 
-        return {
-          pageParams: old.pageParams,
-          pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
-        };
+      //   return {
+      //     pageParams: old.pageParams,
+      //     pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
+      //   };
+      // });
+      // if (newNotification.workspace) {
+      //   queryClient.setQueryData<InfiniteData<Noti[], number>>(
+      //     [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id],
+      //     (old) => {
+      //       if (!old) return;
+
+      //       return {
+      //         pageParams: old.pageParams,
+      //         pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
+      //       };
+      //     }
+      //   );
+
+      queryClient.invalidateQueries({
+        queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id]
       });
-      if (newNotification.workspace) {
-        queryClient.setQueryData(
-          [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id],
-          (old: Noti[]) => {
-            if (!old) return;
-
-            return [newNotification, ...old];
-          }
-        );
-
-        // queryClient.invalidateQueries({
-        //   queryKey: [GET_SPECIFIC_WORKSPACE_KEY + newNotification.workspace.wksp_id]
-        // });
-      }
+      // }
       queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.UNREAD_AMOUNT_NOTIFICATION] });
-      // queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS] });
+      queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS] });
     }
   });
 
