@@ -16,7 +16,7 @@ export const useFetchWorkspaceNotifications = (wksp_id: string) => {
     queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],
     queryFn: async ({ pageParam }) => await fetchWorkspaceNotifications(pageParam, wksp_id),
     initialPageParam: 1,
-    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
+    getNextPageParam: (lastPage, _, lastPageParam) => (lastPage?.length < 20 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
   return {

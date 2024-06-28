@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { useGetAllUsersForAdmin } from '@/libs/hooks/queries/userQueries';
 import UserCompTable from '@/components/adminComp/usersCompTable';
 import { UserResponseWithPagination } from '@/libs/types/userType';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -37,16 +38,22 @@ const AdminPage: NextPageWithLayout = () => {
     <Can I='reach' a='AdminPage' passThrough>
       {(allowed) =>
         allowed ? (
-          <Flex direction='column' gap={3}>
-            <div className='mb-3'>
-              <UserCompTable
-                currentPage={page}
-                dataTable={users as UserResponseWithPagination}
-                onPagination={handlePaging}
-                isLoading={isPending}
-              />
-            </div>
-          </Flex>
+          <>
+            <Head>
+              <title>Admin | Synergy</title>
+              <meta name='description' content='Admin' />
+            </Head>
+            <Flex direction='column' gap={3}>
+              <div className='mb-3'>
+                <UserCompTable
+                  currentPage={page}
+                  dataTable={users as UserResponseWithPagination}
+                  onPagination={handlePaging}
+                  isLoading={isPending}
+                />
+              </div>
+            </Flex>
+          </>
         ) : (
           <Flex direction='column' gap={3}>
             You are not allowed to access this page
