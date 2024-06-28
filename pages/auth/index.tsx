@@ -3,6 +3,7 @@ import { NextPageWithLayout } from '../_app';
 import AuthLayout from '@/components/layouts/AuthLayout';
 import TokenExpired from '@/components/pages/auth/TokenExpired';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookies = context.req.headers.cookie || '';
@@ -15,10 +16,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Auth: NextPageWithLayout<{ expired: boolean }> = ({ expired }) => {
   return (
-    <div className='flex h-dvh justify-between'>
-      <AuthenticationForm />
-      <TokenExpired expired={expired} />
-    </div>
+    <>
+      <Head>
+        <title>Login | Synergy</title>
+        <meta name='description' content='Login' />
+      </Head>
+      <div className='flex h-dvh justify-between'>
+        <AuthenticationForm />
+        <TokenExpired expired={expired} />
+      </div>
+    </>
   );
 };
 

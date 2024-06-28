@@ -5,7 +5,7 @@ import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import {
   Flex,
   useMantineTheme,
@@ -221,8 +221,9 @@ const BlogCompTable = ({
         highlightOnHover
         withTableBorder
         withColumnBorders
-        stickyHeader
-        stickyHeaderOffset={60}>
+        // stickyHeader
+        // stickyHeaderOffset={60}
+      >
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
@@ -269,7 +270,13 @@ const BlogCompTable = ({
         </Table.Tbody>
       </Table>
       <Flex className='mt-5 w-full justify-start lg:justify-center'>
-        <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
+        <Pagination
+          size='sm'
+          radius='lg'
+          value={activePage}
+          onChange={handlePagination}
+          total={dataTable?.totalPages}
+        />
       </Flex>
     </Group>
   );

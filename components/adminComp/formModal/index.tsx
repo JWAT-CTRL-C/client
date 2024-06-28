@@ -75,6 +75,9 @@ const FormModalAdmin = ({ user }: Props) => {
       phone: (val) => {
         // if (!val) return 'Phone number is required';
         return val && isMobilePhone(val, 'vi-VN') ? null : 'Invalid phone number format';
+      },
+      role: (val) => {
+        if (val === 'MA') return 'This role cannot select';
       }
     }
   });

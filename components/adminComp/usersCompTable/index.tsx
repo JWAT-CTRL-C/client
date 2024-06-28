@@ -5,7 +5,7 @@ import { userAttribute } from '@/libs/constants/userAttribute';
 import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
 import { convertIsoToDateTime } from '@/libs/utils';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import {
   ActionIcon,
   Avatar,
@@ -16,6 +16,7 @@ import {
   Group,
   Loader,
   Pagination,
+  ScrollArea,
   Space,
   Table,
   Text,
@@ -163,7 +164,7 @@ const UserCompTable = ({
               onClickRestore={handleRestore}></AdminPopover>
           )}
           {userInfo?.role === row.original.role && (
-            <ActionIcon disabled className='text-2xl' bg={'transparent'}>
+            <ActionIcon disabled className='cursor-not-allowed text-2xl' bg={'transparent'}>
               <FaUserShield />
             </ActionIcon>
           )}
@@ -235,21 +236,23 @@ const UserCompTable = ({
       </Flex>
       <Space h='xl' />
 
+      {/* <ScrollArea h={500} scrollHideDelay={500} offsetScrollbars scrollbarSize={4} className='mx-10'> */}
       <Table
-        className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
+        className='h-full'
         highlightOnHover
         withTableBorder
         withColumnBorders
-        stickyHeader
-        stickyHeaderOffset={60}>
+        // stickyHeader
+        // stickyHeaderOffset={0}
+      >
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
+                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -290,8 +293,15 @@ const UserCompTable = ({
           )}
         </Table.Tbody>
       </Table>
+      {/* </ScrollArea> */}
       <Flex className='mt-5 w-full justify-start lg:justify-center'>
-        <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
+        <Pagination
+          size='sm'
+          radius='lg'
+          value={activePage}
+          onChange={handlePagination}
+          total={dataTable?.totalPages}
+        />
       </Flex>
     </Group>
   );
