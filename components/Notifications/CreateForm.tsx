@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { useRouter } from 'next/router';
+import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
+import { Noti } from '@/libs/types/notiType';
 
 export type NotificationCreateFormType = {
   opened: boolean;
@@ -45,6 +47,8 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
 
   const { user } = useMyInfo();
   const { workspaces } = useFetchWorkspacesByUser();
+
+  const { receiveNotification } = useReceiveNotifications();
 
   const [workspaceOptions, setWorkspaceOptions] = useState<ComboboxItem[]>([]);
 
@@ -109,7 +113,17 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
   const handleSubmit = (value: typeof form.values) => {
     setIsLoading(true);
     if (value.wksp_id) {
-      notificationSocket.emit(NotificationType.CREATE_WORKSPACE, { ...value, user_id: user!.user_id });
+      notificationSocket.emit(NotificationType.CREATE_WORKSPACE, { ...value, user_id: user!.user_id }, () => {
+        const newNotification = {
+          ...value,
+          workspace: {
+            wksp_id: value.wksp_id,
+            wksp_name: selectedWorkspace!
+          },
+          user: user!
+        };
+        receiveNotification(newNotification as unknown as Noti);
+      });
     } else {
       notificationSocket.emit(NotificationType.CREATE_GLOBAL, { ...value, user_id: user!.user_id });
     }
