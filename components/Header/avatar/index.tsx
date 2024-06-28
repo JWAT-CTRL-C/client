@@ -42,6 +42,10 @@ const AvatarComp = () => {
       </Menu.Target>
 
       <Menu.Dropdown>
+        <Menu.Label>
+          {user?.fuln} #{user?.user_id}
+        </Menu.Label>
+        <Menu.Divider />
         <Menu.Label>Dark mode</Menu.Label>
         <Menu.Item closeMenuOnClick={false}>
           <Switch

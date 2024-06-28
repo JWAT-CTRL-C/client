@@ -4,7 +4,6 @@ import { useLogin } from '@/libs/hooks/mutations/useLogin';
 import { ErrorResponseType } from '@/libs/types';
 import { Button, Paper, PasswordInput, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { isAxiosError } from 'axios';
 
 export function AuthenticationForm() {
   const { login: loginFunc, isPending } = useLogin();
@@ -22,7 +21,7 @@ export function AuthenticationForm() {
   });
 
   const handleSubmit = async (values: typeof form.values) => {
-    await loginFunc(
+    loginFunc(
       { usrn: values.username, pass: values.password },
       {
         onSuccess() {

@@ -202,24 +202,28 @@ const UserCompTable = ({
 
   const handleToUserInfo = (id: string | number) => {};
 
-  const handleRestore = async (id: string | number) => {
-    try {
-      await restoreUser(id as number);
-      showSuccessToast('Restore user successfully');
-    } catch (error: AxiosError | any) {
-      const message = error?.response?.data.message;
-      showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
-    }
+  const handleRestore = (id: string | number) => {
+    restoreUser(id as number, {
+      onSuccess: () => {
+        showSuccessToast('Restore user successfully');
+      },
+      onError: (error) => {
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+      }
+    });
   };
 
-  const handleDelete = async (id: string | number) => {
-    try {
-      await removeUser(id as number);
-      showSuccessToast('Delete user successfully');
-    } catch (error: AxiosError | any) {
-      const message = error.response.data.message;
-      showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
-    }
+  const handleDelete = (id: string | number) => {
+    removeUser(id as number, {
+      onSuccess: () => {
+        showSuccessToast('Delete user successfully');
+      },
+      onError: (error) => {
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+      }
+    });
   };
   const handlePagination = (page: number) => {
     setPage(page);

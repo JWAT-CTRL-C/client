@@ -189,14 +189,15 @@ const BlogCompTable = ({
     router.push(`/blogs/${id}`);
   };
 
-  const handleDeleteBlog = async (blog_id: string) => {
-    try {
-      await removeBlog(blog_id);
-      showSuccessToast('Delete blog successfully!');
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-      return;
-    }
+  const handleDeleteBlog = (blog_id: string) => {
+    removeBlog(blog_id, {
+      onSuccess: () => {
+        showSuccessToast('Delete blog successfully!');
+      },
+      onError: (error) => {
+        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+      }
+    });
   };
   const handlePagination = (page: number) => {
     setPage(page);

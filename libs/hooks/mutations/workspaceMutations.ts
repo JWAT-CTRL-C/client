@@ -142,6 +142,7 @@ export const useFranchiseWorkspace = (
     onSuccess: (data) => {
       const { wksp_id } = handleOnSuccess(data);
       queryClient.invalidateQueries({ queryKey: [GET_SPECIFIC_WORKSPACE_KEY + wksp_id] });
+      queryClient.invalidateQueries({ queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp_id] });
     },
     onError: (error) => {
       handleOnError(error);
