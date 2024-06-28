@@ -12,7 +12,7 @@ export interface IModalContentProps {
 }
 
 export default function ModalContent({ notification, handleClose, opened }: IModalContentProps) {
-  const { markSeen, isPending, isError } = useMarkSeenNotification();
+  const { markSeen, isPending, isError } = useMarkSeenNotification(notification.workspace?.wksp_id);
   const handleWhenClose = () => {
     if (!notification.is_read) markSeen(notification.noti_id);
     handleClose();
