@@ -1,7 +1,7 @@
 import { Image, Container, Title, Text, Button, SimpleGrid } from '@mantine/core';
 import { useRouter } from 'next/router';
 
-export default function NotFoundImage() {
+export default function NotFound() {
   const router = useRouter();
   return (
     <Container className='flex-center h-dvh'>

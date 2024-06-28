@@ -19,6 +19,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import type { AppProps } from 'next/app';
 import { AbilityProvider } from '@/providers/AbilityProvider';
+import Head from 'next/head';
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -52,18 +53,25 @@ export default function App({
   }, []);
 
   return (
-    <MantineProvider defaultColorScheme='auto' theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <HydrationBoundary state={dehydratedState}>
-          <StoreProvider>
-            <AbilityProvider>
-              <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
-              <ToastContainer />
-            </AbilityProvider>
-          </StoreProvider>
-        </HydrationBoundary>
-        <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
-      </QueryClientProvider>
-    </MantineProvider>
+    <>
+      <Head>
+        <title>Synergy</title>
+        <meta name='description' content='Synergy' />
+      </Head>
+
+      <MantineProvider defaultColorScheme='auto' theme={theme}>
+        <QueryClientProvider client={queryClient}>
+          <HydrationBoundary state={dehydratedState}>
+            <StoreProvider>
+              <AbilityProvider>
+                <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
+                <ToastContainer />
+              </AbilityProvider>
+            </StoreProvider>
+          </HydrationBoundary>
+          <ReactQueryDevtools initialIsOpen={false} buttonPosition='bottom-left' />
+        </QueryClientProvider>
+      </MantineProvider>
+    </>
   );
 }
