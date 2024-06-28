@@ -9,6 +9,7 @@ import { Can } from '@/providers/AbilityProvider';
 import { Flex } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import React, { useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -39,17 +40,22 @@ const BlogsAdminPage = () => {
     <Can I='reach' a='BlogsAdminPage' passThrough>
       {(allowed) =>
         allowed ? (
-          <Flex direction='column' gap={3}>
-       
-            <div className='mb-3'>
-              <BlogCompTable
-                currentPage={pageBlogs}
-                dataTable={blogs as BlogResponseWithPagination}
-                onPagination={handlePagingBlogs}
-                isLoading={isLoadingBlogs}
-              />
-            </div>
-          </Flex>
+          <>
+            <Head>
+              <title>Blogs | Admin</title>
+              <meta name='description' content='Admin-blogs' />
+            </Head>
+            <Flex direction='column' gap={3}>
+              <div className='mb-3'>
+                <BlogCompTable
+                  currentPage={pageBlogs}
+                  dataTable={blogs as BlogResponseWithPagination}
+                  onPagination={handlePagingBlogs}
+                  isLoading={isLoadingBlogs}
+                />
+              </div>
+            </Flex>
+          </>
         ) : (
           <Flex direction='column' gap={3}>
             You are not allowed to access this page

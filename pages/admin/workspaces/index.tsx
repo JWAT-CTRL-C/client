@@ -13,6 +13,7 @@ import { Can } from '@/providers/AbilityProvider';
 import { Flex } from '@mantine/core';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import React, { useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -44,16 +45,22 @@ const WorkspacesAdminPage = () => {
     <Can I='reach' a='WorkspacesAdminPage' passThrough>
       {(allowed) =>
         allowed ? (
-          <Flex direction='column' gap={3}>
-            <div className='mb-3'>
-              <WorkspaceCompTable
-                currentPage={pageWorkspaces}
-                dataTable={workspaces as WorkspacesResponseWithPagination}
-                onPagination={handlePagingWorkspaces}
-                isLoading={isLoadingWorkspaces}
-              />
-            </div>
-          </Flex>
+          <>
+            <Head>
+              <title>Workspace | Admin</title>
+              <meta name='description' content='Admin-workspaces' />
+            </Head>
+            <Flex direction='column' gap={3}>
+              <div className='mb-3'>
+                <WorkspaceCompTable
+                  currentPage={pageWorkspaces}
+                  dataTable={workspaces as WorkspacesResponseWithPagination}
+                  onPagination={handlePagingWorkspaces}
+                  isLoading={isLoadingWorkspaces}
+                />
+              </div>
+            </Flex>
+          </>
         ) : (
           <Flex direction='column' gap={3}>
             You are not allowed to access this page
