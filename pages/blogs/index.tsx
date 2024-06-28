@@ -11,6 +11,7 @@ import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { Center, Flex, Loader, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import BlogsSkeleton from '@/components/skeletons/blogsSkeleton';
+import NoData from '@/components/shared/EmptyData';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -44,6 +45,13 @@ const Blogs = () => {
     );
 
   if (isLoading) return <BlogsSkeleton />;
+
+  if (!blogs || blogs.length === 0)
+    return (
+      <Flex justify={'center'} className='my-10'>
+        <NoData title='No Blogs Found' />
+      </Flex>
+    );
 
   return (
     <>
