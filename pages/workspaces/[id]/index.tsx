@@ -15,7 +15,6 @@ import SourceList from '@/components/workspaces/sources/sourceList';
 import { setContext } from '@/libs/api';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
-import { prefetchWorkspaceNotifications } from '@/libs/prefetchQueries/noti';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
 import { NextPageWithLayout } from '@/pages/_app';
@@ -23,6 +22,7 @@ import { Can } from '@/providers/AbilityProvider';
 import { subject } from '@casl/ability';
 import { Divider, Spoiler, Stack, Tooltip } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
