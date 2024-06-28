@@ -1,12 +1,14 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaCheck, FaRegCopy, FaSearch } from 'react-icons/fa';
 
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
+  ActionIcon,
+  CopyButton,
   Flex,
   Group,
   Input,
@@ -16,6 +18,8 @@ import {
   Table,
   Text,
   Title,
+  Tooltip,
+  rem,
   useMantineTheme
 } from '@mantine/core';
 import {
@@ -28,7 +32,7 @@ import {
 } from '@tanstack/react-table';
 
 import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
+import BlogPopover from '@/components/blogPopover';
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import TextColumn from './textColumn';
 
@@ -63,11 +67,21 @@ const BlogTable = ({
       accessorKey: 'blog_id',
       header: 'Blog ID',
       size: 50,
-
       cell: ({ row }) => (
-        <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
-          {row.original.blog_id}
-        </TextColumn>
+        <Flex align='center' gap={4}>
+          <CopyButton value={row.original.blog_id} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
+                  {copied ? <FaCheck style={{ width: rem(16) }} /> : <FaRegCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+          <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
+            {row.original.blog_id}
+          </TextColumn>
+        </Flex>
       )
     },
     {
@@ -182,7 +196,6 @@ const BlogTable = ({
       await removeBlog(blog_id);
       showSuccessToast('Delete blog successfully!');
     } catch (error) {
-     
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
     }
@@ -221,8 +234,9 @@ const BlogTable = ({
         highlightOnHover
         withTableBorder
         withColumnBorders
-        stickyHeader
-        stickyHeaderOffset={60}>
+        // stickyHeader
+        // stickyHeaderOffset={60}
+      >
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
@@ -269,7 +283,13 @@ const BlogTable = ({
         </Table.Tbody>
       </Table>
       <Flex className='w-full justify-start lg:justify-center'>
-        <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
+        <Pagination
+          size='sm'
+          radius='lg'
+          value={activePage}
+          onChange={handlePagination}
+          total={dataTable?.totalPages}
+        />
       </Flex>
     </Group>
   );

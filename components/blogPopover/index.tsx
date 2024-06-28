@@ -29,7 +29,7 @@ const BlogPopover = ({
 }: Props) => {
   const [opened, setOpened] = useState(false);
   const isActive = user ? (user.deleted_at ? false : true) : true;
-  console.log(isActive);
+
   return (
     <Popover
       closeOnClickOutside={true}
