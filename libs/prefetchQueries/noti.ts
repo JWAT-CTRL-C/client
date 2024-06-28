@@ -2,13 +2,6 @@ import { fetchNotifications, fetchWorkspaceNotifications, getUnreadAmount } from
 import { QueryClient } from '@tanstack/react-query';
 import { NotiQueryEnum } from '../constants/queryKeys/noti';
 
-export const prefetchNotifications = async (queryClient: QueryClient) =>
-  await queryClient.prefetchInfiniteQuery({
-    queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS],
-    queryFn: async ({ pageParam }) => await fetchNotifications(pageParam),
-    initialPageParam: 1
-  });
-
 export const prefetchWorkspaceNotifications = async (queryClient: QueryClient, wksp_id: string) =>
   await queryClient.prefetchQuery({
     queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],

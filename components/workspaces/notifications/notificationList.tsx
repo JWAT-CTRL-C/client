@@ -1,9 +1,7 @@
 import { ScrollArea } from '@mantine/core';
 import NotificationListItem from './notificationListItem';
-import { lazy, Suspense } from 'react';
-import ListItemSkeleton from '@/components/skeletons/listItemSkeleton';
+import NotificationSkeleton from '@/components/skeletons/notificationSkeleton';
 import NoData from '@/components/shared/EmptyData';
-import { Noti } from '@/libs/types/notiType';
 import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useRouter } from 'next/router';
 import _ from 'lodash';
@@ -13,7 +11,7 @@ export default function NotificationList() {
 
   const { notifications, isPending } = useFetchWorkspaceNotifications(router.query.id as string);
 
-  if (isPending) return <></>;
+  if (isPending) return <NotificationSkeleton />;
 
   if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
 

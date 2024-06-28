@@ -7,7 +7,6 @@ import BlogCard from '@/components/blogCard';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
 import { useFetchBlogs } from '@/libs/hooks/queries/blogQueries';
-import { prefetchBlogs } from '@/libs/prefetchQueries/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { Center, Flex, Loader, SimpleGrid, Title } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
@@ -18,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.all([prefetchBlogs(queryClient), prefetchMyInfo(queryClient)]);
+  await Promise.all([prefetchMyInfo(queryClient)]);
 
   return {
     props: {
