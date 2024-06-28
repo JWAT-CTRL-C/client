@@ -29,8 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   const isExist = await Promise.all([
     fetchSpecificWorkspace(queryClient, wksp_id),
-    prefetchMyInfo(queryClient),
-    prefetchWorkspaceNotifications(queryClient, wksp_id)
+    prefetchMyInfo(queryClient)
   ]).then((res) => res[0]);
   return {
     props: {
@@ -43,6 +42,7 @@ const Page: NextPageWithLayout = () => {
   const router = useRouter();
   const { workspace } = useFetchWorkspaceById(router.query.id as string);
   const { user } = useMyInfo();
+  const { notifications } = useFetchWorkspaceNotifications(router.query.id as string);
 
   useEffect(() => {
     const isUserInWorkspace = workspace?.users?.some((user) => user.user_id === user.user_id);

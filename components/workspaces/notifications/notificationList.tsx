@@ -1,9 +1,7 @@
 import { Loader, ScrollArea } from '@mantine/core';
 import NotificationListItem from './notificationListItem';
-import { lazy, Suspense, useEffect } from 'react';
-import ListItemSkeleton from '@/components/skeletons/listItemSkeleton';
+import { useEffect } from 'react';
 import NoData from '@/components/shared/EmptyData';
-import { Noti } from '@/libs/types/notiType';
 import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useRouter } from 'next/router';
 import _ from 'lodash';
@@ -11,17 +9,16 @@ import { useInView } from 'react-intersection-observer';
 
 export default function NotificationList() {
   const router = useRouter();
+  const [ref, inView] = useInView({ threshold: 0 });
 
   const { notifications, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFetchWorkspaceNotifications(router.query.id as string);
-
-  if (isPending) return <></>;
-
-  if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
-  const [ref, inView] = useInView({ threshold: 0 });
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [inView]);
+  if (isPending) return <></>;
+
+  if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
 
   return (
     <div className=''>
