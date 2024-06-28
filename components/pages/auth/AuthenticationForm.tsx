@@ -28,7 +28,6 @@ export function AuthenticationForm() {
           router.push('/dashboard');
         },
         onError(error) {
-          console.log(error);
           switch ((error as ErrorResponseType).response.status) {
             case 401:
               form.setErrors({ password: 'Password is incorrect' });
