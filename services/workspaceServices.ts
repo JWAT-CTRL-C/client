@@ -5,6 +5,10 @@ import { Noti } from '@/libs/types/notiType';
 import { ResourceType } from '@/libs/types/sourcesType';
 import _ from 'lodash';
 import { USER_TYPE } from './userServices';
+
+import { BlogCardType } from '@/libs/types/blogCardType';
+
+import { WorkspacesResponseWithPagination } from '@/libs/types/workspacesType';
 export type CREATE_WORKSPACE_REQUEST = {
   wksp_name: string;
   wksp_desc: string;
@@ -92,7 +96,6 @@ export const createWorkspace = (wkspData: CREATE_WORKSPACE_REQUEST) => {
 };
 
 export const updateWorkspace = (wkspData: UPDATE_WORKSPACE_REQUEST) => {
-  console.log(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'));
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api
       .patch<GENERAL_RESPONSE_TYPE>(`/workspaces/${wkspData.wksp_id}`, _.omit(wkspData, 'wksp_id'))
@@ -138,6 +141,15 @@ export const getWorkspaceMembers = (wksp_id: string) => {
   return new Promise<WORKSPACE_MEMBER>((resolve, reject) => {
     api
       .get<WORKSPACE_MEMBER>(`/workspaces/${wksp_id}/member`)
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err));
+  });
+};
+
+export const getWorkspacesForMasterAdmin = (page: number) => {
+  return new Promise<WorkspacesResponseWithPagination>((resolve, reject) => {
+    api
+      .get<WorkspacesResponseWithPagination>(`/workspaces/for/master-admin?page=${page}`)
       .then((res) => resolve(res.data))
       .catch((err) => reject(err));
   });

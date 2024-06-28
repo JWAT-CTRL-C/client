@@ -1,5 +1,6 @@
 import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
+  GET_MASTER_ADMIN_WORKSPACES_KEY,
   GET_SPECIFIC_WORKSPACE_KEY,
   GET_WORKSPACE_MEMBERS_KEY
 } from '@/libs/constants/queryKeys/workspace';
@@ -68,9 +69,12 @@ export const useDeleteWorkspace = (
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (wksp_id: string) => await deleteWorkspace(wksp_id),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       handleOnSuccess(data);
-      queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] }),
+        queryClient.invalidateQueries({ queryKey: [GET_MASTER_ADMIN_WORKSPACES_KEY] })
+      ]);
     },
     onError: (error) => {
       handleOnError(error);

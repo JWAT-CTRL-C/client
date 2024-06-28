@@ -66,12 +66,13 @@ export const useRemoveBlogById = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS_CURRENT_USER]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_MASTER_ADMIN]
         })
       ]);
     },
-    onError: (error) => {
-      console.error('Error removing blog:', error.message);
-    }
+    onError: (error) => {}
   });
 
   return {

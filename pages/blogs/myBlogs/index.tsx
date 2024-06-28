@@ -1,5 +1,5 @@
 import { GetServerSideProps } from 'next';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 import BlogTable from '@/components/blogTable';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
@@ -11,6 +11,7 @@ import { transformBlogTableType } from '@/libs/utils';
 import { Flex, LoadingOverlay } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import Head from 'next/head';
+import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -26,10 +27,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 const MyBlogs = () => {
-  const { data: blogs, isLoading } = useFetchBlogsCurrentUser();
+  const [page, setPage] = useState<number>(1);
+  const [blogTitle, setBlogTitle] = useState<string>('');
 
-  if (isLoading)
-    return <LoadingOverlay visible={isLoading} zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
+  const { data: blogs, isLoading, isError } = useFetchBlogsCurrentUser(page, blogTitle);
+
+  const handlePaging = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  function handleSearch(title: string) {
+    setPage(1);
+    setBlogTitle(title);
+  }
 
   return (
     <>
@@ -39,7 +49,13 @@ const MyBlogs = () => {
       </Head>
 
       <Flex className=''>
-        <BlogTable dataTable={blogs ? transformBlogTableType(blogs) : []} />
+        <BlogTable
+          currentPage={page}
+          dataTable={blogs as BlogResponseWithPagination}
+          onPagination={handlePaging}
+          onSearch={handleSearch}
+          isLoading={isLoading}
+        />
       </Flex>
     </>
   );

@@ -58,7 +58,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (!_.isEmpty(workspace)) {
-      if (workspace.owner.user_id !== user?.user_id && !['MA', 'HM'].includes(user?.role ?? '')) {
+      if (workspace?.owner?.user_id !== user?.user_id && !['MA', 'HM'].includes(user?.role ?? '')) {
         router.replace('https://youtu.be/watch_popup?v=Ts2Nv8z0lo4');
       }
     }

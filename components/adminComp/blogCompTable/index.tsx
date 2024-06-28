@@ -1,23 +1,30 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
-
+import TextColumn from '@/components/blogTable/textColumn';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
+import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
+import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
 import {
   Flex,
+  useMantineTheme,
+  Text,
   Group,
-  Input,
-  Loader,
-  Pagination,
+  Title,
   Space,
   Table,
-  Text,
-  Title,
-  useMantineTheme
+  Loader,
+  Pagination,
+  Button,
+  Collapse,
+  Badge,
+  CopyButton,
+  Tooltip,
+  ActionIcon,
+  rem
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import {
   ColumnDef,
   flexRender,
@@ -26,26 +33,23 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
+import { useRouter } from 'next/router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { FaAngleDown, FaAngleRight, FaAngleUp, FaCheck, FaRegCopy } from 'react-icons/fa';
 
-import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
-import BlogPopover from '@/pages/blogs/myBlogs/blogPopover';
-import { showErrorToast, showSuccessToast } from '../shared/toast';
-import TextColumn from './textColumn';
-
-const BlogTable = ({
+const BlogCompTable = ({
   dataTable,
   onPagination,
-  onSearch,
+
   isLoading,
   currentPage
 }: {
   dataTable: BlogResponseWithPagination;
   onPagination: (page: number) => void;
-  onSearch: (title: string) => void;
+
   isLoading: boolean;
   currentPage: number;
 }) => {
-  const [filterField, setFilterField] = useState('');
   const [tableValues, setTableValues] = useState<blogTableType[]>([]);
   // hook delete blog:
   const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
@@ -53,32 +57,42 @@ const BlogTable = ({
   const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
 
-  // Call hook to fetch filtered blogs
-  //const { data: filteredBlogs, isLoading, isError } = useFetchBlogsCurrentUserByTitle(filterField.trim());
-
-  //let transformedBlogs = filteredBlogs ? transformBlogTableType(filteredBlogs) : [];
-
   const columns: ColumnDef<blogTableType>[] = [
     {
       accessorKey: 'blog_id',
       header: 'Blog ID',
       size: 50,
-
       cell: ({ row }) => (
-        <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
-          {row.original.blog_id}
-        </TextColumn>
+        <Flex align='center' gap={4}>
+          <CopyButton value={row.original.blog_id} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
+                <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
+                  {copied ? <FaCheck style={{ width: rem(16) }} /> : <FaRegCopy style={{ width: rem(16) }} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+          <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
+            {row.original.blog_id}
+          </TextColumn>
+        </Flex>
       )
     },
     {
       accessorKey: 'blog_tle',
       header: 'Title',
-      size: 100,
+      size: 150,
 
       cell: ({ row }) => row.original.blog_tle
       // filterFn: (row, columnId, filterValue) => {
       //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
       // }
+    },
+    {
+      accessorKey: 'user',
+      header: 'Author',
+      cell: ({ row }) => row.original.user.fuln
     },
     {
       accessorKey: 'blog_cmt',
@@ -131,10 +145,13 @@ const BlogTable = ({
       header: 'Actions',
 
       cell: ({ row }) => (
-        <BlogPopover
-          id={row.original.blog_id}
-          onClickEditFunction={handleToEditBlogPage}
-          onClickDeleteFunction={handleDeleteBlogPage}></BlogPopover>
+        <Flex justify='center'>
+          <BlogPopover
+            isLoading={isPending}
+            id={row.original.blog_id}
+            onClickEditFunction={handleToEditBlogPage}
+            onClickDeleteFunction={handleDeleteBlog}></BlogPopover>
+        </Flex>
       )
     }
   ];
@@ -164,11 +181,6 @@ const BlogTable = ({
     setPage(currentPage);
   }, [currentPage]);
 
-  const handleSetFilterField = (value: string) => {
-    setFilterField(value);
-    onSearch(value);
-  };
-
   const handleToEditBlogPage = (id: string | number) => {
     router.push(`/blogs/${id}/edit`);
   };
@@ -177,12 +189,11 @@ const BlogTable = ({
     router.push(`/blogs/${id}`);
   };
 
-  const handleDeleteBlogPage = async (blog_id: string) => {
+  const handleDeleteBlog = async (blog_id: string) => {
     try {
       await removeBlog(blog_id);
       showSuccessToast('Delete blog successfully!');
     } catch (error) {
-     
       showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       return;
     }
@@ -193,27 +204,16 @@ const BlogTable = ({
   };
 
   return (
-    <Group className='py-3'>
-      <Flex
-        className={`flex flex-col gap-5`}
-        style={{
-          width: `${table.getCenterTotalSize()}px`
-        }}>
-        <Title>My Blogs</Title>
-
-        <Input
-          className='w-1/2'
-          placeholder='Filter title...'
-          value={filterField}
-          onChange={(event) => handleSetFilterField(event.currentTarget.value)}
-          rightSection={<FaSearch onClick={() => handleSetFilterField('')} />}
-        />
+    <Group className='flex flex-col py-1'>
+      <Flex className='w-full self-start'>
+        <Title>Blogs</Title>
       </Flex>
       <Space h='xl' />
+
       <Table
-        style={{
-          width: `${table.getCenterTotalSize()}px`
-        }}
+        // style={{
+        //   width: `${table.getCenterTotalSize()}px`
+        // }}
         className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
@@ -268,11 +268,11 @@ const BlogTable = ({
           )}
         </Table.Tbody>
       </Table>
-      <Flex className='w-full justify-start lg:justify-center'>
+      <Flex className='mt-5 w-full justify-start lg:justify-center'>
         <Pagination value={activePage} onChange={handlePagination} total={dataTable?.totalPages} />
       </Flex>
     </Group>
   );
 };
 
-export default BlogTable;
+export default BlogCompTable;

@@ -25,3 +25,12 @@ export type BlogResponse = {
   workspace: workspacesType;
   resource: ResourceType;
 };
+
+
+export type BlogResponseWithPagination = {
+  data: BlogResponse[];
+  totalPages: number;
+  currentPage: number;
+ 
+};
+

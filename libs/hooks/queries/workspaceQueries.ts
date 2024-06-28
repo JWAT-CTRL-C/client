@@ -3,11 +3,13 @@ import {
   getSpecificWorkspace,
   getWorkspaceMembers,
   getWorkspacesByUser,
+  getWorkspacesForMasterAdmin,
   SPECIFIC_WORKSPACE_RESPONSE,
   WORKSPACE_MEMBER
 } from '@/services/workspaceServices';
 import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
+  GET_MASTER_ADMIN_WORKSPACES_KEY,
   GET_RECENT_WORKSPACES_KEY,
   GET_SPECIFIC_WORKSPACE_KEY,
   GET_WORKSPACE_MEMBERS_KEY
@@ -67,6 +69,20 @@ export const useGetWorkspaceMember = (wksp: string) => {
 
   return {
     members: data,
+    isError,
+    isFetching,
+    isPending
+  };
+};
+
+export const useGetWorkspaceForMasterAdmin = (page: number) => {
+  const { data, isError, isFetching, isPending } = useQuery({
+    queryKey: [GET_MASTER_ADMIN_WORKSPACES_KEY, page],
+    queryFn: async () => await getWorkspacesForMasterAdmin(page)
+  });
+
+  return {
+    workspaces: data,
     isError,
     isFetching,
     isPending
