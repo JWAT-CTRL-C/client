@@ -102,7 +102,7 @@ const FormModalAdmin = ({ user }: Props) => {
   const handleSave = async (data: typeof form.values) => {
     try {
       if (!user) {
-        await createUser(data);
+        createUser(data);
         showSuccessToast('Create user successfully');
       } else {
         const value: UserForm = {
@@ -112,7 +112,7 @@ const FormModalAdmin = ({ user }: Props) => {
           phone: data.phone,
           role: data.role
         };
-        await updateUser(value);
+        updateUser(value);
         showSuccessToast('Update user successfully');
       }
       handleClear();

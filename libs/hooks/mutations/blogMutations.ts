@@ -21,7 +21,7 @@ export const useUploadImage = () => {
   });
 
   return {
-    uploadImage: mutation.mutate,
+    uploadImage: mutation.mutateAsync,
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null,
