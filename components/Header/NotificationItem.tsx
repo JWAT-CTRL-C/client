@@ -16,7 +16,7 @@ export default function NotificationItem({ notification }: INotificationItemProp
   return (
     <>
       <div className='flex items-center gap-4' onClick={toggle}>
-        <Indicator color='blue' disabled={notification.is_read} style={{ width: rem(12) }} />
+        <Indicator color='blue' disabled={notification.is_read} style={{ width: rem(12) }} zIndex={20} />
         <div className='w-full'>
           <div className='space-x-2 text-sm'>
             <span className='truncate font-semibold'>{notification.noti_tle}</span>

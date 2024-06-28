@@ -1,11 +1,12 @@
 import { Loader, ScrollArea } from '@mantine/core';
 import NotificationListItem from './notificationListItem';
-import { useEffect } from 'react';
+import NotificationSkeleton from '@/components/skeletons/notificationSkeleton';
 import NoData from '@/components/shared/EmptyData';
 import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useRouter } from 'next/router';
 import _ from 'lodash';
 import { useInView } from 'react-intersection-observer';
+import { useEffect } from 'react';
 
 export default function NotificationList() {
   const router = useRouter();

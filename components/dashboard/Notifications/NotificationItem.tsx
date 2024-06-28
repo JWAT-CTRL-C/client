@@ -17,7 +17,7 @@ export function NotificationItem({ notification, toast = false }: INotificationI
 
   return (
     <>
-      <Indicator color='blue' disabled={notification.is_read || toast} size={16} label='New' offset={7}>
+      <Indicator color='blue' disabled={notification.is_read || toast} size={16} label='New' offset={7}zIndex={20}>
         <Card withBorder radius='md' className='cursor-pointer px-5 py-4 shadow-md' onClick={toggle}>
           <Group>
             <Avatar src={avatarSrc(notification)} alt={notification.user?.fuln ?? 'System'} radius='xl' />

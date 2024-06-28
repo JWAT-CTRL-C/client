@@ -2,19 +2,11 @@ import { QueryClient } from '@tanstack/react-query';
 import { BlogQueryEnum } from '../constants/queryKeys/blog';
 import {
   fetchBlogById,
-  fetchBlogs,
   fetchBlogsForCurrentUser,
   fetchBlogsForMasterAdmin,
   fetchRelatedBlogs,
   fetchWorkspacesInfo
 } from '@/services/blogServices';
-
-export const prefetchBlogs = async (queryClient: QueryClient) =>
-  await queryClient.prefetchInfiniteQuery({
-    queryKey: [BlogQueryEnum.BLOGS],
-    queryFn: async ({ pageParam }) => await fetchBlogs(pageParam),
-    initialPageParam: 1
-  });
 
 export const prefetchCurrentUserBlogs = async (queryClient: QueryClient) =>
   await queryClient.prefetchQuery({

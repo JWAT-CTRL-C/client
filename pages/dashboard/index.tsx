@@ -6,7 +6,6 @@ import RecentNotifications from '@/components/dashboard/Notifications/RecentNoti
 import RecentJoinedWorkspaces from '@/components/dashboard/Workspaces/RecentJoinedWorkspaces';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { setContext } from '@/libs/api';
-import { prefetchNotifications } from '@/libs/prefetchQueries/noti';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { prefetchRecentWorkspaces } from '@/libs/prefetchQueries/workspace';
 import { Flex } from '@mantine/core';
@@ -19,11 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
-    prefetchMyInfo(queryClient),
-    prefetchRecentWorkspaces(queryClient),
-    prefetchNotifications(queryClient)
-  ]);
+  await Promise.all([prefetchMyInfo(queryClient), prefetchRecentWorkspaces(queryClient)]);
 
   return {
     props: {

@@ -15,19 +15,14 @@ const LoveIcon = ({
     onRating && (await onRating());
   };
 
-  return (
-    <div onClick={handleRating}>
-      {isLoveBlog && (
-        <ActionIcon loading={isLoading} variant='subtle' aria-label='Love'>
-          <FaHeart className='text-red-600' />
-        </ActionIcon>
-      )}
-      {!isLoveBlog && (
-        <ActionIcon loading={isLoading} variant='subtle' aria-label='Not Love'>
-          <FaRegHeart className='text-red-600' />
-        </ActionIcon>
-      )}
-    </div>
+  return isLoveBlog ? (
+    <ActionIcon loading={isLoading} variant='subtle' aria-label='Love' onClick={handleRating}>
+      <FaHeart className='text-red-600' />
+    </ActionIcon>
+  ) : (
+    <ActionIcon loading={isLoading} variant='subtle' aria-label='Not Love' onClick={handleRating}>
+      <FaRegHeart className='text-red-600' />
+    </ActionIcon>
   );
 };
 
