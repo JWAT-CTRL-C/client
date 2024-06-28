@@ -1,10 +1,11 @@
-import { type ReactNode, createContext, useRef, useContext } from 'react';
-import { useStore as useZStore, create, type StoreApi } from 'zustand';
+import { createContext, ReactNode, useContext, useRef } from 'react';
+import { create, StoreApi, useStore as useZStore } from 'zustand';
 
-import { SocketState, createSocketStore } from '@/stores/websocket';
-import { UserAction, UserState, createUserStore } from '@/stores/user';
+import { createScrollStore, ScrollAction, ScrollState } from '@/stores/scroll';
+import { createUserStore, UserAction, UserState } from '@/stores/user';
+import { createSocketStore, SocketState } from '@/stores/websocket';
 
-export type Store = SocketState & UserState & UserAction;
+export type Store = SocketState & UserState & UserAction & ScrollState & ScrollAction;
 
 export const SocketStoreContext = createContext<StoreApi<Store> | undefined>(undefined);
 
@@ -17,7 +18,8 @@ export const StoreProvider = ({ children }: SocketStoreProviderProps) => {
   if (!storeRef.current) {
     storeRef.current = create<Store>((...setStateFn) => ({
       ...createSocketStore(...setStateFn),
-      ...createUserStore(...setStateFn)
+      ...createUserStore(...setStateFn),
+      ...createScrollStore(...setStateFn)
     }));
   }
 
