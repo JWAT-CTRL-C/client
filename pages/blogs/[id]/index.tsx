@@ -11,6 +11,9 @@ import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { prefetchBlogById, prefetchRelatedBlogs } from '@/libs/prefetchQueries/blog';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { Flex } from '@mantine/core';
+import NoData from '@/components/shared/EmptyData';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -39,7 +42,7 @@ const BlogInfo = () => {
   const { id } = router.query;
   const { data: blog, isLoading } = useFetchBlogById(id as string);
 
-  return isLoading || !blog ? (
+  return isLoading ? (
     <>
       <Head>
         <title>Loading... | Synergy</title>
@@ -48,6 +51,10 @@ const BlogInfo = () => {
 
       <BlogSkeleton />
     </>
+  ) : !blog || _.isEmpty(blog) ? (
+    <Flex justify={'center'} className='my-10'>
+      <NoData title='No Blog' />
+    </Flex>
   ) : (
     <>
       <Head>
