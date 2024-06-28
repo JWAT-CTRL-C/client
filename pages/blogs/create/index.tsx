@@ -70,15 +70,6 @@ const CreateBlog = () => {
     });
   };
 
-  if (isPendingCreateBlog || isPendingImage)
-    return (
-      <LoadingOverlay
-        visible={isPendingCreateBlog || isPendingImage}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
-    );
-
   return (
     <>
       <Head>
@@ -91,6 +82,7 @@ const CreateBlog = () => {
           <Title order={1}>Create new blog</Title>
         </Center>
         <Group justify='center' className='w-full'>
+          <LoadingOverlay visible={isPendingCreateBlog || isPendingImage} />
           {/* To use update form please provide isEditing and updateValues*/}
           <BlogForm
             handleSubmitForm={handleCreateBlog}
