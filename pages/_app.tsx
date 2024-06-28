@@ -5,21 +5,22 @@ import '@/styles/globals.css';
 
 import { NextPage } from 'next';
 import { Inter } from 'next/font/google';
+import Head from 'next/head';
+import NextNProgress from 'nextjs-progressbar';
 import { ReactElement, ReactNode, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { createBreakpoint, useIsomorphicLayoutEffect } from 'react-use';
+import { useIsomorphicLayoutEffect } from 'react-use';
 
-import LoadingPageTransition from '@/components/loadingPageTransition';
 import { theme } from '@/libs/theme';
 import { cn } from '@/libs/utils';
+import { AbilityProvider } from '@/providers/AbilityProvider';
 import { StoreProvider } from '@/providers/StoreProvider';
 import { MantineProvider } from '@mantine/core';
 import { HydrationBoundary, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import type { AppProps } from 'next/app';
-import { AbilityProvider } from '@/providers/AbilityProvider';
-import Head from 'next/head';
+
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -64,7 +65,8 @@ export default function App({
           <HydrationBoundary state={dehydratedState}>
             <StoreProvider>
               <AbilityProvider>
-                <LoadingPageTransition>{getLayout(<Component {...pageProps} />)}</LoadingPageTransition>
+                <NextNProgress color='#7c3aed' />
+                {getLayout(<Component {...pageProps} />)}
                 <ToastContainer />
               </AbilityProvider>
             </StoreProvider>
