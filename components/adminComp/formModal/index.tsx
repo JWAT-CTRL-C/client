@@ -1,10 +1,7 @@
-import React, { useEffect } from 'react';
-import { FaPlusCircle, FaRegEdit } from 'react-icons/fa';
-import isEmail from 'validator/lib/isEmail';
-import isMobilePhone from 'validator/lib/isMobilePhone';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useCreateUser, useUpdateUser } from '@/libs/hooks/mutations/userMutations';
 import { ErrorResponseType } from '@/libs/types';
+import { User, UserForm, UserFormForAdmin } from '@/libs/types/userType';
 import {
   ActionIcon,
   Box,
@@ -19,9 +16,12 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { User, UserForm, UserFormForAdmin } from '@/libs/types/userType';
-import { isEmpty } from 'validator';
 import { AxiosError } from 'axios';
+import { useEffect } from 'react';
+import { FaPlusCircle, FaRegEdit } from 'react-icons/fa';
+import { isEmpty } from 'validator';
+import isEmail from 'validator/lib/isEmail';
+import isMobilePhone from 'validator/lib/isMobilePhone';
 
 type Props = {
   user?: User;
@@ -100,37 +100,58 @@ const FormModalAdmin = ({ user }: Props) => {
   }, [user, opened]);
 
   const handleSave = async (data: typeof form.values) => {
-    try {
-      if (!user) {
-        createUser(data);
-        showSuccessToast('Create user successfully');
-      } else {
-        const value: UserForm = {
-          email: data.email,
-          user_id: user.user_id,
-          fuln: data.fuln ?? '',
-          phone: data.phone,
-          role: data.role
-        };
+    if (!user) {
+      createUser(data, {
+        onSuccess: () => {
+          showSuccessToast('Create user successfully');
+          handleClear();
+        },
+        onError: (error) => {
+          const errorResponse = error as AxiosError<ErrorResponseType>;
+          const message = errorResponse.response?.data?.message;
+          if (typeof message === 'string') {
+            showErrorToast(message);
+          } else if (Array.isArray(message)) {
+            (message as string[]).forEach((msg: string) => {
+              const field = msg.split(' ')[0].toLowerCase();
+              form.setErrors({ [field]: msg });
+            });
+            showErrorToast('Please check the form for errors.');
+          } else {
+            showErrorToast('An unexpected error occurred.');
+          }
+        }
+      });
+    } else {
+      const value: UserForm = {
+        email: data.email,
+        user_id: user.user_id,
+        fuln: data.fuln ?? '',
+        phone: data.phone,
+        role: data.role
+      };
 
-        updateUser(value);
-        showSuccessToast('Update user successfully');
-      }
-      handleClear();
-    } catch (error) {
-      const errorResponse = error as AxiosError<ErrorResponseType>;
-      const message = errorResponse.response?.data?.message;
-      if (typeof message === 'string') {
-        showErrorToast(message);
-      } else if (Array.isArray(message)) {
-        (message as string[]).forEach((msg: string) => {
-          const field = msg.split(' ')[0].toLowerCase();
-          form.setErrors({ [field]: msg });
-        });
-        showErrorToast('Please check the form for errors.');
-      } else {
-        showErrorToast('An unexpected error occurred.');
-      }
+      updateUser(value, {
+        onSuccess: () => {
+          showSuccessToast('Update user successfully');
+          handleClear();
+        },
+        onError: (error) => {
+          const errorResponse = error as AxiosError<ErrorResponseType>;
+          const message = errorResponse.response?.data?.message;
+          if (typeof message === 'string') {
+            showErrorToast(message);
+          } else if (Array.isArray(message)) {
+            (message as string[]).forEach((msg: string) => {
+              const field = msg.split(' ')[0].toLowerCase();
+              form.setErrors({ [field]: msg });
+            });
+            showErrorToast('Please check the form for errors.');
+          } else {
+            showErrorToast('An unexpected error occurred.');
+          }
+        }
+      });
     }
   };
 

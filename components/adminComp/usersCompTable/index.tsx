@@ -1,28 +1,30 @@
+import { useEffect, useState } from 'react';
+import { FaCheck, FaRegCopy, FaUserShield } from 'react-icons/fa';
+
 import TextColumn from '@/components/blogTable/textColumn';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { memberAttribute } from '@/libs/constants/memberAttribute';
 import { userAttribute } from '@/libs/constants/userAttribute';
 import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { ErrorResponseType } from '@/libs/types';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
 import { convertIsoToDateTime } from '@/libs/utils';
-import BlogPopover from '@/components/blogPopover';
 import {
   ActionIcon,
   Avatar,
   Badge,
-  Button,
   CopyButton,
   Flex,
   Group,
   Loader,
   Pagination,
-  ScrollArea,
+  rem,
   Space,
   Table,
   Text,
   Title,
   Tooltip,
-  rem,
   useMantineTheme
 } from '@mantine/core';
 import {
@@ -33,14 +35,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { FaCheck, FaPlusCircle, FaRegCopy, FaTimes, FaUserShield } from 'react-icons/fa';
-import FormModalAdmin from '../formModal';
-import { ErrorResponseType } from '@/libs/types';
-import { AxiosError } from 'axios';
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+
 import AdminPopover from '../adminPopOver';
+import FormModalAdmin from '../formModal';
 
 const UserCompTable = ({
   dataTable,

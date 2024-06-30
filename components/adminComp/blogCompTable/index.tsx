@@ -1,3 +1,8 @@
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { FaCheck, FaRegCopy } from 'react-icons/fa';
+
+import BlogPopover from '@/components/blogPopover';
 import TextColumn from '@/components/blogTable/textColumn';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
@@ -5,26 +10,21 @@ import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
 import { blogTableType } from '@/libs/types/blogTableType';
 import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
-import BlogPopover from '@/components/blogPopover';
 import {
+  ActionIcon,
+  CopyButton,
   Flex,
-  useMantineTheme,
-  Text,
   Group,
-  Title,
-  Space,
-  Table,
   Loader,
   Pagination,
-  Button,
-  Collapse,
-  Badge,
-  CopyButton,
+  rem,
+  Space,
+  Table,
+  Text,
+  Title,
   Tooltip,
-  ActionIcon,
-  rem
+  useMantineTheme
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import {
   ColumnDef,
   flexRender,
@@ -33,9 +33,6 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { useRouter } from 'next/router';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { FaAngleDown, FaAngleRight, FaAngleUp, FaCheck, FaRegCopy } from 'react-icons/fa';
 
 const BlogCompTable = ({
   dataTable,
