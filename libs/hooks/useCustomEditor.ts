@@ -1,10 +1,15 @@
 import { common, createLowlight } from 'lowlight';
 
 import { CodeBlockLowlight } from '@tiptap/extension-code-block-lowlight';
+import { Color } from '@tiptap/extension-color';
 import { Highlight } from '@tiptap/extension-highlight';
 import { Image } from '@tiptap/extension-image';
 import { Link } from '@tiptap/extension-link';
 import { Placeholder } from '@tiptap/extension-placeholder';
+import { Subscript } from '@tiptap/extension-subscript';
+import { Superscript } from '@tiptap/extension-superscript';
+import { TextAlign } from '@tiptap/extension-text-align';
+import { TextStyle } from '@tiptap/extension-text-style';
 import { Underline } from '@tiptap/extension-underline';
 import { EditorOptions, useEditor } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
@@ -28,6 +33,11 @@ export const useCustomEditor = ({
         StarterKit.configure({
           codeBlock: false
         }),
+        TextAlign.configure({ types: ['heading', 'paragraph'] }),
+        TextStyle,
+        Color,
+        Superscript,
+        Subscript,
         Underline,
         Link.configure({
           openOnClick: 'whenNotEditable'
