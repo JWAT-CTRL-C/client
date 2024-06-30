@@ -112,6 +112,7 @@ const FormModalAdmin = ({ user }: Props) => {
           phone: data.phone,
           role: data.role
         };
+
         updateUser(value);
         showSuccessToast('Update user successfully');
       }
@@ -141,6 +142,7 @@ const FormModalAdmin = ({ user }: Props) => {
   return (
     <>
       <Modal
+        zIndex={101}
         opened={opened}
         onClose={close}
         title={`${user ? 'Edit' : 'Create'} account`}
@@ -237,10 +239,8 @@ const FormModalAdmin = ({ user }: Props) => {
             </Group>
           </Box>
         </form>
-
-        <LoadingOverlay visible={isLoadingCreate || isLoadingUpdate} />
       </Modal>
-
+      <LoadingOverlay visible={isLoadingCreate || isLoadingUpdate} />
       {!user && (
         <Button className='' onClick={open}>
           <FaPlusCircle />

@@ -22,6 +22,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
 
   return (
     <Popover
+      zIndex={10}
       closeOnClickOutside={true}
       onChange={setOpened}
       width={130}

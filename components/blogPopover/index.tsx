@@ -28,13 +28,12 @@ const BlogPopover = ({
   user
 }: Props) => {
   const [opened, setOpened] = useState(false);
-  const isActive = user ? (user.deleted_at ? false : true) : true;
 
   return (
     <Popover
       closeOnClickOutside={true}
       onChange={setOpened}
-      width={130}
+      width={100}
       position='bottom'
       withArrow
       shadow='md'
@@ -57,24 +56,23 @@ const BlogPopover = ({
 
             {!user && (
               <Tooltip label='Edit'>
-                <IconColumn blog_id={id} onClick={onClickEditFunction}>
-                  <FaRegEdit />
-                </IconColumn>
+                <div>
+                  <IconColumn blog_id={id} onClick={onClickEditFunction}>
+                    <FaRegEdit />
+                  </IconColumn>
+                </div>
               </Tooltip>
             )}
             <Tooltip label='Delete'>
-              <IconColumn
-                isActive={isActive}
-                isLoading={isLoading}
-                isRed={true}
-                blog_id={id}
-                onClick={onClickDeleteFunction}>
-                <FaRegTrashAlt />
-              </IconColumn>
+              <div>
+                <IconColumn isRed={true} blog_id={id} onClick={onClickDeleteFunction}>
+                  <FaRegTrashAlt />
+                </IconColumn>
+              </div>
             </Tooltip>
             {onClickRestore && (
               <Tooltip label='Restore'>
-                <IconColumn isLoading={isLoading} isYellow={true} blog_id={id} onClick={onClickRestore}>
+                <IconColumn blog_id={id} onClick={onClickRestore}>
                   <FiRotateCcw />
                 </IconColumn>
               </Tooltip>
