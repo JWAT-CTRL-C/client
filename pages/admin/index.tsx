@@ -29,7 +29,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const AdminPage: NextPageWithLayout = () => {
   const [page, setPage] = useState<number>(1);
-  const { users, isError, isPending } = useGetAllUsersForAdmin(page);
+  const { users, isPending } = useGetAllUsersForAdmin(page);
   const handlePaging = (newPage: number) => {
     setPage(newPage);
   };

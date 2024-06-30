@@ -4,7 +4,7 @@ import { CREATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
 import { Button, Group, Modal, Textarea, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { AxiosError, isAxiosError } from 'axios';
-import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '../shared/toast';
 
 export type WorkspaceCreateFormType = {
   opened: boolean;
@@ -39,15 +39,15 @@ export default function CreateWorkspaceForm({ opened, handleClose }: WorkspaceCr
     form.reset();
   };
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
-    toast.success(data.message);
+    showSuccessToast(data.message);
     form.reset();
     handleClose();
   };
   const handleFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
-      toast.error(err.response?.data.message);
+      showErrorToast(err.response?.data.message);
     } else {
-      toast.error(err.message);
+      showErrorToast(err.message);
     }
     handleClose();
     form.reset();

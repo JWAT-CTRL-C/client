@@ -47,7 +47,6 @@ const UserCompTable = ({
 }: {
   dataTable: UserResponseWithPagination;
   onPagination: (page: number) => void;
-
   isLoading: boolean;
   currentPage: number;
 }) => {

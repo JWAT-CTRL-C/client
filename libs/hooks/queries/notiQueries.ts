@@ -20,7 +20,7 @@ export const useFetchWorkspaceNotifications = (wksp_id: string) => {
     select: (data) => data.pages.flat()
   });
   return {
-    notifications: data,
+    notifications: data!,
     isPending,
     fetchNextPage,
     hasNextPage,

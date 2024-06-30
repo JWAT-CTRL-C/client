@@ -10,7 +10,7 @@ export const useMyInfo = () => {
   });
 
   return {
-    user: data,
+    user: data!,
     isError,
     isFetching,
     isPending
@@ -24,7 +24,7 @@ export const useUserInfo = (user_id: string) => {
   });
 
   return {
-    user: data,
+    user: data!,
     isError,
     isFetching,
     isPending
@@ -32,13 +32,12 @@ export const useUserInfo = (user_id: string) => {
 };
 export const useGetAllUsers = () => {
   const { data, isError, isFetching, isPending } = useQuery({
-    initialData: [] as USER_TYPE[],
     queryKey: [GET_ALL_USERS_KEY],
     queryFn: async () => await getAllUsers()
   });
 
   return {
-    users: data,
+    users: data!,
     isError,
     isFetching,
     isPending
@@ -47,14 +46,12 @@ export const useGetAllUsers = () => {
 
 export const useGetAllUsersForAdmin = (page: number) => {
   const { data, isError, isFetching, isPending } = useQuery({
-    initialData: {} as UserResponseWithPagination,
     queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY, page],
-    queryFn: async () => await getAllUsersForAdmin(page),
-    staleTime: Infinity
+    queryFn: async () => await getAllUsersForAdmin(page)
   });
 
   return {
-    users: data,
+    users: data!,
     isError,
     isFetching,
     isPending

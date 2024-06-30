@@ -1,23 +1,3 @@
-import DefaultLayout from '@/components/layouts/DefaultLayout';
-import DangerZone from '@/components/workspaces/dangerZone';
-import EditGeneralWorkspaceForm from '@/components/workspaces/editGeneralForm';
-import EditWorkspaceMemberForm from '@/components/workspaces/editMemberForm';
-import { setContext } from '@/libs/api';
-import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
-import { useGetAllUsers, useMyInfo } from '@/libs/hooks/queries/userQueries';
-import { useFetchWorkspaceById, useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
-import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
-import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
-import {
-  preFetchAllUser,
-  preFetchAllWorkspaceMembers,
-  fetchSpecificWorkspace
-} from '@/libs/prefetchQueries/workspace';
-import { User } from '@/libs/types/userType';
-import { pushHash } from '@/libs/utils';
-import { NextPageWithLayout } from '@/pages/_app';
-import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core';
-import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
@@ -25,6 +5,26 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
 import { FaBan, FaChevronLeft, FaCog, FaUsers } from 'react-icons/fa';
+
+import DefaultLayout from '@/components/layouts/DefaultLayout';
+import DangerZone from '@/components/workspaces/dangerZone';
+import EditGeneralWorkspaceForm from '@/components/workspaces/editGeneralForm';
+import EditWorkspaceMemberForm from '@/components/workspaces/editMemberForm';
+import { setContext } from '@/libs/api';
+import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
+import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
+import {
+  fetchSpecificWorkspace,
+  preFetchAllUser,
+  preFetchAllWorkspaceMembers
+} from '@/libs/prefetchQueries/workspace';
+import { pushHash } from '@/libs/utils';
+import { NextPageWithLayout } from '@/pages/_app';
+import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -52,8 +52,6 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const wksp_id = router.query.id as string;
   const { workspace, isPending } = useFetchWorkspaceById(wksp_id);
   const { resources } = useGetAllResourcesByWorkspace(wksp_id);
-  const { users } = useGetAllUsers();
-  const { members } = useGetWorkspaceMember(wksp_id);
   const { user } = useMyInfo();
 
   useEffect(() => {
@@ -119,7 +117,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='collaborator' className='p-5'>
-            <EditWorkspaceMemberForm members={members} users={users} currentUser={user ?? ({} as User)} />
+            <EditWorkspaceMemberForm wksp_id={wksp_id} />
           </Tabs.Panel>
           <Tabs.Panel value='danger-zone' className='p-5'>
             <DangerZone wksp_id={wksp_id} />
