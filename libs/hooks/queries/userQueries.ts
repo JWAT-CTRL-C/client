@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserById, getAllUsers, getAllUsersForAdmin, USER_TYPE } from '@/services/userServices';
+import { fetchUserById, getAllUsers, getAllUsersForAdmin } from '@/services/userServices';
 import { GET_ALL_USERS_FOR_ADMIN_KEY, GET_ALL_USERS_KEY, MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
-import { UserResponseWithPagination } from '@/libs/types/userType';
 
 export const useMyInfo = () => {
   const { data, isError, isFetching, isPending } = useQuery({
