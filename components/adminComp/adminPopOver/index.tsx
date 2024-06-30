@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { ActionIcon, Button, Flex, Popover, Tooltip } from '@mantine/core';
-import { FaRegEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaRegTrashAlt } from 'react-icons/fa';
 import { FiRotateCcw } from 'react-icons/fi';
 import { HiDotsHorizontal } from 'react-icons/hi';
 
-import IconColumn from '@/components/blogTable/iconColumn';
-import { User } from '@/libs/types/userType';
 import FormModalAdmin from '@/components/adminComp/formModal';
+import { User } from '@/libs/types/userType';
+import { ActionIcon, Button, Flex, Popover, Tooltip } from '@mantine/core';
 
 type Props = {
   id: string | number;
@@ -37,7 +36,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
       </Popover.Target>
       <Popover.Dropdown className='overflow-clip'>
         <div className='overflow-clip'>
-          <Flex justify={'space-between'}>
+          <Flex justify='space-between'>
             <Tooltip label='Edit'>
               <div onClick={() => setOpened(true)} onContextMenu={() => setOpened(true)}>
                 <FormModalAdmin user={user} />

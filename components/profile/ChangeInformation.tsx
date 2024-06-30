@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { FileWithPath, useDropzone } from 'react-dropzone';
+import { ErrorCode, FileWithPath, useDropzone } from 'react-dropzone';
 import { FaUserCog } from 'react-icons/fa';
 import { IoCamera } from 'react-icons/io5';
 import isEmail from 'validator/lib/isEmail';
@@ -14,6 +14,7 @@ import { Box, Button, CloseButton, Group, Image, LoadingOverlay, Modal, NavLink,
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { UserForm } from '@/libs/types/userType';
+import { useCustomDropzone } from '@/libs/hooks/useCustomDropzone';
 
 function ChangeInformation() {
   const [opened, { open, close }] = useDisclosure(false);
@@ -34,23 +35,7 @@ function ChangeInformation() {
     });
   }, []);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDropAccepted: onDrop,
-    onDropRejected: () => {
-      showErrorToast('Your image is too big!');
-    },
-    accept: {
-      'image/png': ['.png'],
-      'image/gif': ['.gif'],
-      'image/jpeg': ['.jpeg', '.jpg'],
-      'image/webp': ['.webp']
-    },
-    maxSize: 1024 * 1024 * 10,
-    multiple: false,
-    onError: (error) => {
-      showErrorToast(error.message);
-    }
-  });
+  const { getRootProps, getInputProps } = useCustomDropzone(onDrop);
 
   const form = useForm<Omit<UserForm, 'user_id'>>({
     initialValues: {
@@ -122,7 +107,7 @@ function ChangeInformation() {
         <form onSubmit={form.onSubmit(handleSave)}>
           <Box mx='auto' style={{ maxWidth: 400 }}>
             <div className='flex-center relative h-full w-full shrink-0 overflow-hidden' {...getRootProps()}>
-              <input {...getInputProps()} className='cursor-pointer' value={''} />
+              <input {...getInputProps()} className='cursor-pointer' value='' />
               <Image
                 src={user?.avatar || '/images/default-avatar.png'}
                 radius='9999px'

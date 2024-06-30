@@ -38,7 +38,7 @@ export default function BlogItem({ blog }: IBlogItemProps) {
 
   const totalLoveBlog = blog?.blogRatings?.filter((rating) => rating.is_rated === true);
 
-  const handleCommentBlog = async (comment: string) => {
+  const handleCommentBlog = (comment: string) => {
     createBlogComment(
       { blog_id: blog.blog_id, blog_cmt_cont: comment },
       {
@@ -61,60 +61,56 @@ export default function BlogItem({ blog }: IBlogItemProps) {
   };
 
   return (
-    <Flex direction={{ base: 'column', lg: 'row' }} gap={'xl'} px={20} py={24} className='relative'>
-      <Flex
-        direction={'column'}
-        className='pr-3'
-        gap={'xl'}
-        justify={'center'}
-        flex={{ base: 'auto', lg: 8 }}>
+    <Flex direction={{ base: 'column', lg: 'row' }} gap='xl' px={20} py={24} className='relative'>
+      <Flex direction='column' className='pr-3' gap='xl' justify='center' flex={{ base: 'auto', lg: 8 }}>
         <Image
           className='object-contain'
           radius='md'
           src={blog?.blogImage?.blog_img_url ?? defaultImage}
           mah={500}
-          w={'100%'}
+          w='100%'
+          alt='blog image'
         />
 
         <Text
           className='text-4xl'
           ta='center'
           fw={900}
-          c={'violet'}
+          c='violet'
           // variant='gradient'
           // gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
         >
           {upperFirst(blog?.blog_tle as string)}
         </Text>
 
-        <Flex justify={'space-between'}>
+        <Flex justify='space-between'>
           <Flex align='center' className='text-lg'>
             <Avatar src={blog?.user?.avatar} /> &nbsp;
             {blog?.user?.fuln?.toLocaleUpperCase() ?? blog?.user?.usrn?.toLocaleUpperCase()}
           </Flex>
-          <Flex align='center' c={'green'} className='text-lg'>
+          <Flex align='center' c='green' className='text-lg'>
             <FaRegArrowAltCircleUp /> &nbsp; {convertIsoToDateTime(blog?.crd_at!)}
           </Flex>
         </Flex>
         {/* <Divider /> */}
 
         {blog?.tags.length !== 0 && (
-          <Flex direction={'column'} gap={'md'} wrap={'wrap'}>
+          <Flex direction='column' gap='md' wrap='wrap'>
             <Title order={2}>Tags:</Title>
-            <Flex gap={'sm'}>{blog?.tags.map((tag) => <TagComp key={tag.tag_id} tag={tag.tag_name} />)}</Flex>
+            <Flex gap='sm'>{blog?.tags.map((tag) => <TagComp key={tag.tag_id} tag={tag.tag_name} />)}</Flex>
           </Flex>
         )}
 
         {blog?.workspace && (
-          <Flex align={'center'}>
-            <Text fw={'bold'}>Workspace: &nbsp; </Text>
+          <Flex align='center'>
+            <Text fw='bold'>Workspace: &nbsp; </Text>
             <Text>{blog?.workspace?.wksp_name}</Text>
           </Flex>
         )}
 
         {blog?.resource && (
-          <Flex align={'center'}>
-            <Text fw={'bold'}>Resource: &nbsp; </Text>
+          <Flex align='center'>
+            <Text fw='bold'>Resource: &nbsp; </Text>
             <Text>{blog?.resource?.resrc_name}</Text>
           </Flex>
         )}
@@ -126,8 +122,8 @@ export default function BlogItem({ blog }: IBlogItemProps) {
 
         <Divider />
 
-        <Flex align={'center'} justify='start' gap={5}>
-          <Flex justify='center' align={'center'}>
+        <Flex align='center' justify='start' gap={5}>
+          <Flex justify='center' align='center'>
             <LoveIcon
               onRating={handleRating}
               isLoveBlog={isLoveBlog as boolean}
@@ -135,7 +131,7 @@ export default function BlogItem({ blog }: IBlogItemProps) {
             />
             <Text>&nbsp;{totalLoveBlog?.length ?? 0}</Text>
           </Flex>
-          <Flex justify='center' align={'center'}>
+          <Flex justify='center' align='center'>
             <ThemeIcon variant='subtle'>
               <FaRegCommentAlt />
             </ThemeIcon>
@@ -150,14 +146,14 @@ export default function BlogItem({ blog }: IBlogItemProps) {
           onComment={handleCommentBlog}
         />
         {/* <Divider /> */}
-        <Text size='lg' fw={'bold'}>
+        <Text size='lg' fw='bold'>
           COMMENTS :
         </Text>
         <ScrollArea h={350} scrollbarSize={4} scrollHideDelay={500}>
-          <Flex direction={'column'} gap={20}>
+          <Flex direction='column' gap={20}>
             {blog?.blogComments.map((comment) => <CommentCard key={comment.blog_cmt_id} comment={comment} />)}
             {blog?.blogComments.length === 0 && (
-              <Flex justify={'center'} className='my-10'>
+              <Flex justify='center' className='my-10'>
                 <NoData title='No comments found' />
               </Flex>
             )}
@@ -166,9 +162,9 @@ export default function BlogItem({ blog }: IBlogItemProps) {
       </Flex>
       {/* <Divider orientation='vertical' /> */}
       <Flex
-        direction={'column'}
-        gap={'xl'}
-        w={'1/6'}
+        direction='column'
+        gap='xl'
+        w='1/6'
         className='top-4 h-full lg:sticky'
         flex={{ base: 'auto', md: 'auto', sm: 'auto', lg: 3 }}>
         <Title>Related Blogs</Title>

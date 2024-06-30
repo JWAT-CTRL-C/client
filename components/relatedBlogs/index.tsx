@@ -5,7 +5,7 @@ import BlogCard from '../blogCard';
 
 const RelatedBlogs = ({ blogs }: { blogs: BlogResponse[] }) => {
   return (
-    <Flex direction={'column'} gap='20'>
+    <Flex direction='column' gap='20'>
       {blogs && blogs?.map((blog) => <BlogCard blog={blog} key={blog.blog_id} />)}
     </Flex>
   );

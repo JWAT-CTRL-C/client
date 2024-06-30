@@ -1,14 +1,13 @@
 import { createContext, useContext, useEffect } from 'react';
 
-import { defineAbilities, updateAbility } from '@/libs/casl';
-import { AbilityTuple, MongoAbility, MongoQuery } from '@casl/ability';
+import { AppAbility, defineAbilities, updateAbility } from '@/libs/casl';
 import { createContextualCan } from '@casl/react';
 
 import { useStore } from './StoreProvider';
 
 const ability = defineAbilities();
 
-const AbilityContext = createContext<MongoAbility<AbilityTuple, MongoQuery>>(ability);
+const AbilityContext = createContext<AppAbility>(ability);
 
 export const AbilityProvider = ({ children }: { children: React.ReactNode }) => {
   const user = useStore((state) => state.user);
@@ -20,7 +19,7 @@ export const AbilityProvider = ({ children }: { children: React.ReactNode }) => 
   return <AbilityContext.Provider value={ability}>{children}</AbilityContext.Provider>;
 };
 
-export const useAbility = (): MongoAbility<AbilityTuple, MongoQuery> => {
+export const useAbility = (): AppAbility => {
   const context = useContext(AbilityContext);
 
   if (!context) {

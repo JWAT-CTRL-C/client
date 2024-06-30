@@ -22,7 +22,7 @@ export default function RecentNotifications({}: IRecentNotificationsProps) {
           ))}
         </SimpleGrid>
       ) : !notifications || _.isEmpty(notifications) ? (
-        <Flex justify={'center'} className='my-10'>
+        <Flex justify='center' className='my-10'>
           <NoData title='No Recent Notifications' />
         </Flex>
       ) : (

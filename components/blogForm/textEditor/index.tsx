@@ -40,10 +40,6 @@ const TextEditor = ({ form }: { form: UseFormReturnType<blogFormType> }) => {
     }
   }, [form.values.blog_cont, editor]);
 
-  if (!editor) {
-    return null;
-  }
-
   return (
     <RichTextEditor
       editor={editor}

@@ -58,7 +58,7 @@ const Sidebar = () => {
         <ChangeInformation />
 
         <NavLink
-          label={'Log out'}
+          label='Log out'
           className={`my-5 cursor-pointer rounded-md p-4`}
           onClick={() => {
             router.push('/auth');

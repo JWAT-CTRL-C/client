@@ -16,7 +16,7 @@ export default function RecentBlogs({}: IRecentBlogsProps) {
       {isPending ? (
         <BlogsSkeleton />
       ) : !blogs || _.isEmpty(blogs) ? (
-        <Flex justify={'center'} className='my-10'>
+        <Flex justify='center' className='my-10'>
           <NoData title='No Recent Blogs' />
         </Flex>
       ) : (

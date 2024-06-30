@@ -7,7 +7,7 @@ const CommentCard = ({ comment }: { comment: blogCommentType }) => {
 
   return (
     <Card shadow='sm' padding='lg' radius='md' withBorder>
-      <Flex align='center' justify={'space-between'}>
+      <Flex align='center' justify='space-between'>
         <Flex align='center' gap={7}>
           <Avatar
             src={comment?.user?.avatar || '/images/default-avatar.png'}
@@ -20,7 +20,7 @@ const CommentCard = ({ comment }: { comment: blogCommentType }) => {
         <Text>{convertIsoToDateTime(comment?.crd_at as string)}</Text>
       </Flex>
 
-      <Text mt={'lg'}>{comment?.blog_cmt_cont}</Text>
+      <Text mt='lg'>{comment?.blog_cmt_cont}</Text>
     </Card>
   );
 };

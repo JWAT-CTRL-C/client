@@ -4,7 +4,7 @@ import { Children, cloneElement, ReactNode } from 'react';
 const PopoverConfirm = ({
   children,
   title,
-  confirmLable,
+  confirmLabel,
   cancelLable,
   disabled = false,
   size = 200,
@@ -12,7 +12,7 @@ const PopoverConfirm = ({
 }: {
   children: ReactNode;
   title?: string;
-  confirmLable?: string;
+  confirmLabel?: string;
   cancelLable?: string;
   disabled?: boolean;
   size?: number;
@@ -44,7 +44,7 @@ const PopoverConfirm = ({
           <Text ta='center'>{title ?? 'Confirm'}</Text>
           <Group mt='md' justify='center'>
             <Button onClick={() => onConfirm()} variant='filled' color='green' loading={disabled}>
-              {confirmLable ?? 'Yes'}
+              {confirmLabel ?? 'Yes'}
             </Button>
             <Button onClick={() => handleCancel()} variant='outline' color='red'>
               {cancelLable ?? 'No'}

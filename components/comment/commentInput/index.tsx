@@ -51,7 +51,7 @@ const CommentInput = ({
           onChange={(event) => setValue(event.currentTarget.value)}
         />
       </Skeleton>
-      <Flex gap={10} justify={'end'}>
+      <Flex gap={10} justify='end'>
         <Button onClick={handleClear} variant='outline' className='w-[25%]' loading={loading}>
           Clear
         </Button>

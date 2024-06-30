@@ -14,10 +14,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export const useUploadImage = () => {
   const mutation = useMutation({
     mutationFn: uploadImage,
-    onSuccess: (data) => {
-      // console.log('Image uploaded successfully:', data);
-    },
-    onError: (error) => {}
+    onSuccess: (_data) => {},
+    onError: (_error) => {}
   });
 
   return {
@@ -43,7 +41,7 @@ export const useCreateBlog = () => {
         })
       ]);
     },
-    onError: (error) => {}
+    onError: (_error) => {}
   });
 
   return {
@@ -72,7 +70,7 @@ export const useRemoveBlogById = () => {
         })
       ]);
     },
-    onError: (error) => {}
+    onError: (_error) => {}
   });
 
   return {
@@ -97,7 +95,7 @@ export const useUpdateBlog = () => {
         })
       ]);
     },
-    onError: (error) => {}
+    onError: (_error) => {}
   });
 
   return {
@@ -114,13 +112,13 @@ export const useCreateBlogComment = () => {
 
   const mutation = useMutation<void, Error, { blog_id: string; blog_cmt_cont: string }>({
     mutationFn: async ({ blog_id, blog_cmt_cont }) => await createBlogCommentById(blog_id, blog_cmt_cont),
-    onSuccess: async (data, variables) => {
+    onSuccess: async (_data, variables) => {
       const { blog_id } = variables;
       await queryClient.invalidateQueries({
         queryKey: [BlogQueryEnum.BLOGS, blog_id]
       });
     },
-    onError: (error) => {}
+    onError: (_error) => {}
   });
 
   return {
@@ -138,7 +136,7 @@ export const useRatingBlog = () => {
 
   const mutation = useMutation<void, Error, { blog_id: string }>({
     mutationFn: async ({ blog_id }) => await ratingBlogById(blog_id),
-    onSuccess: async (data, variables) => {
+    onSuccess: async (_data, variables) => {
       const { blog_id } = variables;
 
       await Promise.all([
@@ -165,7 +163,7 @@ export const useRatingBlog = () => {
       //   });
       // }
     },
-    onError: (error) => {}
+    onError: (_error) => {}
   });
 
   return {

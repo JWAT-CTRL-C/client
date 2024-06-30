@@ -7,7 +7,7 @@ import BlogForm from '@/components/blogForm';
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { setContext } from '@/libs/api';
-import { useUpdateBlog } from '@/libs/hooks/mutations/blogMutations';
+import { useUpdateBlog, useUploadImage } from '@/libs/hooks/mutations/blogMutations';
 import { useFetchBlogById } from '@/libs/hooks/queries/blogQueries';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
 import { prefetchBlogById } from '@/libs/prefetchQueries/blog';
@@ -42,9 +42,9 @@ const EditBlog = () => {
   const router = useRouter();
   const { data: blog, isLoading } = useFetchBlogById(router.query.id as string);
   const { workspaces: workSpaceList } = useFetchWorkspacesByUser();
-  //const { uploadImage, imageUrl, isPending: IsPendingImage } = useUploadImage();
+  const { uploadImage } = useUploadImage();
 
-  const { updateBlog, isPending: isPendingUpdateBlog, isSuccess } = useUpdateBlog();
+  const { updateBlog, isPending: isPendingUpdateBlog } = useUpdateBlog();
 
   const updateValues: blogFormType = {
     blog_tle: blog?.blog_tle ?? '',
@@ -56,39 +56,36 @@ const EditBlog = () => {
   };
 
   const handleEdit = async (values: blogFormType) => {
-    // let imageUrlResponse = '';
+    let imageUrlResponse = '';
 
-    // if (values.blog_img && typeof values.blog_img !== 'string') {
-    //   imageUrlResponse = await uploadImage(values.blog_img);
-    // }
+    if (values.blog_img && typeof values.blog_img !== 'string') {
+      imageUrlResponse = await uploadImage(values.blog_img);
+    }
 
     const filteredValues = filterFalsyFields({
-      ...values
-      // blog_img: imageUrlResponse || values.blog_img
+      ...values,
+      blog_img: imageUrlResponse || values.blog_img
     });
 
-    try {
-      await updateBlog({
+    updateBlog(
+      {
         blog_id: router.query.id as string,
         blogData: filteredValues as blogFormType
-      });
-      showSuccessToast('Update blog successfully!');
-
-      await router.push('/blogs/myBlogs');
-    } catch (error) {
-      showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
-      return;
-    }
+      },
+      {
+        onSuccess: () => {
+          showSuccessToast('Blog updated successfully');
+          router.push('/blogs/myBlogs');
+        },
+        onError: (error) => {
+          showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        }
+      }
+    );
   };
 
   if (isPendingUpdateBlog || isLoading)
-    return (
-      <LoadingOverlay
-        visible={isPendingUpdateBlog || isLoading}
-        zIndex={1000}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
-    );
+    return <LoadingOverlay visible zIndex={1000} overlayProps={{ radius: 'sm', blur: 2 }} />;
 
   return (
     <>

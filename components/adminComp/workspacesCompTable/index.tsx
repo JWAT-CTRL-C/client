@@ -1,33 +1,30 @@
+import { AxiosError, isAxiosError } from 'axios';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { FaCheck, FaRegCopy } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
+import BlogPopover from '@/components/blogPopover';
 import TextColumn from '@/components/blogTable/textColumn';
-import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
-import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
 import { useDeleteWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
-import { blogTableType } from '@/libs/types/blogTableType';
-import { Tag } from '@/libs/types/tagType';
 import { WorkspacesResponseWithPagination, workspacesType } from '@/libs/types/workspacesType';
-import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
-import BlogPopover from '@/components/blogPopover';
+import { convertIsoToDateTime } from '@/libs/utils';
 import {
+  ActionIcon,
+  CopyButton,
   Flex,
-  useMantineTheme,
-  Text,
   Group,
-  Title,
-  Space,
-  Table,
   Loader,
   Pagination,
-  Button,
-  Collapse,
-  Badge,
-  CopyButton,
+  rem,
+  Space,
+  Table,
+  Text,
+  Title,
   Tooltip,
-  ActionIcon,
-  rem
+  useMantineTheme
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import {
   ColumnDef,
   flexRender,
@@ -36,11 +33,6 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { AxiosError, isAxiosError } from 'axios';
-import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { FaAngleDown, FaAngleRight, FaAngleUp, FaCheck, FaRegCopy } from 'react-icons/fa';
-import { toast } from 'react-toastify';
 
 const WorkspaceCompTable = ({
   dataTable,
@@ -215,7 +207,7 @@ const WorkspaceCompTable = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
+                <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group relative'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -236,7 +228,7 @@ const WorkspaceCompTable = ({
           ) : table?.getRowModel()?.rows?.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className='text-center'>
-                <Text c={theme.primaryColor} fw={'bold'}>
+                <Text c={theme.primaryColor} fw='bold'>
                   Not Found
                 </Text>
               </Table.Td>

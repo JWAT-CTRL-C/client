@@ -1,6 +1,7 @@
 import {
   GET_ALL_WORKSPACES_BY_USER_KEY,
   GET_MASTER_ADMIN_WORKSPACES_KEY,
+  GET_RECENT_WORKSPACES_KEY,
   GET_SPECIFIC_WORKSPACE_KEY,
   GET_WORKSPACE_MEMBERS_KEY
 } from '@/libs/constants/queryKeys/workspace';
@@ -28,6 +29,8 @@ export const useCreateWorkspace = (
     onSuccess: (data) => {
       handleOnSuccess(data);
       queryClient.invalidateQueries({ queryKey: [GET_ALL_WORKSPACES_BY_USER_KEY] });
+      queryClient.invalidateQueries({ queryKey: [GET_MASTER_ADMIN_WORKSPACES_KEY] });
+      queryClient.invalidateQueries({ queryKey: [GET_RECENT_WORKSPACES_KEY] });
     },
     onError: (error) => {
       handleOnError(error);

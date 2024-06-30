@@ -19,23 +19,23 @@ export const useReceiveNotifications = () => {
       //     pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
       //   };
       // });
-      // if (newNotification.workspace) {
-      //   queryClient.setQueryData<InfiniteData<Noti[], number>>(
-      //     [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id],
-      //     (old) => {
-      //       if (!old) return;
+      if (newNotification.workspace) {
+        //   queryClient.setQueryData<InfiniteData<Noti[], number>>(
+        //     [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id],
+        //     (old) => {
+        //       if (!old) return;
 
-      //       return {
-      //         pageParams: old.pageParams,
-      //         pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
-      //       };
-      //     }
-      //   );
+        //       return {
+        //         pageParams: old.pageParams,
+        //         pages: [[newNotification, ...old.pages[0]], ...old.pages.slice(1)]
+        //       };
+        //     }
+        //   );
 
-      queryClient.invalidateQueries({
-        queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id]
-      });
-      // }
+        queryClient.invalidateQueries({
+          queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, newNotification.workspace.wksp_id]
+        });
+      }
       queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.UNREAD_AMOUNT_NOTIFICATION] });
       queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS] });
     }
