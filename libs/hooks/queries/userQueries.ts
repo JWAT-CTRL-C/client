@@ -47,7 +47,7 @@ export const useGetAllUsers = () => {
 
 export const useGetAllUsersForAdmin = (page: number) => {
   const { data, isError, isFetching, isPending } = useQuery({
-    initialData: {} as UserResponseWithPagination,
+  
     queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY, page],
     queryFn: async () => await getAllUsersForAdmin(page),
     staleTime: Infinity
