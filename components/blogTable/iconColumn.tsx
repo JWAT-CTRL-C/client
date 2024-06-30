@@ -21,6 +21,4 @@ const IconColumn = ({
   );
 };
 
-IconColumn.displayName = 'IconColumn';
-
 export default IconColumn;
