@@ -3,13 +3,21 @@ import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
 import { fetchNotifications, fetchWorkspaceNotifications, getUnreadAmount } from '@/services/notiServices';
 
 export const useFetchNotifications = () => {
-  return useInfiniteQuery({
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS],
     queryFn: async ({ pageParam }) => await fetchNotifications(pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
+
+  return {
+    notifications: data!,
+    isPending,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  };
 };
 export const useFetchWorkspaceNotifications = (wksp_id: string) => {
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
