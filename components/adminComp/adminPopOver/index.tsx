@@ -36,7 +36,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
       </Popover.Target>
       <Popover.Dropdown className='overflow-clip'>
         <div className='overflow-clip'>
-          <Flex justify={'space-between'}>
+          <Flex justify='space-between'>
             <Tooltip label='Edit'>
               <div onClick={() => setOpened(true)} onContextMenu={() => setOpened(true)}>
                 <FormModalAdmin user={user} />

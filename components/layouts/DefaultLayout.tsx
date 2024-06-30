@@ -40,7 +40,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       }
       notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
         receiveNotification(notification);
-        if (notification.user && notification.user.user_id !== user.user_id)
+        if (!notification.user || notification.user.user_id !== user.user_id)
           showNotifyToast(<NotificationItem notification={notification} toast />);
       });
       setIsListening(true);
@@ -53,6 +53,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     return () => {
       if (notificationSocket && isListening) {
         notificationSocket.off(NotificationType.NEW);
+        setIsListening(false);
       }
     };
   }, [user]);

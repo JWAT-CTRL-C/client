@@ -19,7 +19,7 @@ export default function NotificationListItem({ item }: { item: Noti }) {
     <>
       <div className='mt-4 w-full rounded-xl bg-muted p-5 pb-7 shadow-md' onClick={toggle}>
         <div className='flex-start gap-4'>
-          <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
+          <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System' }/>
           <div className='w-full'>
             <Indicator color='blue' disabled={item.is_read} label='New' size={16} zIndex={20}>
               <Text className='line-clamp-1 w-full text-xl font-bold'>{item.noti_tle}</Text>
@@ -30,13 +30,13 @@ export default function NotificationListItem({ item }: { item: Noti }) {
                 size='sm'
                 variant='light'
                 color={memberAttribute[item.user?.role ?? 'default'].color}
-                ml={'xs'}>
+                ml='xs'>
                 {memberAttribute[item.user?.role ?? 'default'].roleName}
               </Badge>
             </div>
           </div>
         </div>
-        <Divider size={'xs'} />
+        <Divider size='xs' />
         <div className='mt-2 grid gap-2 pl-[8%]'>
           <ShowContent content={item.noti_cont} className='line-clamp-2' />
           <Text size='xs' c='gray.6'>

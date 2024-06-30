@@ -87,7 +87,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
 
       <div className='h-[84vh]'>
         <Tabs
-          defaultValue={'general'}
+          defaultValue='general'
           value={activeTab}
           orientation='vertical'
           h='100%'
@@ -114,7 +114,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
           </Tabs.List>
 
           <Tabs.Panel value='general' className='p-5'>
-            <ScrollArea h={'100%'} scrollbars='y' scrollbarSize={2} scrollHideDelay={0}>
+            <ScrollArea h='100%' scrollbars='y' scrollbarSize={2} scrollHideDelay={0}>
               <EditGeneralWorkspaceForm workspace={workspace} resources={resources} />
             </ScrollArea>
           </Tabs.Panel>

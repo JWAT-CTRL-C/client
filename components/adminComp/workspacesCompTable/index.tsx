@@ -215,7 +215,7 @@ const WorkspaceCompTable = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group relative'>
+                <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group relative'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -236,7 +236,7 @@ const WorkspaceCompTable = ({
           ) : table?.getRowModel()?.rows?.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className='text-center'>
-                <Text c={theme.primaryColor} fw={'bold'}>
+                <Text c={theme.primaryColor} fw='bold'>
                   Not Found
                 </Text>
               </Table.Td>

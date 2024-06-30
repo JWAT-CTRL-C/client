@@ -105,7 +105,7 @@ const BlogCard = ({ blog }: { blog: BlogResponse }) => {
         </div>
       </Group>
 
-      <Card.Section my={'sm'}>
+      <Card.Section my='sm'>
         <Divider />
       </Card.Section>
       <Group justify='space-between'>

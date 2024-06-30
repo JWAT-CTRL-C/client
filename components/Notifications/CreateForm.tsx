@@ -1,16 +1,19 @@
-import { Button, ComboboxItem, Group, Input, Modal, Select, TextInput } from '@mantine/core';
-import { useForm } from '@mantine/form';
 import { AxiosError, isAxiosError } from 'axios';
-import { toast } from 'react-toastify';
-import TextEditor from './TextEditor';
-import { useStore } from '@/providers/StoreProvider';
-import { NotificationType } from '@/libs/types';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
+import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { useFetchWorkspacesByUser } from '@/libs/hooks/queries/workspaceQueries';
-import { useRouter } from 'next/router';
-import { useReceiveNotifications } from '@/libs/hooks/mutations/notiMutations';
+import { NotificationType } from '@/libs/types';
 import { Noti } from '@/libs/types/notiType';
+import { useAbility } from '@/providers/AbilityProvider';
+import { useStore } from '@/providers/StoreProvider';
+import { Button, ComboboxItem, Group, Input, Modal, Select, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
+
+import TextEditor from './TextEditor';
 
 export type NotificationCreateFormType = {
   opened: boolean;
@@ -21,8 +24,11 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
   const { notificationSocket } = useStore((store) => store);
   const { query, pathname } = useRouter();
 
+  const ability = useAbility();
+
   const [isLoading, setIsLoading] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | undefined>(undefined);
+  const [workspaceOptions, setWorkspaceOptions] = useState<ComboboxItem[]>([]);
 
   const form = useForm<{
     noti_tle: string;
@@ -49,8 +55,6 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
 
   const { receiveNotification } = useReceiveNotifications();
 
-  const [workspaceOptions, setWorkspaceOptions] = useState<ComboboxItem[]>([]);
-
   useEffect(() => {
     if (opened) {
       notificationSocket.on(NotificationType.SUCCESS, handleSuccess);
@@ -74,7 +78,7 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
         );
       }
     }
-  }, [pathname, workspaceOptions]);
+  }, [pathname, workspaceOptions, opened]);
 
   useEffect(() => {
     if (workspaces) {
@@ -86,6 +90,8 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
     }
   }, [workspaces]);
 
+  const canCreateGlobalNoti = ability.can('create', 'global_notification');
+
   const handleCancel = () => {
     handleClose();
     form.reset();
@@ -93,7 +99,7 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
 
   const handleSuccess = () => {
     setIsLoading(false);
-    toast.success('Notification created successfully');
+    showSuccessToast('Notification created successfully');
     form.reset();
     handleClose();
   };
@@ -101,9 +107,9 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
   const handleFail = (err: Error | AxiosError) => {
     setIsLoading(false);
     if (isAxiosError(err)) {
-      toast.error(err.response?.data.message);
+      showErrorToast(err.response?.data.message);
     } else {
-      toast.error(err.message);
+      showErrorToast(err.message);
     }
     form.reset();
     handleClose();
@@ -153,7 +159,7 @@ export default function CreateNotificationForm({ opened, handleClose }: Notifica
           label='Workspace'
           data={workspaceOptions}
           nothingFoundMessage='No workspace available'
-          disabled={!workspaceOptions.length}
+          disabled={!workspaceOptions.length || !canCreateGlobalNoti}
           placeholder='Leave empty for global notification'
           {...form.getInputProps('wksp_id')}
         />

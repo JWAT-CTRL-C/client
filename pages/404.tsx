@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <Container className='flex-center h-dvh'>
       <SimpleGrid spacing={{ base: 40, sm: 80 }} cols={{ base: 1, sm: 2 }}>
-        <Image src='/images/404.svg' className='md:hidden' />
+        <Image src='/images/404.svg' className='md:hidden' alt='404' />
         <div>
           <Title className='mb-[var(--mantine-spacing-md)] text-4xl font-black max-sm:text-3xl'>
             Something is not right...
@@ -24,7 +24,7 @@ export default function NotFound() {
             Get back to home page
           </Button>
         </div>
-        <Image src='/images/404.svg' className='max-md:hidden' />
+        <Image src='/images/404.svg' className='max-md:hidden' alt='404' />
       </SimpleGrid>
     </Container>
   );
