@@ -32,9 +32,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      dehydratedState: dehydrate(queryClient),
-      notFound: isExist.status === 'rejected'
-    }
+      dehydratedState: dehydrate(queryClient)
+    },
+    notFound: isExist.status === 'rejected'
   };
 };
 

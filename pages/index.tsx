@@ -18,6 +18,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
+    },
+    redirect: {
+      destination: '/dashboard',
+      permanent: true
     }
   };
 };
