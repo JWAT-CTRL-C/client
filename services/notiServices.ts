@@ -1,10 +1,12 @@
 import api from '@/libs/api';
 import { Noti, NotificationResponseWithPagination } from '@/libs/types/notiType';
+import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 
-export const fetchNotifications = async (pageParam: number): Promise<Noti[]> => {
+
+export const fetchNotifications = async (pageParam: number, withoutSys: number): Promise<Noti[]> => {
   return new Promise((resolve, reject) => {
     api
-      .get(`/notifications?page=${pageParam}`)
+      .get(`/notifications?page=${pageParam}&withoutSys=${withoutSys}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
@@ -47,6 +49,14 @@ export const removeNotificationById = async (noti_id: string): Promise<void> => 
   return new Promise((resolve, reject) => {
     api
       .delete(`/notifications/${noti_id}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  })
+}
+export const removeNotification = (wksp_id: string, noti_id: string) => {
+  return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
+    api
+      .delete(`/notifications/${noti_id}/workspaces/${wksp_id}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });

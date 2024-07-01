@@ -4,9 +4,15 @@ import { Box, Button, Collapse, Image } from '@mantine/core';
 import { cn, useBreakpoint } from '@/libs/utils';
 import { BlogResponse } from '@/libs/types/blogResponse';
 import NoData from '@/components/shared/EmptyData';
+import { useRouter } from 'next/router';
+import { useFetchBlogsWorkspace } from '@/libs/hooks/queries/blogQueries';
+import _ from 'lodash';
+import BlogsSkeleton from '@/components/skeletons/blogsSkeleton';
 
-export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
+export default function BlogList() {
+  const router = useRouter();
   const [opened, { toggle }] = useDisclosure(false);
+  const { blogs, blogsPending } = useFetchBlogsWorkspace(router.query.id as string);
   const breakpoint = useBreakpoint();
   const breakpointType: { [breakpoint: string]: { length: number } } = {
     lg: {
@@ -22,10 +28,12 @@ export default function BlogList({ blogs }: { blogs: BlogResponse[] }) {
       length: 1
     }
   };
+  if (blogsPending) return;
+  <BlogsSkeleton />;
 
   return (
     <div className='py-3'>
-      {blogs.length === 0 ? (
+      {_.isNil(blogs) || blogs.length === 0 ? (
         <NoData title='No blogs found' />
       ) : (
         <>

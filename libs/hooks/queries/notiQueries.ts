@@ -8,10 +8,10 @@ import {
 } from '@/services/notiServices';
 import { NotificationResponseWithPagination } from '@/libs/types/notiType';
 
-export const useFetchNotifications = () => {
+export const useFetchNotifications = (withoutSys = 0) => {
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS],
-    queryFn: async ({ pageParam }) => await fetchNotifications(pageParam),
+    queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS, withoutSys],
+    queryFn: async ({ pageParam }) => await fetchNotifications(pageParam, withoutSys),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
