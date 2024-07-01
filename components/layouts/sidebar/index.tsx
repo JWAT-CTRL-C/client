@@ -8,13 +8,13 @@ import { removeUserAuth } from '@/libs/utils';
 import { useAbility } from '@/providers/AbilityProvider';
 import { subject } from '@casl/ability';
 import { NavLink } from '@mantine/core';
-import { QueryCache } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { sidebarConfig } from './sidebarConfig';
 
 const Sidebar = () => {
   const router = useRouter();
-  const queryCache = new QueryCache();
+  const queryClient = useQueryClient();
   const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig(router);
   const ability = useAbility();
   const [sidebarState, setSidebarState] = useState(blogConfig);
@@ -86,7 +86,7 @@ const Sidebar = () => {
           label='Log out'
           className={`my-5 cursor-pointer rounded-md p-4`}
           onClick={() => {
-            queryCache.clear();
+            queryClient.clear();
             router.push('/auth');
             removeUserAuth();
           }}
