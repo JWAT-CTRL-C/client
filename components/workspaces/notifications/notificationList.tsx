@@ -36,11 +36,11 @@ export default function NotificationList() {
         scrollbarSize={4}
         scrollHideDelay={500}
         className='rounded-lg bg-neutral-50 py-2 dark:bg-neutral-800'>
-        <div className='flex-end w-full gap-3 pr-5'>
+        <div className='flex-end w-full gap-3 pb-3 pr-5'>
           <Checkbox checked={withoutSys} onChange={() => setWithoutSys((prev) => !prev)} />
           <label>Without system notifications</label>
         </div>
-        <div className='grid w-full grid-cols-2 gap-3 px-4 lg:grid-cols-3'>
+        <div className='grid w-full grid-cols-1 gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3'>
           {notifications.map((notification) =>
             withoutSys && !notification.user?.usrn ? null : (
               <NotificationListItem item={notification} key={notification.noti_id} />
