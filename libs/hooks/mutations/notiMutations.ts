@@ -79,7 +79,12 @@ export const useRemoveNotificationById = () => {
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: [NotiQueryEnum.ADMIN_NOTIFICATION]
-        })
+        }),
+        queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS] }),
+        queryClient.invalidateQueries({
+          queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS]
+        }),
+        queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.UNREAD_AMOUNT_NOTIFICATION] })
       ]);
     },
     onError: (_error) => {}
