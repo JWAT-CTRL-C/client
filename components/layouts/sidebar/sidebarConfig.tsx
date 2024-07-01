@@ -1,5 +1,6 @@
 import { SidebarConfig } from '@/libs/types/sidebarType';
 import {
+  FaBell,
   FaBlog,
   FaBriefcase,
   FaHistory,
@@ -27,6 +28,7 @@ export const sidebarConfig: SidebarConfig = {
   adminConfig: [
     { link: '/admin', label: 'Users', icon: <FaUser size={20} /> },
     { link: '/admin/blogs', label: 'Blogs', icon: <FaBlog size={20} /> },
-    { link: '/admin/workspaces', label: 'Workspaces', icon: <FaBriefcase size={20} /> }
+    { link: '/admin/workspaces', label: 'Workspaces', icon: <FaBriefcase size={20} /> },
+    { link: '/admin/notifications', label: 'Notifications', icon: <FaBell size={20} /> }
   ]
 };

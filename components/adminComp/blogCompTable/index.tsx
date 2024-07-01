@@ -122,9 +122,10 @@ const BlogCompTable = ({
       cell: ({ row }) => {
         return (
           <Flex wrap='wrap' align='center' gap='sm'>
-            {row.original.blog_tag?.map((tag: Tag) => (
-              <Text c={theme.primaryColor} key={tag.tag_id} fw={400}>
+            {row.original.blog_tag?.map((tag: Tag, index) => (
+              <Text c={theme.primaryColor} key={tag.tag_id}>
                 {tag.tag_name}
+                {index + 1 >= row.original.blog_tag?.length ? '' : ','}
               </Text>
             ))}
           </Flex>
@@ -228,7 +229,7 @@ const BlogCompTable = ({
               {headerGroup.headers.map((header) => (
                 <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group relative'>
                   {header.isPlaceholder ? null : (
-                    <div className='my-1'>
+                    <div className='my-1 text-center'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                   )}

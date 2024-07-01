@@ -209,7 +209,7 @@ const WorkspaceCompTable = ({
               {headerGroup.headers.map((header) => (
                 <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group relative'>
                   {header.isPlaceholder ? null : (
-                    <div className='my-1'>
+                    <div className='my-1 text-center'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                   )}

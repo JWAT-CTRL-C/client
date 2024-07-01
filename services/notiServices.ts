@@ -1,5 +1,5 @@
 import api from '@/libs/api';
-import { Noti } from '@/libs/types/notiType';
+import { Noti, NotificationResponseWithPagination } from '@/libs/types/notiType';
 
 export const fetchNotifications = async (pageParam: number): Promise<Noti[]> => {
   return new Promise((resolve, reject) => {
@@ -30,6 +30,16 @@ export const getUnreadAmount = () => {
     api
       .get<{ unreadAmount: number }>('/notifications/unread')
       .then((response) => resolve(response.data.unreadAmount))
+      .catch((error) => reject(error));
+  });
+};
+
+
+export const fetchNotificationsAdmin = (pageParam: number) => {
+  return new Promise<NotificationResponseWithPagination>((resolve, reject) => {
+    api
+      .get(`/notifications/for/admin?page=${pageParam}`)
+      .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
 };

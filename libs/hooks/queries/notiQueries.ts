@@ -1,6 +1,12 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
-import { fetchNotifications, fetchWorkspaceNotifications, getUnreadAmount } from '@/services/notiServices';
+import {
+  fetchNotifications,
+  fetchNotificationsAdmin,
+  fetchWorkspaceNotifications,
+  getUnreadAmount
+} from '@/services/notiServices';
+import { NotificationResponseWithPagination } from '@/libs/types/notiType';
 
 export const useFetchNotifications = () => {
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -43,4 +49,12 @@ export const useFetchUnreadAmount = () => {
   return {
     unreadAmount: data
   };
+};
+
+export const useFetchNotificationsMasterAdmin = (page: number) => {
+  return useQuery<NotificationResponseWithPagination>({
+    queryKey: [NotiQueryEnum.ADMIN_NOTIFICATION, page],
+    queryFn: () => fetchNotificationsAdmin(page),
+    staleTime: Infinity
+  });
 };

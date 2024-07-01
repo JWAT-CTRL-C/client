@@ -16,3 +16,9 @@ export type Noti = {
 
   is_read: boolean;
 };
+
+export type NotificationResponseWithPagination = {
+  data: Noti[];
+  totalPages: number;
+  currentPage: number;
+};

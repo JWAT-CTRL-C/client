@@ -1,18 +1,17 @@
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaCheck, FaRegCopy, FaUserShield } from 'react-icons/fa';
+import { FaCheck, FaRegCopy, FaRegTrashAlt } from 'react-icons/fa';
 
+import BlogPopover from '@/components/blogPopover';
 import TextColumn from '@/components/blogTable/textColumn';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
-import { memberAttribute } from '@/libs/constants/memberAttribute';
-import { userAttribute } from '@/libs/constants/userAttribute';
-import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
-import { ErrorResponseType } from '@/libs/types';
-import { User, UserResponseWithPagination } from '@/libs/types/userType';
-import { convertIsoToDateTime } from '@/libs/utils';
+import { useRemoveBlogById } from '@/libs/hooks/mutations/blogMutations';
+import { BlogResponseWithPagination } from '@/libs/types/blogResponse';
+import { blogTableType } from '@/libs/types/blogTableType';
+import { Tag } from '@/libs/types/tagType';
+import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
   ActionIcon,
-  Avatar,
   Badge,
   CopyButton,
   Flex,
@@ -35,40 +34,40 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
+import { Noti, NotificationResponseWithPagination } from '@/libs/types/notiType';
+import IconColumn from '@/components/blogTable/iconColumn';
+import ShowContent from '@/components/EditorContent';
+import { userAttribute } from '@/libs/constants/userAttribute';
+import { notificationAttribute } from '@/libs/constants/notiAttribute';
 
-import AdminPopover from '../adminPopOver';
-import FormModalAdmin from '../formModal';
-
-const UserCompTable = ({
+const NotificationCompTable = ({
   dataTable,
   onPagination,
+
   isLoading,
   currentPage
 }: {
-  dataTable: UserResponseWithPagination;
+  dataTable: NotificationResponseWithPagination;
   onPagination: (page: number) => void;
+
   isLoading: boolean;
   currentPage: number;
 }) => {
-  const [tableValues, setTableValues] = useState<User[]>([]);
-
-  const { removeUser, isPending: isPendingRemoveUser } = useRemoveUser();
-  const { restoreUser, isPending: isPendingRestoreUser } = useRestoreUser();
-  const { user: userInfo } = useMyInfo();
-
+  const [tableValues, setTableValues] = useState<Noti[]>([]);
+  // hook delete blog:
+  const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
   const theme = useMantineTheme();
-
+  const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<Noti>[] = [
     {
-      accessorKey: 'user_id',
-      header: 'User ID',
+      accessorKey: 'noti_id',
+      header: 'Notification ID',
       size: 50,
-
       cell: ({ row }) => (
         <Flex align='center' gap={4}>
-          <CopyButton value={row.original.user_id.toString()} timeout={2000}>
+          <CopyButton value={row.original.noti_id} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
                 <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
@@ -77,67 +76,28 @@ const UserCompTable = ({
               </Tooltip>
             )}
           </CopyButton>
-          <TextColumn onClick={handleToUserInfo} blog_id={row.original.user_id}>
-            {row.original.user_id}
-          </TextColumn>
+          <Text onClick={() => {}} lineClamp={1}>
+            {row.original.noti_id}
+          </Text>
         </Flex>
       )
     },
     {
-      accessorKey: 'usrn',
-      header: 'Username',
-      size: 150,
+      accessorKey: 'noti_cont',
+      header: 'Content',
+      size: 300,
 
-      cell: ({ row }) => (
-        <Flex align='center' gap='lg'>
-          <Avatar src={row.original.avatar} />
-          <Text>{row.original.usrn}</Text>
-        </Flex>
-      )
+      cell: ({ row }) => <ShowContent className='line-clamp-2' content={row.original.noti_cont} />
+      // filterFn: (row, columnId, filterValue) => {
+      //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
+      // }
     },
     {
-      accessorKey: 'fuln',
-      header: 'Full name',
-
-      cell: ({ row }) => row.original.fuln
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      size: 150,
-
-      cell: ({ row }) => row.original.email
+      accessorKey: 'user',
+      header: 'Author',
+      cell: ({ row }) => (row.original.user ? row.original.user.fuln : 'System')
     },
 
-    {
-      accessorKey: 'phone',
-      header: 'Phone number',
-      cell: ({ row }) => row.original.phone ?? ''
-    },
-    {
-      accessorKey: 'role',
-      header: 'Role',
-
-      cell: ({ row }) => (
-        <Badge variant='light' color={memberAttribute[row.original.role].color} size='sm' radius='md'>
-          {memberAttribute[row.original.role].roleName}
-        </Badge>
-      )
-    },
-    {
-      accessorKey: 'deleted_at',
-      header: 'Status',
-
-      cell: ({ row }) => {
-        const isActive = row.original.deleted_at ? 'inactive' : 'active';
-
-        return (
-          <Badge variant='light' color={userAttribute[isActive].color} size='sm' radius='md'>
-            {userAttribute[isActive].status}
-          </Badge>
-        );
-      }
-    },
     {
       accessorKey: 'crd_at',
       header: 'Created At',
@@ -145,25 +105,34 @@ const UserCompTable = ({
       cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
 
+    // {
+    //   accessorKey: 'is_read',
+    //   header: 'Is Read',
+    //   size: 300,
+
+    //   cell: ({ row }) => {
+    //     const isRead = row.original.is_read ? 'read' : 'unread';
+    //     return (
+    //       <Badge variant='light' color={notificationAttribute[isRead].color} size='sm' radius='md'>
+    //         {notificationAttribute[isRead].status}
+    //       </Badge>
+    //     );
+    //   }
+    // },
+
     {
       id: 'actions',
       header: 'Actions',
 
       cell: ({ row }) => (
         <Flex justify='center'>
-          {userInfo?.role !== row.original.role && (
-            <AdminPopover
-              isLoading={isLoading}
-              user={row.original}
-              id={row.original.user_id.toString()}
-              onClickDeleteFunction={handleDelete}
-              onClickRestore={handleRestore}></AdminPopover>
-          )}
-          {userInfo?.role === row.original.role && (
-            <ActionIcon disabled className='cursor-not-allowed text-2xl' bg='transparent'>
-              <FaUserShield />
-            </ActionIcon>
-          )}
+          <Tooltip label='Delete'>
+            <div>
+              <IconColumn isRed={true} blog_id={row.original.noti_id} onClick={handleDelete}>
+                <FaRegTrashAlt />
+              </IconColumn>
+            </div>
+          </Tooltip>
         </Flex>
       )
     }
@@ -194,30 +163,13 @@ const UserCompTable = ({
     setPage(currentPage);
   }, [currentPage]);
 
-  const handleToEdit = (id: string | number) => {};
-
-  const handleToUserInfo = (id: string | number) => {};
-
-  const handleRestore = (id: string | number) => {
-    restoreUser(id as number, {
+  const handleDelete = (blog_id: string) => {
+    removeBlog(blog_id, {
       onSuccess: () => {
-        showSuccessToast('Restore user successfully');
+        showSuccessToast('Delete blog successfully!');
       },
       onError: (error) => {
-        const message = (error as ErrorResponseType).response.data.message;
-        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
-      }
-    });
-  };
-
-  const handleDelete = (id: string | number) => {
-    removeUser(id as number, {
-      onSuccess: () => {
-        showSuccessToast('Delete user successfully');
-      },
-      onError: (error) => {
-        const message = (error as ErrorResponseType).response.data.message;
-        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
       }
     });
   };
@@ -228,31 +180,24 @@ const UserCompTable = ({
 
   return (
     <Group className='flex flex-col py-1'>
-      <Flex className='w-full items-center justify-between self-start'>
-        <Title>USERS</Title>
-        <div className='justify-self-end'>
-          <FormModalAdmin />
-        </div>
+      <Flex className='w-full self-start'>
+        <Title>Notifications</Title>
       </Flex>
       <Space h='xl' />
 
-      {/* <ScrollArea h={500} scrollHideDelay={500} offsetScrollbars scrollbarSize={4} className='mx-10'> */}
       <Table
+        className='w-full overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
-        className='h-full'
         highlightOnHover
         withTableBorder
-        withColumnBorders
-        // stickyHeader
-        // stickyHeaderOffset={0}
-      >
+        withColumnBorders>
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group'>
+                <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group relative'>
                   {header.isPlaceholder ? null : (
                     <div className='my-1 text-center'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
@@ -293,7 +238,6 @@ const UserCompTable = ({
           )}
         </Table.Tbody>
       </Table>
-      {/* </ScrollArea> */}
       <Flex className='mt-5 w-full justify-start lg:justify-center'>
         <Pagination
           size='sm'
@@ -307,4 +251,4 @@ const UserCompTable = ({
   );
 };
 
-export default UserCompTable;
+export default NotificationCompTable;
