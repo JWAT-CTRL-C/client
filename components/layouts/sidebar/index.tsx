@@ -11,10 +11,10 @@ import { subject } from '@casl/ability';
 import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
 
 const Sidebar = () => {
-  const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig();
+  const router = useRouter();
+  const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig(router);
   const ability = useAbility();
   const [sidebarState, setSidebarState] = useState(blogConfig);
-  const router = useRouter();
   const isDashboard = router.pathname.startsWith('/dashboard');
   const isBlog = router.pathname.startsWith('/blogs');
   const isWorkspace = router.pathname.startsWith('/workspaces');

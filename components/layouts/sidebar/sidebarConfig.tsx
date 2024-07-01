@@ -1,5 +1,5 @@
 import { SidebarConfig } from '@/libs/types/sidebarType';
-import { useRouter } from 'next/router';
+import { NextRouter } from 'next/router';
 import {
   FaBlog,
   FaBriefcase,
@@ -12,8 +12,7 @@ import {
   FaUser
 } from 'react-icons/fa';
 
-export const sidebarConfig = (): SidebarConfig => {
-  const router = useRouter();
+export const sidebarConfig = (router: NextRouter): SidebarConfig => {
   return {
     blogConfig: [
       { link: '/blogs', label: 'Home', icon: <FaHome size={20} /> },
