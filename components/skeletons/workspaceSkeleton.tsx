@@ -38,7 +38,7 @@ export default function WorkspaceSkeleton() {
                     <Skeleton radius='lg' height={20} width={70} />
                   </div>
                 </div>
-                <Divider size={'xs'} />
+                <Divider size='xs' />
                 <div className='mt-2 grid gap-2 pl-[8%]'>
                   <Skeleton height={20} width={200} />
                   <Skeleton height={20} width={100} />
@@ -80,7 +80,7 @@ export default function WorkspaceSkeleton() {
                 </div>
               </Group>
 
-              <Card.Section my={'sm'}>
+              <Card.Section my='sm'>
                 <Divider />
               </Card.Section>
 

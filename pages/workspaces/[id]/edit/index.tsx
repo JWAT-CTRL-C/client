@@ -1,4 +1,5 @@
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import TabSkeleton from '@/components/skeletons/tabSkeleton';
 import DangerZone from '@/components/workspaces/dangerZone';
 import EditGeneralWorkspaceForm from '@/components/workspaces/editGeneralForm';
 import EditWorkspaceMemberForm from '@/components/workspaces/editMemberForm';
@@ -9,14 +10,13 @@ import { useFetchWorkspaceById, useGetWorkspaceMember } from '@/libs/hooks/queri
 import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import {
+  fetchSpecificWorkspace,
   preFetchAllUser,
-  preFetchAllWorkspaceMembers,
-  fetchSpecificWorkspace
+  preFetchAllWorkspaceMembers
 } from '@/libs/prefetchQueries/workspace';
-import { User } from '@/libs/types/userType';
 import { pushHash } from '@/libs/utils';
 import { NextPageWithLayout } from '@/pages/_app';
-import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core';
+import { Box, Divider, Flex, rem, ScrollArea, Tabs } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
@@ -50,10 +50,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const [activeTab, setActiveTab] = useState<string>('general');
   const router = useRouter();
   const wksp_id = router.query.id as string;
-  const { workspace, isPending } = useFetchWorkspaceById(wksp_id);
-  const { resources } = useGetAllResourcesByWorkspace(wksp_id);
-  const { users } = useGetAllUsers();
-  const { members } = useGetWorkspaceMember(wksp_id);
+  const { workspace } = useFetchWorkspaceById(wksp_id);
   const { user } = useMyInfo();
 
   useEffect(() => {
@@ -74,11 +71,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-  return _.isEmpty(workspace) || isPending ? (
-    <div className='flex h-full w-full items-center justify-center'>
-      <Loader />
-    </div>
-  ) : (
+  return (
     <>
       <Head>
         <title>Edit workspace | Synergy</title>
@@ -87,7 +80,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
 
       <div className='h-[84vh]'>
         <Tabs
-          defaultValue={'general'}
+          defaultValue='general'
           value={activeTab}
           orientation='vertical'
           h='100%'
@@ -114,12 +107,12 @@ const EditWorkSpace: NextPageWithLayout = () => {
           </Tabs.List>
 
           <Tabs.Panel value='general' className='p-5'>
-            <ScrollArea h={'100%'} scrollbars='y' scrollbarSize={2} scrollHideDelay={0}>
-              <EditGeneralWorkspaceForm workspace={workspace} resources={resources} />
+            <ScrollArea h='100%' scrollbars='y' scrollbarSize={2} scrollHideDelay={0}>
+              <EditGeneralWorkspaceForm wksp_id={wksp_id} />
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='collaborator' className='p-5'>
-            <EditWorkspaceMemberForm members={members} users={users} currentUser={user ?? ({} as User)} />
+            <EditWorkspaceMemberForm wksp_id={wksp_id} />
           </Tabs.Panel>
           <Tabs.Panel value='danger-zone' className='p-5'>
             <DangerZone wksp_id={wksp_id} />

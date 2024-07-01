@@ -1,28 +1,30 @@
+import { useEffect, useState } from 'react';
+import { FaCheck, FaRegCopy, FaUserShield } from 'react-icons/fa';
+
 import TextColumn from '@/components/blogTable/textColumn';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { memberAttribute } from '@/libs/constants/memberAttribute';
 import { userAttribute } from '@/libs/constants/userAttribute';
-import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
+import { useRemoveUser, useResetPassword, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
+import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { ErrorResponseType } from '@/libs/types';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
 import { convertIsoToDateTime } from '@/libs/utils';
-import BlogPopover from '@/components/blogPopover';
 import {
   ActionIcon,
   Avatar,
   Badge,
-  Button,
   CopyButton,
   Flex,
   Group,
   Loader,
   Pagination,
-  ScrollArea,
+  rem,
   Space,
   Table,
   Text,
   Title,
   Tooltip,
-  rem,
   useMantineTheme
 } from '@mantine/core';
 import {
@@ -33,14 +35,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { FaCheck, FaPlusCircle, FaRegCopy, FaTimes, FaUserShield } from 'react-icons/fa';
-import FormModalAdmin from '../formModal';
-import { ErrorResponseType } from '@/libs/types';
-import { AxiosError } from 'axios';
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
+
 import AdminPopover from '../adminPopOver';
+import FormModalAdmin from '../formModal';
 
 const UserCompTable = ({
   dataTable,
@@ -50,7 +47,6 @@ const UserCompTable = ({
 }: {
   dataTable: UserResponseWithPagination;
   onPagination: (page: number) => void;
-
   isLoading: boolean;
   currentPage: number;
 }) => {
@@ -58,6 +54,7 @@ const UserCompTable = ({
 
   const { removeUser, isPending: isPendingRemoveUser } = useRemoveUser();
   const { restoreUser, isPending: isPendingRestoreUser } = useRestoreUser();
+  const { resetPassword, isPending: isPendingResetPassword } = useResetPassword();
   const { user: userInfo } = useMyInfo();
 
   const theme = useMantineTheme();
@@ -93,7 +90,7 @@ const UserCompTable = ({
       size: 150,
 
       cell: ({ row }) => (
-        <Flex align={'center'} gap={'lg'}>
+        <Flex align='center' gap='lg'>
           <Avatar src={row.original.avatar} />
           <Text>{row.original.usrn}</Text>
         </Flex>
@@ -157,14 +154,15 @@ const UserCompTable = ({
         <Flex justify='center'>
           {userInfo?.role !== row.original.role && (
             <AdminPopover
-              isLoading={isLoading}
               user={row.original}
               id={row.original.user_id.toString()}
               onClickDeleteFunction={handleDelete}
-              onClickRestore={handleRestore}></AdminPopover>
+              onClickRestore={handleRestore}
+              onClickReset={handleResetPassword}
+            />
           )}
           {userInfo?.role === row.original.role && (
-            <ActionIcon disabled className='cursor-not-allowed text-2xl' bg={'transparent'}>
+            <ActionIcon disabled className='cursor-not-allowed text-2xl' bg='transparent'>
               <FaUserShield />
             </ActionIcon>
           )}
@@ -225,6 +223,19 @@ const UserCompTable = ({
       }
     });
   };
+
+  const handleResetPassword = (id: string | number) => {
+    resetPassword(id as number, {
+      onSuccess: () => {
+        showSuccessToast('Reset password successfully');
+      },
+      onError: (error) => {
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+      }
+    });
+  };
+
   const handlePagination = (page: number) => {
     setPage(page);
     onPagination(page);
@@ -256,9 +267,9 @@ const UserCompTable = ({
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <Table.Th key={header.id} c={theme.primaryColor} fw={'bolder'} className='group'>
+                <Table.Th key={header.id} c={theme.primaryColor} fw='bolder' className='group'>
                   {header.isPlaceholder ? null : (
-                    <div className='my-1'>
+                    <div className='my-1 text-center'>
                       {flexRender(header.column.columnDef.header, header.getContext())}
                     </div>
                   )}
@@ -277,7 +288,7 @@ const UserCompTable = ({
           ) : table?.getRowModel()?.rows?.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={columns.length} className='text-center'>
-                <Text c={theme.primaryColor} fw={'bold'}>
+                <Text c={theme.primaryColor} fw='bold'>
                   Not Found
                 </Text>
               </Table.Td>

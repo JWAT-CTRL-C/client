@@ -8,7 +8,6 @@ export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const isAuthPage = pathname.startsWith('/auth');
-  const isMainPage = pathname === '/';
 
   if (isAuthPage) {
     if (isAuth) {
@@ -17,9 +16,6 @@ export default async function middleware(req: NextRequest) {
   } else {
     if (!isAuth) {
       return NextResponse.redirect(new URL('/auth', req.url));
-    }
-    if (isMainPage && isAuth) {
-      return NextResponse.redirect(new URL('/dashboard', req.url));
     }
   }
 

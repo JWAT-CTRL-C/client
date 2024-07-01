@@ -8,6 +8,7 @@ import { preFetchSpecificResource } from '@/libs/prefetchQueries/resource';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { NextPageWithLayout } from '@/pages/_app';
 import { Can } from '@/providers/AbilityProvider';
+import { SPECIFIC_WORKSPACE_RESPONSE } from '@/services/workspaceServices';
 import { subject } from '@casl/ability';
 import { Button, Divider } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
@@ -65,7 +66,7 @@ const ResourceViewPage: NextPageWithLayout = () => {
           {_.isEmpty(resource.blog) ? (
             <div className='flex-center w-full flex-col'>
               <NoData title='No blog found' />
-              <Can I='create' this={subject('resrc_blog', resource)}>
+              <Can I='create' this={subject('workspace', resource.workspace as SPECIFIC_WORKSPACE_RESPONSE)}>
                 <Button onClick={handleCreateResourceBlog} className='mt-4'>
                   Add a blog to this resource
                 </Button>

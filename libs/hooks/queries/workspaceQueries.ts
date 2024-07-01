@@ -23,7 +23,7 @@ export const useFetchWorkspacesByUser = () => {
   });
 
   return {
-    workspaces: data,
+    workspaces: data!,
     isError,
     isFetching,
     isPending
@@ -38,7 +38,7 @@ export const useFetchWorkspaceById = (wksp_id: string) => {
   });
 
   return {
-    workspace: data,
+    workspace: data!,
     isError,
     isFetching,
     isPending
@@ -52,7 +52,7 @@ export const useFetchRecentWorkspaces = () => {
   });
 
   return {
-    workspaces: data,
+    workspaces: data!,
     isError,
     isFetching,
     isPending
@@ -62,16 +62,15 @@ export const useFetchRecentWorkspaces = () => {
 export const useGetWorkspaceMember = (wksp: string) => {
   const { data, isError, isFetching, isPending } = useQuery({
     enabled: !!wksp,
-    initialData: {} as WORKSPACE_MEMBER,
     queryKey: [GET_WORKSPACE_MEMBERS_KEY + wksp],
     queryFn: async () => await getWorkspaceMembers(wksp)
   });
 
   return {
-    members: data,
+    members: data!,
     isError,
     isFetching,
-    isPending
+    memberPending: isPending
   };
 };
 
@@ -82,7 +81,7 @@ export const useGetWorkspaceForMasterAdmin = (page: number) => {
   });
 
   return {
-    workspaces: data,
+    workspaces: data!,
     isError,
     isFetching,
     isPending

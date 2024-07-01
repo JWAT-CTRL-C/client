@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserById, getAllUsers, getAllUsersForAdmin, USER_TYPE } from '@/services/userServices';
+import { fetchUserById, getAllUsers, getAllUsersForAdmin } from '@/services/userServices';
 import { GET_ALL_USERS_FOR_ADMIN_KEY, GET_ALL_USERS_KEY, MY_INFO_KEY } from '@/libs/constants/queryKeys/user';
-import { UserResponseWithPagination } from '@/libs/types/userType';
 
 export const useMyInfo = () => {
   const { data, isError, isFetching, isPending } = useQuery({
@@ -10,7 +9,7 @@ export const useMyInfo = () => {
   });
 
   return {
-    user: data,
+    user: data!,
     isError,
     isFetching,
     isPending
@@ -24,7 +23,7 @@ export const useUserInfo = (user_id: string) => {
   });
 
   return {
-    user: data,
+    user: data!,
     isError,
     isFetching,
     isPending
@@ -32,29 +31,26 @@ export const useUserInfo = (user_id: string) => {
 };
 export const useGetAllUsers = () => {
   const { data, isError, isFetching, isPending } = useQuery({
-    initialData: [] as USER_TYPE[],
     queryKey: [GET_ALL_USERS_KEY],
     queryFn: async () => await getAllUsers()
   });
 
   return {
-    users: data,
+    users: data!,
     isError,
     isFetching,
-    isPending
+    userPending: isPending
   };
 };
 
 export const useGetAllUsersForAdmin = (page: number) => {
   const { data, isError, isFetching, isPending } = useQuery({
-    initialData: {} as UserResponseWithPagination,
     queryKey: [GET_ALL_USERS_FOR_ADMIN_KEY, page],
-    queryFn: async () => await getAllUsersForAdmin(page),
-    staleTime: Infinity
+    queryFn: async () => await getAllUsersForAdmin(page)
   });
 
   return {
-    users: data,
+    users: data!,
     isError,
     isFetching,
     isPending

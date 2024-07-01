@@ -1,16 +1,17 @@
-import { Loader, ScrollArea } from '@mantine/core';
+import { Checkbox, Loader, ScrollArea } from '@mantine/core';
 import NotificationListItem from './notificationListItem';
 import NoData from '@/components/shared/EmptyData';
 import { useFetchWorkspaceNotifications } from '@/libs/hooks/queries/notiQueries';
 import { useRouter } from 'next/router';
 import _ from 'lodash';
 import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import RecentNotificationSkeleton from '@/components/skeletons/recentNotificationSkeleton';
 
 export default function NotificationList() {
   const router = useRouter();
   const [ref, inView] = useInView({ threshold: 0 });
+  const [withoutSys, setWithoutSys] = useState(false);
 
   const { notifications, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFetchWorkspaceNotifications(router.query.id as string);
@@ -35,10 +36,16 @@ export default function NotificationList() {
         scrollbarSize={4}
         scrollHideDelay={500}
         className='rounded-lg bg-neutral-50 py-2 dark:bg-neutral-800'>
-        <div className='grid w-full grid-cols-2 gap-3 px-4 lg:grid-cols-3'>
-          {notifications.map((notification) => (
-            <NotificationListItem item={notification} key={notification.noti_id} />
-          ))}
+        <div className='flex-end w-full gap-3 pb-3 pr-5'>
+          <Checkbox checked={withoutSys} onChange={() => setWithoutSys((prev) => !prev)} />
+          <label>Without system notifications</label>
+        </div>
+        <div className='grid w-full grid-cols-1 gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3'>
+          {notifications.map((notification) =>
+            withoutSys && !notification.user?.usrn ? null : (
+              <NotificationListItem item={notification} key={notification.noti_id} />
+            )
+          )}
         </div>
         {hasNextPage && (
           <div ref={ref} className='flex-center my-3 w-full p-3'>

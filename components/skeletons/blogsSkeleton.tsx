@@ -37,7 +37,7 @@ export default function BlogsSkeleton() {
             </div>
           </Group>
 
-          <Card.Section my={'sm'}>
+          <Card.Section my='sm'>
             <Divider />
           </Card.Section>
 

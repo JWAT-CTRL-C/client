@@ -39,7 +39,7 @@ export const uploadImage = async (file: File): Promise<string> => {
 export const updateUser = async (user: UserForm): Promise<User> => {
   return new Promise((resolve, reject) => {
     api
-      .patch(`/users/${user.user_id}`, user)
+      .patch(`/users/${user.user_id}`, filterFalsyFields(user))
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
@@ -81,11 +81,29 @@ export const restoreUser = (user_id: number) => {
   });
 };
 
-export const createUser = async (user: Omit<UserFormForAdmin, 'user_id'>) => {
+export const createUser = async (user: Omit<UserFormForAdmin, 'user_id' | 'pass'>) => {
   const value = filterFalsyFields(user);
   return new Promise<void>((resolve, reject) => {
     api
       .post(`/users`, value)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  });
+};
+
+export const resetPassword = async (user_id: number) => {
+  return new Promise<void>((resolve, reject) => {
+    api
+      .patch(`/users/${user_id}/reset-password`)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  });
+};
+
+export const changePassword = async (data: { user_id: number; oldPass: string; newPass: string }) => {
+  return new Promise<void>((resolve, reject) => {
+    api
+      .patch(`/users/change-password`, data)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });

@@ -20,7 +20,7 @@ export default function RecentJoinedWorkspaces({}: IRecentJoinedWorkspacesProps)
           ))}
         </div>
       ) : _.isEmpty(workspaces) || _.isNil(workspaces) ? (
-        <Flex justify={'center'} className='my-10'>
+        <Flex justify='center' className='my-10'>
           <NoData title='No Recent Blogs' />
         </Flex>
       ) : (

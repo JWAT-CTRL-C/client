@@ -1,21 +1,25 @@
+import { AxiosError, isAxiosError } from 'axios';
+import { useRouter } from 'next/router';
+import { FaEdit, FaPlusCircle, FaRegNewspaper, FaTrash } from 'react-icons/fa';
+
 import { useDeleteResource } from '@/libs/hooks/mutations/resourceMutations';
 import { useUpdateWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE, NotificationType } from '@/libs/types';
 import { ResourceItemType } from '@/libs/types/workspace';
+import { useStore } from '@/providers/StoreProvider';
 import { RESOURCE_TYPE } from '@/services/resourceServices';
 import { SPECIFIC_WORKSPACE_RESPONSE, UPDATE_WORKSPACE_REQUEST } from '@/services/workspaceServices';
 import { Button, ButtonGroup, Divider, Group, Text, Textarea, TextInput, Tooltip } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
-import { AxiosError, isAxiosError } from 'axios';
-import { FaEdit, FaPlusCircle, FaRegNewspaper, FaTrash } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+
 import PopoverConfirm from '../popoverConfirm';
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import AddResourceForm from './addResourceForm';
 import EditResourceForm from './editResourceForm';
-import { useRouter } from 'next/router';
-import { useStore } from '@/providers/StoreProvider';
+import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
+import TabSkeleton from '../skeletons/tabSkeleton';
 
 const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: string }) => {
   const { notificationSocket } = useStore((state) => state);
@@ -95,15 +99,12 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
   );
 };
 
-export default function EditGeneralWorkspaceForm({
-  workspace,
-  resources
-}: {
-  workspace: SPECIFIC_WORKSPACE_RESPONSE;
-  resources: RESOURCE_TYPE[];
-}) {
+export default function EditGeneralWorkspaceForm({ wksp_id }: { wksp_id: string }) {
   const [opened, { toggle }] = useDisclosure(false);
   const { notificationSocket } = useStore((state) => state);
+  const { workspace, isPending: workspacePending } = useFetchWorkspaceById(wksp_id);
+  const { resources, isPending: resourcePending } = useGetAllResourcesByWorkspace(wksp_id);
+
   const form = useForm({
     initialValues: {
       wksp_id: workspace?.wksp_id,
@@ -132,15 +133,15 @@ export default function EditGeneralWorkspaceForm({
   //   }
   // }, [workspace]);
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
-    toast.success(data.message);
+    showSuccessToast(data.message);
     form.reset();
     return { wksp_id: workspace?.wksp_id };
   };
   const handleFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
-      toast.error(err.response?.data.message);
+      showErrorToast(err.response?.data.message);
     } else {
-      toast.error(err.message);
+      showErrorToast(err.message);
     }
     form.reset();
   };
@@ -162,6 +163,7 @@ export default function EditGeneralWorkspaceForm({
       }
     });
   };
+  if (workspacePending || resourcePending) return <TabSkeleton />;
   return (
     <div>
       <div className='grid justify-items-center'>

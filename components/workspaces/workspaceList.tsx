@@ -19,7 +19,7 @@ export default function WorkspaceList() {
           ))}
         </div>
       ) : _.isEmpty(workspaces) || !workspaces ? (
-        <Flex justify={'center'} className='my-10'>
+        <Flex justify='center' className='my-10'>
           <NoData title='No Workspaces Found' />
         </Flex>
       ) : (

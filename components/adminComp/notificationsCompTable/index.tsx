@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaCheck, FaRegCopy } from 'react-icons/fa';
+import { FaCheck, FaRegCopy, FaRegTrashAlt } from 'react-icons/fa';
 
 import BlogPopover from '@/components/blogPopover';
 import TextColumn from '@/components/blogTable/textColumn';
@@ -12,10 +12,12 @@ import { Tag } from '@/libs/types/tagType';
 import { convertIsoToDateTime, transformBlogTableType } from '@/libs/utils';
 import {
   ActionIcon,
+  Badge,
   CopyButton,
   Flex,
   Group,
   Loader,
+  LoadingOverlay,
   Pagination,
   rem,
   Space,
@@ -33,35 +35,42 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
+import { Noti, NotificationResponseWithPagination } from '@/libs/types/notiType';
+import IconColumn from '@/components/blogTable/iconColumn';
+import ShowContent from '@/components/EditorContent';
+import { userAttribute } from '@/libs/constants/userAttribute';
+import { notificationAttribute } from '@/libs/constants/notiAttribute';
+import { useRemoveNotificationById } from '@/libs/hooks/mutations/notiMutations';
+import { ErrorResponseType } from '@/libs/types';
 
-const BlogCompTable = ({
+const NotificationCompTable = ({
   dataTable,
   onPagination,
 
   isLoading,
   currentPage
 }: {
-  dataTable: BlogResponseWithPagination;
+  dataTable: NotificationResponseWithPagination;
   onPagination: (page: number) => void;
 
   isLoading: boolean;
   currentPage: number;
 }) => {
-  const [tableValues, setTableValues] = useState<blogTableType[]>([]);
+  const [tableValues, setTableValues] = useState<Noti[]>([]);
   // hook delete blog:
-  const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
+  const { removeNotification, isPending, isError: isErrorRemove } = useRemoveNotificationById();
   const theme = useMantineTheme();
   const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
 
-  const columns: ColumnDef<blogTableType>[] = [
+  const columns: ColumnDef<Noti>[] = [
     {
-      accessorKey: 'blog_id',
-      header: 'Blog ID',
+      accessorKey: 'noti_id',
+      header: 'Notification ID',
       size: 50,
       cell: ({ row }) => (
-        <Flex align='center' gap={4}>
-          <CopyButton value={row.original.blog_id} timeout={2000}>
+        <Flex align='center' gap={4} className='w-[95%]'>
+          <CopyButton value={row.original.noti_id} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
                 <ActionIcon color={copied ? 'teal' : 'gray'} variant='subtle' onClick={copy}>
@@ -70,73 +79,44 @@ const BlogCompTable = ({
               </Tooltip>
             )}
           </CopyButton>
-          <TextColumn onClick={handleToBLog} blog_id={row.original.blog_id}>
-            {row.original.blog_id}
-          </TextColumn>
+          <Text lineClamp={1}>{row.original.noti_id}</Text>
         </Flex>
       )
     },
     {
-      accessorKey: 'blog_tle',
-      header: 'Title',
-      size: 150,
+      accessorKey: 'noti_cont',
+      header: 'Content',
+      size: 100,
 
-      cell: ({ row }) => row.original.blog_tle
-      // filterFn: (row, columnId, filterValue) => {
-      //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
-      // }
+      cell: ({ row }) => <ShowContent className='line-clamp-2' content={row.original.noti_cont} />
     },
     {
       accessorKey: 'user',
       header: 'Author',
-      cell: ({ row }) => row.original.user.fuln
+      cell: ({ row }) => (row.original.user ? row.original.user.fuln : 'System')
     },
-    {
-      accessorKey: 'blog_cmt',
-      header: 'Comments',
 
-      cell: ({ row }) => row.original.blog_cmt?.length ?? 0
-    },
-    {
-      accessorKey: 'blog_rtg',
-      header: 'Like',
-
-      cell: ({ row }) => (row.original.blog_rtg?.length > 0 ? row.original.blog_rtg?.length : 0)
-    },
     {
       accessorKey: 'crd_at',
       header: 'Created At',
 
       cell: ({ row }) => convertIsoToDateTime(row.original.crd_at as string)
     },
-    {
-      accessorKey: 'upd_at',
-      header: 'Updated At',
 
-      cell: ({ row }) => convertIsoToDateTime(row.original.upd_at as string)
-    },
-    {
-      accessorKey: 'blog_tag',
-      header: 'Tags',
+    // {
+    //   accessorKey: 'is_read',
+    //   header: 'Is Read',
+    //   size: 300,
 
-      cell: ({ row }) => {
-        return (
-          <Flex wrap='wrap' align='center' gap='sm'>
-            {row.original.blog_tag?.map((tag: Tag, index) => (
-              <Text c={theme.primaryColor} key={tag.tag_id}>
-                {tag.tag_name}
-                {index + 1 >= row.original.blog_tag?.length ? '' : ','}
-              </Text>
-            ))}
-          </Flex>
-        );
-      },
-      filterFn: (row, columnId, filterValue) => {
-        return row.original.blog_tag.some((tag: Tag) =>
-          tag.tag_name.toLowerCase().includes(filterValue.toLowerCase())
-        );
-      }
-    },
+    //   cell: ({ row }) => {
+    //     const isRead = row.original.is_read ? 'read' : 'unread';
+    //     return (
+    //       <Badge variant='light' color={notificationAttribute[isRead].color} size='sm' radius='md'>
+    //         {notificationAttribute[isRead].status}
+    //       </Badge>
+    //     );
+    //   }
+    // },
 
     {
       id: 'actions',
@@ -144,11 +124,16 @@ const BlogCompTable = ({
 
       cell: ({ row }) => (
         <Flex justify='center'>
-          <BlogPopover
-            isLoading={isPending}
-            id={row.original.blog_id}
-            onClickEditFunction={handleToEditBlogPage}
-            onClickDeleteFunction={handleDeleteBlog}></BlogPopover>
+          <Tooltip label='Delete'>
+            <div>
+              {!isPending && (
+                <IconColumn isRed={true} blog_id={row.original.noti_id} onClick={handleDelete}>
+                  <FaRegTrashAlt />
+                </IconColumn>
+              )}
+              {isPending && <Loader size={'sm'} />}
+            </div>
+          </Tooltip>
         </Flex>
       )
     }
@@ -171,7 +156,7 @@ const BlogCompTable = ({
 
   useEffect(() => {
     if (dataTable?.data) {
-      setTableValues(transformBlogTableType(dataTable.data));
+      setTableValues(dataTable.data);
     }
   }, [dataTable]);
 
@@ -179,21 +164,14 @@ const BlogCompTable = ({
     setPage(currentPage);
   }, [currentPage]);
 
-  const handleToEditBlogPage = (id: string | number) => {
-    router.push(`/blogs/${id}/edit`);
-  };
-
-  const handleToBLog = (id: string | number) => {
-    router.push(`/blogs/${id}`);
-  };
-
-  const handleDeleteBlog = (blog_id: string) => {
-    removeBlog(blog_id, {
+  const handleDelete = (noti_id: string) => {
+    removeNotification(noti_id, {
       onSuccess: () => {
-        showSuccessToast('Delete blog successfully!');
+        showSuccessToast('Delete Notification successfully!');
       },
       onError: (error) => {
-        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
       }
     });
   };
@@ -205,24 +183,18 @@ const BlogCompTable = ({
   return (
     <Group className='flex flex-col py-1'>
       <Flex className='w-full self-start'>
-        <Title>Blogs</Title>
+        <Title>Notifications</Title>
       </Flex>
       <Space h='xl' />
 
       <Table
-        // style={{
-        //   width: `${table.getCenterTotalSize()}px`
-        // }}
         className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
         highlightOnHover
         withTableBorder
-        withColumnBorders
-        // stickyHeader
-        // stickyHeaderOffset={60}
-      >
+        withColumnBorders>
         <Table.Thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
@@ -281,4 +253,4 @@ const BlogCompTable = ({
   );
 };
 
-export default BlogCompTable;
+export default NotificationCompTable;

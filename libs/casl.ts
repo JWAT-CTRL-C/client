@@ -3,21 +3,19 @@ import { AbilityBuilder, AbilityTuple, createMongoAbility, MongoAbility, MongoQu
 import { User } from './types/userType';
 import { SPECIFIC_WORKSPACE_RESPONSE } from '@/services/workspaceServices';
 import { BlogResponse } from './types/blogResponse';
-import { BlogQueryEnum } from './constants/queryKeys/blog';
 
-type Action = 'create' | 'read' | 'edit' | 'delete' | 'reach' | 'do';
-type Subject =
+export type AbilityAction = 'create' | 'read' | 'edit' | 'delete' | 'reach' | 'do';
+export type AbilitySubject =
   | 'AdminPage'
   | 'blog'
-  | 'resrc_blog'
   | 'workspace'
-  | 'notification'
+  | 'global_notification'
   | 'all'
   | SPECIFIC_WORKSPACE_RESPONSE
   | BlogResponse
   | 'BlogsAdminPage'
-  | 'WorkspacesAdminPage';
-type AppAbility = MongoAbility<[Action, Subject], MongoQuery>;
+  | 'WorkspacesAdminPage' | 'NotificationsAdminPage';
+export type AppAbility = MongoAbility<[AbilityAction, AbilitySubject], MongoQuery>;
 
 export function defineAbilities() {
   const { build } = new AbilityBuilder<AppAbility>(createMongoAbility);
@@ -30,29 +28,36 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
   switch (user.role) {
     case 'MA':
       can('reach', 'AdminPage');
-      can('create', ['blog', 'workspace', 'notification', 'resrc_blog']);
+      can('create', ['blog', 'workspace', 'global_notification']);
       can('edit', ['blog', 'workspace']);
       can('reach', 'BlogsAdminPage');
       can('reach', 'WorkspacesAdminPage');
+      can('reach', 'NotificationsAdminPage');
+
+      can('reach', 'workspace');
 
       break;
     case 'HM':
-      can('create', ['blog', 'workspace', 'resrc_blog']);
+      can('create', ['blog', 'workspace']);
       can('edit', ['blog', 'workspace']);
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
+      can('reach', 'workspace');
 
       break;
     case 'PM':
       can('create', 'blog');
       can('create', 'workspace');
-      can('create', 'resrc_blog', { 'workspace.owner.user_id': user.user_id });
-      can('edit', 'workspace', { 'owner.user_id': user.user_id });
+      can(['edit', 'reach'], 'workspace', { 'owner.user_id': user.user_id });
       can('edit', 'blog', { 'user.user_id': user.user_id });
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
 
       break;
     case 'EM':
@@ -62,6 +67,8 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
 
       break;
     default:

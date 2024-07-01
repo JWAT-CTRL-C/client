@@ -1,15 +1,29 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
-import { fetchNotifications, fetchWorkspaceNotifications, getUnreadAmount } from '@/services/notiServices';
+import {
+  fetchNotifications,
+  fetchNotificationsAdmin,
+  fetchWorkspaceNotifications,
+  getUnreadAmount
+} from '@/services/notiServices';
+import { NotificationResponseWithPagination } from '@/libs/types/notiType';
 
-export const useFetchNotifications = () => {
-  return useInfiniteQuery({
-    queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS],
-    queryFn: async ({ pageParam }) => await fetchNotifications(pageParam),
+export const useFetchNotifications = (withoutSys = 0) => {
+  const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS, withoutSys],
+    queryFn: async ({ pageParam }) => await fetchNotifications(pageParam, withoutSys),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _, lastPageParam) => (lastPage.length < 20 ? null : lastPageParam + 1),
     select: (data) => data.pages.flat()
   });
+
+  return {
+    notifications: data!,
+    isPending,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  };
 };
 export const useFetchWorkspaceNotifications = (wksp_id: string) => {
   const { data, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
@@ -20,7 +34,7 @@ export const useFetchWorkspaceNotifications = (wksp_id: string) => {
     select: (data) => data.pages.flat()
   });
   return {
-    notifications: data,
+    notifications: data!,
     isPending,
     fetchNextPage,
     hasNextPage,
@@ -35,4 +49,12 @@ export const useFetchUnreadAmount = () => {
   return {
     unreadAmount: data
   };
+};
+
+export const useFetchNotificationsMasterAdmin = (page: number) => {
+  return useQuery<NotificationResponseWithPagination>({
+    queryKey: [NotiQueryEnum.ADMIN_NOTIFICATION, page],
+    queryFn: () => fetchNotificationsAdmin(page),
+    staleTime: Infinity
+  });
 };

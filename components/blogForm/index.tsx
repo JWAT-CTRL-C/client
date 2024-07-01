@@ -120,7 +120,7 @@ const BlogForm = ({
         : 0;
       setIndexWorkspaceField(indexSelecting);
     }
-  }, [form.getValues().blog_wksp, workSpaceList]);
+  }, [form.values.blog_wksp, workSpaceList]);
 
   useEffect(() => {
     if (fromWorkspacesPage?.resrc_id && fromWorkspacesPage?.wksp_id) {
@@ -288,7 +288,7 @@ const BlogForm = ({
           <AspectRatio ratio={1080 / 720} maw={350}>
             <div className='relative'>
               <Image
-                radius={'md'}
+                radius='md'
                 fit='cover'
                 src={
                   typeof form.values.blog_img === 'string'
@@ -305,7 +305,7 @@ const BlogForm = ({
                   variant='filled'
                   color='red'
                   size='xs'
-                  radius={'lg'}
+                  radius='lg'
                   onClick={handleClearImage}>
                   <FaTimes />
                 </ActionIcon>
@@ -313,7 +313,7 @@ const BlogForm = ({
             </div>
           </AspectRatio>
           {!isEditing && (
-            <Flex direction={'column'} className='mb-7'>
+            <Flex direction='column' className='mb-7'>
               <Text fw={500}>Name: &nbsp;{(form.values.blog_img as File)?.name}</Text>
               <Text fw={500}>
                 Size: &nbsp;{`${((form.values.blog_img as File)?.size / 1024).toFixed(2)} KB`}

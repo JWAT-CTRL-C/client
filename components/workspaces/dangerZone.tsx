@@ -1,24 +1,26 @@
+import { AxiosError, isAxiosError } from 'axios';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { FaTrash } from 'react-icons/fa';
+
 import { useDeleteWorkspace } from '@/libs/hooks/mutations/workspaceMutations';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import { Button, Text } from '@mantine/core';
-import { AxiosError, isAxiosError } from 'axios';
-import React from 'react';
+
 import PopoverConfirm from '../popoverConfirm';
-import { FaTrash } from 'react-icons/fa';
-import { useRouter } from 'next/router';
-import { toast } from 'react-toastify';
+import { showErrorToast, showSuccessToast } from '../shared/toast';
 
 const DangerZone = ({ wksp_id }: { wksp_id: string }) => {
   const router = useRouter();
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
-    toast.success(data.message);
+    showSuccessToast(data.message);
     router.replace('/workspaces');
   };
   const handleFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
-      toast.error(err.response?.data.message);
+      showErrorToast(err.response?.data.message);
     } else {
-      toast.error(err.message);
+      showErrorToast(err.message);
     }
   };
   const { deleteWorkspace, isPending, isSuccess } = useDeleteWorkspace(handleSuccess, handleFail);

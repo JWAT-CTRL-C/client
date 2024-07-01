@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const queryClient = new QueryClient();
 
-  await Promise.all([
+  const [isExist] = await Promise.allSettled([
     prefetchBlogById(queryClient, id as string),
 
     prefetchRelatedBlogs(queryClient, id as string),
@@ -33,7 +33,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       dehydratedState: dehydrate(queryClient)
-    }
+    },
+    notFound: isExist.status === 'rejected'
   };
 };
 
@@ -52,7 +53,7 @@ const BlogInfo = () => {
       <BlogSkeleton />
     </>
   ) : !blog || _.isEmpty(blog) ? (
-    <Flex justify={'center'} className='my-10'>
+    <Flex justify='center' className='my-10'>
       <NoData title='No Blog' />
     </Flex>
   ) : (

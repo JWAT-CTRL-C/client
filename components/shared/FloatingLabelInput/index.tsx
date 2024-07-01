@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TextInput, TextInputProps } from '@mantine/core';
 import classes from './FloatingLabelInput.module.css';
 
@@ -9,24 +9,36 @@ export function FloatingLabelInput({
   placeholder,
   value,
   defaultValue,
-  onChange,
   required,
+  onChange,
+  onFocus,
+  onBlur,
   ...props
 }: IFloatingLabelInputProps) {
   const [focused, setFocused] = useState(false);
-  const [valueInput, setValue] = useState((value as string) || (defaultValue as string) || '');
-  const floating = valueInput.trim().length !== 0 || focused || undefined;
+  const [valueInput, setValue] = useState((value as string) ?? (defaultValue as string) ?? '');
+  const floating = focused || valueInput.trim().length !== 0 || undefined;
+
+  useEffect(() => {
+    setValue(value as string);
+  }, [value]);
 
   return (
     <TextInput
       label={label || 'Floating label input'}
       placeholder={placeholder || 'Placeholder'}
-      required={required}
       classNames={classes}
-      value={value}
+      value={value ?? ''}
+      withAsterisk={required}
       defaultValue={defaultValue}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      onFocus={(e) => {
+        setFocused(true);
+        onFocus && onFocus(e);
+      }}
+      onBlur={(e) => {
+        setFocused(false);
+        onBlur && onBlur(e);
+      }}
       onChange={(e) => {
         setValue(e.currentTarget.value);
         onChange && onChange(e);

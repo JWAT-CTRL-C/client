@@ -17,6 +17,7 @@ import { useDisclosure } from '@mantine/hooks';
 
 import Header from './header';
 import Sidebar from './sidebar';
+import Logo from './header/logo';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setUser, setScrollY } = useStore((store) => store);
@@ -40,7 +41,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
       }
       notificationSocket.on(NotificationType.NEW, (notification: Noti) => {
         receiveNotification(notification);
-        if (notification.user && notification.user.user_id !== user.user_id)
+        if (!notification.user || notification.user.user_id !== user.user_id)
           showNotifyToast(<NotificationItem notification={notification} toast />);
       });
       setIsListening(true);
@@ -53,6 +54,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
     return () => {
       if (notificationSocket && isListening) {
         notificationSocket.off(NotificationType.NEW);
+        setIsListening(false);
       }
     };
   }, [user]);
@@ -63,7 +65,9 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
   return !loader ? (
     <></>
   ) : isPending ? (
-    <LoadingOverlay visible />
+    <div className='flex-center h-dvh w-dvw'>
+      <Logo />
+    </div>
   ) : (
     <AppShell
       header={{ height: 80 }}

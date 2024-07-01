@@ -37,7 +37,7 @@ const Blogs = () => {
 
   if (isError)
     return (
-      <Flex align={'center'}>
+      <Flex align='center'>
         <Center>
           <Title>Error</Title>
         </Center>
@@ -48,7 +48,7 @@ const Blogs = () => {
 
   if (!blogs || blogs.length === 0)
     return (
-      <Flex justify={'center'} className='my-10'>
+      <Flex justify='center' className='my-10'>
         <NoData title='No Blogs Found' />
       </Flex>
     );
@@ -77,8 +77,8 @@ const Blogs = () => {
   );
 };
 
-export default Blogs;
-
 Blogs.getLayout = function getLayout(page: React.ReactElement) {
   return <DefaultLayout>{page}</DefaultLayout>;
 };
+
+export default Blogs;
