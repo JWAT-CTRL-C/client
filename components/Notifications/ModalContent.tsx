@@ -8,13 +8,19 @@ import { useMarkSeenNotification } from '@/libs/hooks/mutations/notiMutations';
 export interface IModalContentProps {
   notification: Noti;
   opened: boolean;
+  enableEdit?: boolean;
   handleClose: () => void;
 }
 
-export default function ModalContent({ notification, handleClose, opened }: IModalContentProps) {
+export default function ModalContent({
+  notification,
+  handleClose,
+  opened,
+  enableEdit = false
+}: IModalContentProps) {
   const { markSeen, isPending, isError } = useMarkSeenNotification(notification.workspace?.wksp_id);
   const handleWhenClose = () => {
-    if (!notification.is_read) markSeen(notification.noti_id);
+    if (!notification.is_read && !enableEdit) markSeen(notification.noti_id);
     handleClose();
   };
   return (

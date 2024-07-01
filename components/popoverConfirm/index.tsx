@@ -35,7 +35,9 @@ const PopoverConfirm = ({
       shadow='lg'
       opened={opened}
       radius='md'
-      disabled={disabled}>
+      disabled={disabled}
+      onPositionChange={handleCancel}
+      zIndex={10}>
       <Popover.Target>
         {cloneElement(Children.only(children) as React.ReactElement, { onClick: open })}
       </Popover.Target>
@@ -43,7 +45,7 @@ const PopoverConfirm = ({
         <div className='px-4 py-2'>
           <Text ta='center'>{title ?? 'Confirm'}</Text>
           <Group mt='md' justify='center'>
-            <Button onClick={() => onConfirm()} variant='filled' color='green' loading={disabled}>
+            <Button onClick={handleConfirm} variant='filled' color='green' loading={disabled}>
               {confirmLabel ?? 'Yes'}
             </Button>
             <Button onClick={() => handleCancel()} variant='outline' color='red'>

@@ -70,7 +70,7 @@ export const useGetWorkspaceMember = (wksp: string) => {
     members: data!,
     isError,
     isFetching,
-    isPending
+    memberPending: isPending
   };
 };
 
