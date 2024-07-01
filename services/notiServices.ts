@@ -1,4 +1,5 @@
 import api from '@/libs/api';
+import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import { Noti } from '@/libs/types/notiType';
 
 export const fetchNotifications = async (pageParam: number): Promise<Noti[]> => {
@@ -30,6 +31,14 @@ export const getUnreadAmount = () => {
     api
       .get<{ unreadAmount: number }>('/notifications/unread')
       .then((response) => resolve(response.data.unreadAmount))
+      .catch((error) => reject(error));
+  });
+};
+export const removeNotification = (wksp_id: string, noti_id: string) => {
+  return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
+    api
+      .delete(`/notifications/${noti_id}/workspaces/${wksp_id}`)
+      .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
 };
