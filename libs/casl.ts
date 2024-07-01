@@ -14,7 +14,7 @@ export type AbilitySubject =
   | SPECIFIC_WORKSPACE_RESPONSE
   | BlogResponse
   | 'BlogsAdminPage'
-  | 'WorkspacesAdminPage';
+  | 'WorkspacesAdminPage' | 'NotificationsAdminPage';
 export type AppAbility = MongoAbility<[AbilityAction, AbilitySubject], MongoQuery>;
 
 export function defineAbilities() {
@@ -32,6 +32,8 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       can('edit', ['blog', 'workspace']);
       can('reach', 'BlogsAdminPage');
       can('reach', 'WorkspacesAdminPage');
+      can('reach', 'NotificationsAdminPage');
+
       can('reach', 'workspace');
 
       break;
@@ -41,6 +43,8 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
       can('reach', 'workspace');
 
       break;
@@ -52,6 +56,8 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
 
       break;
     case 'EM':
@@ -61,6 +67,8 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      cannot('reach', 'NotificationsAdminPage');
+
 
       break;
     default:

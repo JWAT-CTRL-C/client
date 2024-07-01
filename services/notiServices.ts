@@ -1,6 +1,7 @@
 import api from '@/libs/api';
+import { Noti, NotificationResponseWithPagination } from '@/libs/types/notiType';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
-import { Noti } from '@/libs/types/notiType';
+
 
 export const fetchNotifications = async (pageParam: number, withoutSys: number): Promise<Noti[]> => {
   return new Promise((resolve, reject) => {
@@ -34,6 +35,24 @@ export const getUnreadAmount = () => {
       .catch((error) => reject(error));
   });
 };
+
+export const fetchNotificationsAdmin = (pageParam: number) => {
+  return new Promise<NotificationResponseWithPagination>((resolve, reject) => {
+    api
+      .get(`/notifications/for/admin?page=${pageParam}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  });
+};
+
+export const removeNotificationById = async (noti_id: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    api
+      .delete(`/notifications/${noti_id}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  })
+}
 export const removeNotification = (wksp_id: string, noti_id: string) => {
   return new Promise<GENERAL_RESPONSE_TYPE>((resolve, reject) => {
     api
