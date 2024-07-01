@@ -8,7 +8,7 @@ import NoData from '@/components/shared/EmptyData';
 export interface IRecentNotificationsProps {}
 
 export default function RecentNotifications({}: IRecentNotificationsProps) {
-  const { data: notifications, isPending } = useFetchNotifications();
+  const { notifications, isPending } = useFetchNotifications();
 
   return (
     <div className='px-1 py-2 md:px-3 md:py-5'>

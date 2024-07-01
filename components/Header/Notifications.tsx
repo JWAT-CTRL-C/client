@@ -10,7 +10,7 @@ import NotificationItem from './NotificationItem';
 const Notifications = () => {
   const [opened, setOpened] = useState(false);
 
-  const { data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchNotifications();
+  const { notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchNotifications();
   const { unreadAmount } = useFetchUnreadAmount();
 
   const [ref, inView] = useInView({ threshold: 0 });

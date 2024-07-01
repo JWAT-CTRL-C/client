@@ -2,7 +2,6 @@ import { AxiosError, isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaCheck, FaRegCopy } from 'react-icons/fa';
-import { toast } from 'react-toastify';
 
 import BlogPopover from '@/components/blogPopover';
 import TextColumn from '@/components/blogTable/textColumn';
@@ -33,6 +32,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
+import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 
 const WorkspaceCompTable = ({
   dataTable,
@@ -49,13 +49,13 @@ const WorkspaceCompTable = ({
 }) => {
   const [tableValues, setTableValues] = useState<workspacesType[]>([]);
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
-    toast.success(data.message);
+    showSuccessToast(data.message);
   };
   const handleFail = (err: Error | AxiosError) => {
     if (isAxiosError(err)) {
-      toast.error(err.response?.data.message);
+      showErrorToast(err.response?.data.message);
     } else {
-      toast.error(err.message);
+      showErrorToast(err.message);
     }
   };
   const { deleteWorkspace, isPending, isSuccess } = useDeleteWorkspace(handleSuccess, handleFail);
