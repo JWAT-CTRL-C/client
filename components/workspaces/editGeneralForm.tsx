@@ -134,7 +134,6 @@ export default function EditGeneralWorkspaceForm({ wksp_id }: { wksp_id: string 
   // }, [workspace]);
   const handleSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     showSuccessToast(data.message);
-    form.reset();
     return { wksp_id: workspace?.wksp_id };
   };
   const handleFail = (err: Error | AxiosError) => {
@@ -150,10 +149,10 @@ export default function EditGeneralWorkspaceForm({ wksp_id }: { wksp_id: string 
     // console.log(value)
     updateWorkspace(value as unknown as UPDATE_WORKSPACE_REQUEST, {
       onSuccess: () => {
-        let content = `Resource ${value.wksp_name} has been updated`;
+        let content = `Workspace ${value.wksp_name} has been updated`;
 
         if (value.wksp_name !== workspace?.wksp_name) {
-          content = `Resource ${value.wksp_name} has been renamed to ${workspace?.wksp_name}`;
+          content = `Workspace ${value.wksp_name} has been renamed to ${workspace?.wksp_name}`;
         }
         notificationSocket.emit(NotificationType.CREATE_SYSTEM_WORKSPACE, {
           noti_tle: 'Update Resource',

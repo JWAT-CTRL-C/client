@@ -38,6 +38,7 @@ const Page: NextPageWithLayout = () => {
   const [withoutSys, setWithoutSys] = useState(false);
   const { notifications, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFetchWorkspaceNotifications(wksp_id as string);
+  const showListNoti = notifications?.filter((noti) => (withoutSys && !noti?.user ? null : noti));
   const { remove, isPending: removePending } = useRemoveNotification(wksp_id as string);
   const handleRemoveNotification = (noti_id: string) => {
     remove(noti_id, {
@@ -78,18 +79,23 @@ const Page: NextPageWithLayout = () => {
           <label>Without system notifications</label>
         </div>
         <div className='grid w-full grid-cols-1 gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {notifications.map((notification) => {
-            if (withoutSys && !notification.user?.usrn) return null;
-            return (
-              <NotificationListItem
-                item={notification}
-                key={notification.noti_id}
-                enableEdit={true}
-                handleRemove={handleRemoveNotification}
-                removePending={removePending}
-              />
-            );
-          })}
+          {showListNoti.length > 0
+            ? showListNoti.map((notification) => {
+                return (
+                  <NotificationListItem
+                    item={notification}
+                    key={notification.noti_id}
+                    enableEdit={true}
+                    handleRemove={handleRemoveNotification}
+                    removePending={removePending}
+                  />
+                );
+              })
+            : !isFetchingNextPage && (
+                <div className='flex-center w-full sm:col-span-2 lg:col-span-3'>
+                  <NoData title='No notifications found' />
+                </div>
+              )}
         </div>
         {hasNextPage && (
           <div ref={ref} className='flex-center my-3 w-full p-3'>

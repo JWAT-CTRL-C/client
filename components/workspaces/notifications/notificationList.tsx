@@ -12,12 +12,14 @@ export default function NotificationList() {
   const router = useRouter();
   const [ref, inView] = useInView({ threshold: 0 });
   const [withoutSys, setWithoutSys] = useState(false);
-
   const { notifications, isPending, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFetchWorkspaceNotifications(router.query.id as string);
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [inView]);
+
+  const showListNoti = notifications?.filter((noti) => (withoutSys && !noti?.user ? null : noti));
+
   if (isPending)
     return (
       <div className='grid w-full grid-cols-2 gap-3 px-4 lg:grid-cols-3'>
@@ -26,7 +28,6 @@ export default function NotificationList() {
         ))}
       </div>
     );
-
   if (_.isEmpty(notifications) || _.isNil(notifications)) return <NoData title='No notifications found' />;
 
   return (
@@ -41,11 +42,15 @@ export default function NotificationList() {
           <label>Without system notifications</label>
         </div>
         <div className='grid w-full grid-cols-1 gap-3 px-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {notifications.map((notification) =>
-            withoutSys && !notification.user?.usrn ? null : (
-              <NotificationListItem item={notification} key={notification.noti_id} />
-            )
-          )}
+          {showListNoti.length > 0
+            ? showListNoti.map((notification) => (
+                <NotificationListItem item={notification} key={notification.noti_id} />
+              ))
+            : !isFetchingNextPage && (
+                <div className='flex-center w-full sm:col-span-2 lg:col-span-3'>
+                  <NoData title='No notifications found' />
+                </div>
+              )}
         </div>
         {hasNextPage && (
           <div ref={ref} className='flex-center my-3 w-full p-3'>

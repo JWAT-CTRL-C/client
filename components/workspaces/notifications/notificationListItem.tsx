@@ -31,13 +31,13 @@ export default function NotificationListItem({
   return (
     <>
       <div className='relative mt-4 w-full rounded-xl bg-muted shadow-md'>
-        <Indicator
-          color='blue'
-          disabled={!enableEdit ? item.is_read : enableEdit}
-          label='New'
-          size={16}
-          zIndex={20}>
-          <div className='w-full cursor-pointer p-5 pb-7' onClick={toggle}>
+        <div className='w-full cursor-pointer p-5 pb-7' onClick={toggle}>
+          <Indicator
+            color='blue'
+            disabled={!enableEdit ? item.is_read : enableEdit}
+            label='New'
+            size={16}
+            zIndex={20}>
             <div className='flex-start gap-4'>
               <Avatar src={avatarSrc} alt={item.user?.usrn ?? 'System'} />
               <div className='w-full'>
@@ -54,27 +54,27 @@ export default function NotificationListItem({
                 </div>
               </div>
             </div>
-            <Divider size='xs' />
-            <div className='mt-2 grid gap-2 pl-[8%]'>
-              <ShowContent content={item.noti_cont} className='line-clamp-2' />
-              <Text size='xs' c='gray.6'>
-                {convertIsoToDateTime(item.crd_at)}
-              </Text>
-            </div>
+          </Indicator>
+          <Divider size='xs' />
+          <div className='mt-2 grid gap-2 pl-[8%]'>
+            <ShowContent content={item.noti_cont} className='line-clamp-2' />
+            <Text size='xs' c='gray.6'>
+              {convertIsoToDateTime(item.crd_at)}
+            </Text>
           </div>
-          <span className={cn('absolute right-0 top-0 p-0', enableEdit ? 'block' : 'hidden')}>
-            <PopoverConfirm onConfirm={() => handleRemove(item.noti_id)} title='Confirm to delete?'>
-              <Button
-                variant='subtle'
-                color='red.4'
-                size='xs'
-                className='rounded-xl p-1 px-2'
-                loading={removePending}>
-                <FaRegTrashAlt size={16} />
-              </Button>
-            </PopoverConfirm>
-          </span>
-        </Indicator>
+        </div>
+        <span className={cn('absolute right-0 top-0 p-0', enableEdit ? 'block' : 'hidden')}>
+          <PopoverConfirm onConfirm={() => handleRemove(item.noti_id)} title='Confirm to delete?'>
+            <Button
+              variant='subtle'
+              color='red.4'
+              size='xs'
+              className='rounded-xl p-1 px-2'
+              loading={removePending}>
+              <FaRegTrashAlt size={16} />
+            </Button>
+          </PopoverConfirm>
+        </span>
         <ModalContent notification={item} opened={opened} handleClose={toggle} enableEdit={enableEdit} />
       </div>
     </>

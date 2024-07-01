@@ -28,6 +28,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, onClickRestore, user, onClick
       position='bottom'
       withArrow
       shadow='md'
+      keepMounted
       opened={opened}>
       <Popover.Target>
         <Button variant='subtle' onClick={() => setOpened((o) => !o)}>
