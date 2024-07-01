@@ -51,7 +51,7 @@ export default function App({
   const getLayout = Component.getLayout ?? ((page) => page);
 
   useIsomorphicLayoutEffect(() => {
-    document.body.className = cn('custom-scrollbar-bg min-h-screen font-sans antialiased', inter.variable);
+    document.body.className = cn('custom-scrollbar-bg min-h-screen antialiased', inter.variable);
   }, []);
 
   return (

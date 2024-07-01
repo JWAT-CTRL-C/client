@@ -29,7 +29,7 @@ export function NotificationItem({ notification, toast = false }: INotificationI
             <Avatar src={avatarSrc(notification)} alt={notification.user?.fuln ?? 'System'} radius='xl' />
             <div>
               <Text fz='sm'>{notification.user?.fuln ?? 'System'}</Text>
-              <div className='flex-start gap-2'>
+              <div className='md:flex-start gap-2'>
                 <Text fz='xs' c='dimmed'>
                   {convertIsoToDateTime(notification.crd_at)}
                 </Text>
