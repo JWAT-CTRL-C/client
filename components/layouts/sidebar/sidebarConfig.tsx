@@ -36,10 +36,10 @@ export const sidebarConfig = (router: NextRouter): SidebarConfig => {
     ],
     dashboardConfig: [{ link: '/dashboard', label: 'Home', icon: <FaHome size={20} /> }],
     adminConfig: [
-      { link: '/admin', label: 'Users', icon: <FaUser size={20} /> },
-      { link: '/admin/blogs', label: 'Blogs', icon: <FaBlog size={20} /> },
-      { link: '/admin/workspaces', label: 'Workspaces', icon: <FaBriefcase size={20} /> },
-      { link: '/admin/notifications', label: 'Notifications', icon: <FaBell size={20} /> }
+      { link: '/admin', label: 'Manage Users', icon: <FaUser size={20} /> },
+      { link: '/admin/blogs', label: 'Manage Blogs', icon: <FaBlog size={20} /> },
+      { link: '/admin/workspaces', label: 'Manage Workspaces', icon: <FaBriefcase size={20} /> },
+      { link: '/admin/notifications', label: 'Manage Notifications', icon: <FaBell size={20} /> }
     ]
   };
 };
