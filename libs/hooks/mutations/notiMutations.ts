@@ -70,8 +70,6 @@ export const useMarkSeenNotification = (wksp_id?: string) => {
   };
 };
 
-
-
 export const useRemoveNotificationById = () => {
   const queryClient = useQueryClient();
 

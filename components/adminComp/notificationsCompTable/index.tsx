@@ -67,9 +67,9 @@ const NotificationCompTable = ({
     {
       accessorKey: 'noti_id',
       header: 'Notification ID',
-
+      size: 50,
       cell: ({ row }) => (
-        <Flex align='center' gap={4} className='w-[90%]'>
+        <Flex align='center' gap={4} className='w-[95%]'>
           <CopyButton value={row.original.noti_id} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
@@ -86,7 +86,7 @@ const NotificationCompTable = ({
     {
       accessorKey: 'noti_cont',
       header: 'Content',
-      size: 300,
+      size: 100,
 
       cell: ({ row }) => <ShowContent className='line-clamp-2' content={row.original.noti_cont} />
     },
@@ -131,7 +131,7 @@ const NotificationCompTable = ({
                   <FaRegTrashAlt />
                 </IconColumn>
               )}
-              {isPending && <Loader />}
+              {isPending && <Loader size={'sm'} />}
             </div>
           </Tooltip>
         </Flex>
@@ -188,7 +188,7 @@ const NotificationCompTable = ({
       <Space h='xl' />
 
       <Table
-        className='w-full overflow-x-auto'
+        className='overflow-x-auto'
         horizontalSpacing='md'
         verticalSpacing='md'
         striped
