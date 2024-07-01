@@ -66,7 +66,7 @@ const NotificationCompTable = ({
       header: 'Notification ID',
 
       cell: ({ row }) => (
-        <Flex align='center' gap={4} wrap={'no-wrap'} className='w-[90%]'>
+        <Flex align='center' gap={4} className='w-[90%]'>
           <CopyButton value={row.original.noti_id} timeout={2000}>
             {({ copied, copy }) => (
               <Tooltip label={copied ? 'Copied' : 'Copy'} withArrow position='right'>
