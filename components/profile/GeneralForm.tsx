@@ -62,8 +62,8 @@ export default function GeneralForm({ close, opened }: GeneralFormProps) {
     if (user) {
       form.setValues({
         fuln: user.fuln,
-        email: user.email,
-        phone: user.phone
+        email: user.email ?? '',
+        phone: user.phone ?? ''
       });
     }
   }, [user, opened]);

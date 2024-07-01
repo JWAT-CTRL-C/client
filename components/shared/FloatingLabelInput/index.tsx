@@ -17,7 +17,7 @@ export function FloatingLabelInput({
 }: IFloatingLabelInputProps) {
   const [focused, setFocused] = useState(false);
   const [valueInput, setValue] = useState((value as string) ?? (defaultValue as string) ?? '');
-  const floating = focused || valueInput.trim().length !== 0 || undefined;
+  const floating = focused || valueInput?.trim()?.length !== 0 || undefined;
 
   useEffect(() => {
     setValue(value as string);
