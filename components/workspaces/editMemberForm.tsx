@@ -26,6 +26,9 @@ export default function EditWorkspaceMemberForm({ wksp_id }: { wksp_id: string }
   const { notificationSocket } = useStore((state) => state);
 
   useEffect(() => {
+    if (!_.isNil(members) && members.owner.user_id !== user.user_id && !['MA', 'HM'].includes(user.role)) {
+      router.replace(`/workspaces/${router.query.id}`);
+    }
     const listUserData = users.filter(
       (user) => !members.users.map((member) => member.user_id).includes(user.user_id)
     );

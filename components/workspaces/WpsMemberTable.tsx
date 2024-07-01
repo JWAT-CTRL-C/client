@@ -68,8 +68,7 @@ export default function WpsMemberTable({ className, member, wksp_id, currentUser
   // Franchise
   const handleFranchiseMemberSuccess = (data: GENERAL_RESPONSE_TYPE) => {
     showSuccessToast(data.message);
-    if (member.owner.user_id !== currentUser.user_id && !['MA', 'HM'].includes(currentUser.role))
-      router.replace(`/workspaces/${wksp_id}`);
+
     return { wksp_id };
   };
   const handleFranchiseMemberFail = (err: Error | AxiosError) => {
