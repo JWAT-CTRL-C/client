@@ -17,14 +17,14 @@ export function NotificationItem({ notification, toast = false }: INotificationI
 
   return (
     <>
-      <Indicator
-        color='blue'
-        disabled={notification.is_read || toast}
-        size={16}
-        label='New'
-        offset={7}
-        zIndex={20}>
-        <Card withBorder radius='md' className='cursor-pointer px-5 py-4 shadow-md' onClick={toggle}>
+      <Card withBorder radius='md' className='cursor-pointer px-5 py-4 shadow-md' onClick={toggle}>
+        <Indicator
+          color='blue'
+          disabled={notification.is_read || toast}
+          size={16}
+          label='New'
+          offset={7}
+          zIndex={20}>
           <Group>
             <Avatar src={avatarSrc(notification)} alt={notification.user?.fuln ?? 'System'} radius='xl' />
             <div>
@@ -46,8 +46,8 @@ export function NotificationItem({ notification, toast = false }: INotificationI
             </Text>
             <ShowContent className='line-clamp-2' content={notification.noti_cont} />
           </TypographyStylesProvider>
-        </Card>
-      </Indicator>
+        </Indicator>
+      </Card>
       <ModalContent notification={notification} opened={opened} handleClose={toggle} />
     </>
   );
