@@ -27,12 +27,11 @@ type Props = {
   user?: User;
 };
 
-const initialValues: Omit<UserFormForAdmin, 'user_id'> = {
+const initialValues: Omit<UserFormForAdmin, 'user_id' | 'pass'> = {
   fuln: '',
   email: '',
   phone: '',
   role: 'EM',
-  pass: '',
   usrn: ''
 };
 
@@ -40,7 +39,7 @@ const FormModalAdmin = ({ user }: Props) => {
   const [opened, { open, close }] = useDisclosure(false);
   const { createUser, isPending: isLoadingCreate } = useCreateUser();
   const { updateUser, isPending: isLoadingUpdate } = useUpdateUser();
-  const form = useForm<Omit<UserFormForAdmin, 'user_id'>>({
+  const form = useForm<Omit<UserFormForAdmin, 'user_id' | 'pass'>>({
     initialValues: initialValues,
     transformValues(values) {
       return {
@@ -48,17 +47,10 @@ const FormModalAdmin = ({ user }: Props) => {
         email: values.email?.trim() || '',
         phone: values.phone?.trim() || '',
         fuln: values.fuln?.trim() || '',
-        pass: values.pass?.trim() || '',
         usrn: values.usrn?.trim() || ''
       };
     },
     validate: {
-      pass: (val) => {
-        if (!user) {
-          if (!val) return 'Password is required';
-          return val && isEmpty(val) ? 'Password is required' : null;
-        }
-      },
       fuln: (val) => {
         if (!val) return 'Full name is required';
         return val && isEmpty(val) ? 'Full name is required' : null;
@@ -90,7 +82,6 @@ const FormModalAdmin = ({ user }: Props) => {
           email: user.email || '',
           phone: user.phone || '',
           role: user.role || 'EM',
-          pass: '',
           usrn: user.usrn || ''
         });
       } else {
@@ -185,6 +176,7 @@ const FormModalAdmin = ({ user }: Props) => {
                 {...form.getInputProps('usrn')}
                 autoComplete='off'
               />
+
               <TextInput
                 label='Full Name'
                 withAsterisk
@@ -194,18 +186,6 @@ const FormModalAdmin = ({ user }: Props) => {
                 {...form.getInputProps('fuln')}
                 autoComplete='off'
               />
-              {!user && (
-                <PasswordInput
-                  label='Password'
-                  withAsterisk
-                  disabled={!!user}
-                  name='pass'
-                  placeholder='Enter your password'
-                  key={form.key('pass')}
-                  {...form.getInputProps('pass')}
-                  autoComplete='new-password'
-                />
-              )}
 
               <TextInput
                 label='Email'
@@ -215,6 +195,7 @@ const FormModalAdmin = ({ user }: Props) => {
                 {...form.getInputProps('email')}
                 autoComplete='off'
               />
+
               <TextInput
                 label='Phone'
                 name='phone'
@@ -259,9 +240,9 @@ const FormModalAdmin = ({ user }: Props) => {
               <Button type='submit'>Save</Button>
             </Group>
           </Box>
+          <LoadingOverlay visible={isLoadingCreate || isLoadingUpdate} />
         </form>
       </Modal>
-      <LoadingOverlay visible={isLoadingCreate || isLoadingUpdate} />
       {!user && (
         <Button className='' onClick={open}>
           <FaPlusCircle />

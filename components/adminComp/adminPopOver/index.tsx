@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FaRegTrashAlt } from 'react-icons/fa';
-import { FiRotateCcw } from 'react-icons/fi';
+import { FiKey, FiRotateCcw } from 'react-icons/fi';
 import { HiDotsHorizontal } from 'react-icons/hi';
 
 import FormModalAdmin from '@/components/adminComp/formModal';
@@ -10,12 +10,12 @@ import { ActionIcon, Button, Flex, Popover, Tooltip } from '@mantine/core';
 type Props = {
   id: string | number;
   onClickDeleteFunction: (id: string) => void;
-  isLoading?: boolean;
   onClickRestore: (id: string) => void;
+  onClickReset: (id: string) => void;
   user?: User;
 };
 
-const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, user }: Props) => {
+const AdminPopover = ({ id, onClickDeleteFunction, onClickRestore, user, onClickReset }: Props) => {
   const [opened, setOpened] = useState(false);
   const isActive = user ? !user.deleted_at : true;
 
@@ -24,7 +24,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
       zIndex={10}
       closeOnClickOutside={true}
       onChange={setOpened}
-      width={130}
+      width={180}
       position='bottom'
       withArrow
       shadow='md'
@@ -42,9 +42,18 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
                 <FormModalAdmin user={user} />
               </div>
             </Tooltip>
+
+            <Tooltip label='Reset Password'>
+              <ActionIcon
+                className='bg-blue-500 hover:bg-blue-500 focus:bg-blue-500'
+                onClick={() => onClickReset(id as string)}>
+                <FiKey />
+              </ActionIcon>
+            </Tooltip>
+
             <Tooltip label='Delete'>
               <ActionIcon
-                className={`${isActive ? 'bg-red-500 hover:bg-red-500 focus:bg-red-500' : 'pointer-events-none cursor-not-allowed bg-gray-400'}`}
+                className={`${isActive ? 'bg-red-500 hover:bg-red-500 focus:bg-red-500' : 'cursor-not-allowed bg-gray-400'}`}
                 disabled={!isActive}
                 onClick={() => onClickDeleteFunction(id as string)}>
                 <FaRegTrashAlt />
@@ -53,7 +62,7 @@ const AdminPopover = ({ id, onClickDeleteFunction, isLoading, onClickRestore, us
 
             <Tooltip label='Restore'>
               <ActionIcon
-                className={`${!isActive ? 'bg-yellow-500 hover:bg-yellow-500 focus:bg-yellow-500' : 'pointer-events-none cursor-not-allowed bg-gray-400'}`}
+                className={`${!isActive ? 'bg-yellow-500 hover:bg-yellow-500 focus:bg-yellow-500' : 'cursor-not-allowed bg-gray-400'}`}
                 disabled={isActive}
                 onClick={() => onClickRestore(id as string)}>
                 <FiRotateCcw />

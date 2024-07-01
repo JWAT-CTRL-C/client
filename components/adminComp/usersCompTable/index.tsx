@@ -5,7 +5,7 @@ import TextColumn from '@/components/blogTable/textColumn';
 import { showErrorToast, showSuccessToast } from '@/components/shared/toast';
 import { memberAttribute } from '@/libs/constants/memberAttribute';
 import { userAttribute } from '@/libs/constants/userAttribute';
-import { useRemoveUser, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
+import { useRemoveUser, useResetPassword, useRestoreUser } from '@/libs/hooks/mutations/userMutations';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { ErrorResponseType } from '@/libs/types';
 import { User, UserResponseWithPagination } from '@/libs/types/userType';
@@ -54,6 +54,7 @@ const UserCompTable = ({
 
   const { removeUser, isPending: isPendingRemoveUser } = useRemoveUser();
   const { restoreUser, isPending: isPendingRestoreUser } = useRestoreUser();
+  const { resetPassword, isPending: isPendingResetPassword } = useResetPassword();
   const { user: userInfo } = useMyInfo();
 
   const theme = useMantineTheme();
@@ -153,11 +154,12 @@ const UserCompTable = ({
         <Flex justify='center'>
           {userInfo?.role !== row.original.role && (
             <AdminPopover
-              isLoading={isLoading}
               user={row.original}
               id={row.original.user_id.toString()}
               onClickDeleteFunction={handleDelete}
-              onClickRestore={handleRestore}></AdminPopover>
+              onClickRestore={handleRestore}
+              onClickReset={handleResetPassword}
+            />
           )}
           {userInfo?.role === row.original.role && (
             <ActionIcon disabled className='cursor-not-allowed text-2xl' bg='transparent'>
@@ -221,6 +223,19 @@ const UserCompTable = ({
       }
     });
   };
+
+  const handleResetPassword = (id: string | number) => {
+    resetPassword(id as number, {
+      onSuccess: () => {
+        showSuccessToast('Reset password successfully');
+      },
+      onError: (error) => {
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
+      }
+    });
+  };
+
   const handlePagination = (page: number) => {
     setPage(page);
     onPagination(page);
