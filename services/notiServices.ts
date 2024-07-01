@@ -2,10 +2,10 @@ import api from '@/libs/api';
 import { GENERAL_RESPONSE_TYPE } from '@/libs/types';
 import { Noti } from '@/libs/types/notiType';
 
-export const fetchNotifications = async (pageParam: number): Promise<Noti[]> => {
+export const fetchNotifications = async (pageParam: number, withoutSys: number): Promise<Noti[]> => {
   return new Promise((resolve, reject) => {
     api
-      .get(`/notifications?page=${pageParam}`)
+      .get(`/notifications?page=${pageParam}&withoutSys=${withoutSys}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
