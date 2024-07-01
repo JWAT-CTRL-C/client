@@ -1,17 +1,20 @@
-import { NavLink } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
-import { sidebarConfig } from './sidebarConfig';
 
-import { removeUserAuth } from '@/libs/utils';
 import ChangeInformation from '@/components/profile/ChangeInformation';
+import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { removeUserAuth } from '@/libs/utils';
 import { useAbility } from '@/providers/AbilityProvider';
 import { subject } from '@casl/ability';
-import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { NavLink } from '@mantine/core';
+import { QueryCache } from '@tanstack/react-query';
+
+import { sidebarConfig } from './sidebarConfig';
 
 const Sidebar = () => {
   const router = useRouter();
+  const queryCache = new QueryCache();
   const { blogConfig, workspaceConfig, dashboardConfig, adminConfig } = sidebarConfig(router);
   const ability = useAbility();
   const [sidebarState, setSidebarState] = useState(blogConfig);
@@ -83,6 +86,7 @@ const Sidebar = () => {
           label='Log out'
           className={`my-5 cursor-pointer rounded-md p-4`}
           onClick={() => {
+            queryCache.clear();
             router.push('/auth');
             removeUserAuth();
           }}
