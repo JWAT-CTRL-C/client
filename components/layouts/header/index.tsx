@@ -33,7 +33,9 @@ const Header = () => {
 
   return (
     <header className='py-auto flex w-full items-center justify-between gap-2'>
-      <Logo />
+      <div className='cursor-pointer' onClick={() => router.push('/dashboard')}>
+        <Logo />
+      </div>
       <Group justify='space-between' align='center' gap='lg'>
         <Tabs value={activeTab} onChange={handleTabChange} variant='default' radius='md'>
           <Tabs.List style={{ display: 'flex', width: '100%' }}>

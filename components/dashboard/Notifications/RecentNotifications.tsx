@@ -20,8 +20,8 @@ export default function RecentNotifications({}: IRecentNotificationsProps) {
       {isPending ? (
         <SimpleGrid
           cols={{ xs: 1, sm: 1, md: 2, lg: 3 }}
-          spacing={{ xs: 'xl', sm: 'xl', md: 'xl' }}
-          verticalSpacing={{ xs: 'md', sm: 'md', md: 'lg' }}>
+          spacing={{ base: 5, sm: 'xl' }}
+          verticalSpacing={{ base: 'md', sm: 'xl' }}>
           {Array.from({ length: 6 }).map((_, index) => (
             <RecentNotificationSkeleton key={index} />
           ))}
@@ -33,8 +33,8 @@ export default function RecentNotifications({}: IRecentNotificationsProps) {
       ) : (
         <SimpleGrid
           cols={{ xs: 1, sm: 1, md: 2, lg: 3 }}
-          spacing={{ xs: 'xl', sm: 'xl', md: 'xl' }}
-          verticalSpacing={{ xs: 'md', sm: 'md', md: 'lg' }}>
+          spacing={{ base: 5, sm: 'xl' }}
+          verticalSpacing={{ base: 'md', sm: 'xl' }}>
           {notifications.slice(0, 6).map((notification) => (
             <NotificationItem key={notification.noti_id} notification={notification} />
           ))}

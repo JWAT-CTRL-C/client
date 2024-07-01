@@ -17,6 +17,7 @@ import { useDisclosure } from '@mantine/hooks';
 
 import Header from './header';
 import Sidebar from './sidebar';
+import Logo from './header/logo';
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   const { notificationSocket, setUser, setScrollY } = useStore((store) => store);
@@ -64,7 +65,9 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
   return !loader ? (
     <></>
   ) : isPending ? (
-    <LoadingOverlay visible />
+    <div className='flex-center h-dvh w-dvw'>
+      <Logo />
+    </div>
   ) : (
     <AppShell
       header={{ height: 80 }}
