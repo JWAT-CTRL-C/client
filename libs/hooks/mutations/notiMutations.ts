@@ -1,6 +1,6 @@
 import { NotiQueryEnum } from '@/libs/constants/queryKeys/noti';
 import { Noti } from '@/libs/types/notiType';
-import { markSeenNotification, removeNotificationById } from '@/services/notiServices';
+import { markSeenNotification, removeNotification, removeNotificationById } from '@/services/notiServices';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useReceiveNotifications = () => {
@@ -92,5 +92,26 @@ export const useRemoveNotificationById = () => {
     isPending: mutation.isPending,
     isError: mutation.isError,
     errorMessage: mutation.error?.message || null
+  };
+};
+export const useRemoveNotification = (wksp_id: string) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (noti_id: string) => await removeNotification(wksp_id, noti_id),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.GLOBAL_NOTIFICATIONS] }),
+        queryClient.invalidateQueries({
+          queryKey: [NotiQueryEnum.WORKSPACE_NOTIFICATIONS, wksp_id],
+          exact: true
+        }),
+        queryClient.invalidateQueries({ queryKey: [NotiQueryEnum.UNREAD_AMOUNT_NOTIFICATION] })
+      ]);
+    }
+  });
+  return {
+    remove: mutation.mutate,
+    isPending: mutation.isPending,
+    isError: mutation.isError
   };
 };
