@@ -154,6 +154,9 @@ export const useRatingBlog = () => {
         }),
         queryClient.invalidateQueries({
           queryKey: [BlogQueryEnum.BLOGS_RECENT]
+        }),
+        queryClient.invalidateQueries({
+          queryKey: [BlogQueryEnum.BLOGS_WORKSPACE]
         })
       ]);
 

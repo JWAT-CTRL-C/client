@@ -4,6 +4,7 @@ import {
   fetchBlogs,
   fetchBlogsForCurrentUser,
   fetchBlogsForMasterAdmin,
+  fetchBlogsForWorkspace,
   fetchRecentBlogs,
   fetchRelatedBlogs,
   fetchWorkspacesInfo,
@@ -83,4 +84,14 @@ export const useFetchBlogsMasterAdmin = (page: number) => {
     queryFn: () => fetchBlogsForMasterAdmin(page),
     staleTime: Infinity
   });
+};
+export const useFetchBlogsWorkspace = (wksp_id: string) => {
+  const { data, isPending } = useQuery<BlogResponse[]>({
+    queryKey: [BlogQueryEnum.BLOGS_WORKSPACE, wksp_id],
+    queryFn: () => fetchBlogsForWorkspace(wksp_id)
+  });
+  return {
+    blogs: data,
+    blogsPending: isPending
+  };
 };

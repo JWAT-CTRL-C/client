@@ -1,19 +1,12 @@
-import _ from 'lodash';
-import { GetServerSideProps } from 'next';
-import Head from 'next/head';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
-import { ReactElement, useEffect, useState } from 'react';
-import { FaBan, FaChevronLeft, FaCog, FaUsers } from 'react-icons/fa';
-
 import DefaultLayout from '@/components/layouts/DefaultLayout';
+import TabSkeleton from '@/components/skeletons/tabSkeleton';
 import DangerZone from '@/components/workspaces/dangerZone';
 import EditGeneralWorkspaceForm from '@/components/workspaces/editGeneralForm';
 import EditWorkspaceMemberForm from '@/components/workspaces/editMemberForm';
 import { setContext } from '@/libs/api';
 import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
-import { useMyInfo } from '@/libs/hooks/queries/userQueries';
-import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { useGetAllUsers, useMyInfo } from '@/libs/hooks/queries/userQueries';
+import { useFetchWorkspaceById, useGetWorkspaceMember } from '@/libs/hooks/queries/workspaceQueries';
 import { preFetchAllResources } from '@/libs/prefetchQueries/resource';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import {
@@ -23,8 +16,15 @@ import {
 } from '@/libs/prefetchQueries/workspace';
 import { pushHash } from '@/libs/utils';
 import { NextPageWithLayout } from '@/pages/_app';
-import { Box, Divider, Flex, Loader, rem, ScrollArea, Tabs } from '@mantine/core';
+import { Box, Divider, Flex, rem, ScrollArea, Tabs } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import _ from 'lodash';
+import { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ReactElement, useEffect, useState } from 'react';
+import { FaBan, FaChevronLeft, FaCog, FaUsers } from 'react-icons/fa';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -50,8 +50,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const [activeTab, setActiveTab] = useState<string>('general');
   const router = useRouter();
   const wksp_id = router.query.id as string;
-  const { workspace, isPending } = useFetchWorkspaceById(wksp_id);
-  const { resources } = useGetAllResourcesByWorkspace(wksp_id);
+  const { workspace } = useFetchWorkspaceById(wksp_id);
   const { user } = useMyInfo();
 
   useEffect(() => {
@@ -72,11 +71,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
   };
-  return _.isEmpty(workspace) || isPending ? (
-    <div className='flex h-full w-full items-center justify-center'>
-      <Loader />
-    </div>
-  ) : (
+  return (
     <>
       <Head>
         <title>Edit workspace | Synergy</title>
@@ -113,7 +108,7 @@ const EditWorkSpace: NextPageWithLayout = () => {
 
           <Tabs.Panel value='general' className='p-5'>
             <ScrollArea h='100%' scrollbars='y' scrollbarSize={2} scrollHideDelay={0}>
-              <EditGeneralWorkspaceForm workspace={workspace} resources={resources} />
+              <EditGeneralWorkspaceForm wksp_id={wksp_id} />
             </ScrollArea>
           </Tabs.Panel>
           <Tabs.Panel value='collaborator' className='p-5'>

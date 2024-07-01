@@ -14,14 +14,15 @@ import { useForm } from '@mantine/form';
 
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import WpsMemberTable from './WpsMemberTable';
+import TabSkeleton from '../skeletons/tabSkeleton';
 
 export default function EditWorkspaceMemberForm({ wksp_id }: { wksp_id: string }) {
   const router = useRouter();
   const [data, setData] = useState<(ComboboxItem & { fuln: string })[]>([]);
 
   const { user } = useMyInfo();
-  const { users } = useGetAllUsers();
-  const { members } = useGetWorkspaceMember(wksp_id);
+  const { users, userPending } = useGetAllUsers();
+  const { members, memberPending } = useGetWorkspaceMember(wksp_id);
 
   const { notificationSocket } = useStore((state) => state);
 
@@ -76,6 +77,7 @@ export default function EditWorkspaceMemberForm({ wksp_id }: { wksp_id: string }
       }
     );
   };
+  if (memberPending || userPending) return <TabSkeleton />;
   return (
     <div className='max-h-[90vh] px-[8%]'>
       <form className='py-3' onSubmit={form.onSubmit(handleSubmit)}>

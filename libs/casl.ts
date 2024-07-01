@@ -32,6 +32,7 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       can('edit', ['blog', 'workspace']);
       can('reach', 'BlogsAdminPage');
       can('reach', 'WorkspacesAdminPage');
+      can('reach', 'workspace');
 
       break;
     case 'HM':
@@ -40,12 +41,13 @@ export function updateAbility(ability: MongoAbility<AbilityTuple, MongoQuery>, u
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');
       cannot('reach', 'WorkspacesAdminPage');
+      can('reach', 'workspace');
 
       break;
     case 'PM':
       can('create', 'blog');
       can('create', 'workspace');
-      can('edit', 'workspace', { 'owner.user_id': user.user_id });
+      can(['edit', 'reach'], 'workspace', { 'owner.user_id': user.user_id });
       can('edit', 'blog', { 'user.user_id': user.user_id });
       cannot('reach', 'AdminPage');
       cannot('reach', 'BlogsAdminPage');

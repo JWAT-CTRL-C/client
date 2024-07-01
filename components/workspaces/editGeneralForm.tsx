@@ -17,6 +17,9 @@ import PopoverConfirm from '../popoverConfirm';
 import { showErrorToast, showSuccessToast } from '../shared/toast';
 import AddResourceForm from './addResourceForm';
 import EditResourceForm from './editResourceForm';
+import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
+import { useGetAllResourcesByWorkspace } from '@/libs/hooks/queries/resourceQueries';
+import TabSkeleton from '../skeletons/tabSkeleton';
 
 const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: string }) => {
   const { notificationSocket } = useStore((state) => state);
@@ -96,15 +99,12 @@ const ResourceItem = ({ item, wksp_id }: { item: ResourceItemType; wksp_id: stri
   );
 };
 
-export default function EditGeneralWorkspaceForm({
-  workspace,
-  resources
-}: {
-  workspace: SPECIFIC_WORKSPACE_RESPONSE;
-  resources: RESOURCE_TYPE[];
-}) {
+export default function EditGeneralWorkspaceForm({ wksp_id }: { wksp_id: string }) {
   const [opened, { toggle }] = useDisclosure(false);
   const { notificationSocket } = useStore((state) => state);
+  const { workspace, isPending: workspacePending } = useFetchWorkspaceById(wksp_id);
+  const { resources, isPending: resourcePending } = useGetAllResourcesByWorkspace(wksp_id);
+
   const form = useForm({
     initialValues: {
       wksp_id: workspace?.wksp_id,
@@ -163,6 +163,7 @@ export default function EditGeneralWorkspaceForm({
       }
     });
   };
+  if (workspacePending || resourcePending) return <TabSkeleton />;
   return (
     <div>
       <div className='grid justify-items-center'>

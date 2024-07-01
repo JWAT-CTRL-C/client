@@ -1,10 +1,8 @@
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect } from 'react';
-import { FaEdit } from 'react-icons/fa';
 
 import DefaultLayout from '@/components/layouts/DefaultLayout';
 import WorkspaceSkeleton from '@/components/skeletons/workspaceSkeleton';
@@ -18,10 +16,9 @@ import { useFetchWorkspaceById } from '@/libs/hooks/queries/workspaceQueries';
 import { prefetchMyInfo } from '@/libs/prefetchQueries/user';
 import { fetchSpecificWorkspace } from '@/libs/prefetchQueries/workspace';
 import { NextPageWithLayout } from '@/pages/_app';
-import { Can } from '@/providers/AbilityProvider';
-import { subject } from '@casl/ability';
-import { Divider, Spoiler, Stack, Tooltip } from '@mantine/core';
+import { Divider, Spoiler, Stack } from '@mantine/core';
 import { dehydrate, QueryClient } from '@tanstack/react-query';
+import { prefetchWorkspaceBlogs } from '@/libs/prefetchQueries/blog';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   setContext(context);
@@ -29,7 +26,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const queryClient = new QueryClient();
   const isExist = await Promise.all([
     fetchSpecificWorkspace(queryClient, wksp_id),
-    prefetchMyInfo(queryClient)
+    prefetchMyInfo(queryClient),
+    prefetchWorkspaceBlogs(queryClient, wksp_id)
   ]).then((res) => res[0]);
   return {
     props: {
@@ -85,7 +83,7 @@ const Page: NextPageWithLayout = () => {
               {workspace?.wksp_desc}
             </Spoiler>
           </div>
-          <Can I='edit' this={subject('workspace', workspace)}>
+          {/* <Can I='edit' this={subject('workspace', workspace)}>
             <Tooltip label='Edit workspace' color='black' withArrow>
               <Link
                 className='mr-4 flex items-center gap-3 justify-self-end rounded-md border-0 bg-violet-700 bg-opacity-75 px-4 py-2 text-white'
@@ -94,7 +92,7 @@ const Page: NextPageWithLayout = () => {
                 <span className='hidden md:inline'>Edit</span>
               </Link>
             </Tooltip>
-          </Can>
+          </Can> */}
         </div>
         <Stack h={300} bg='var(--mantine-color-body)' align='stretch' justify='flex-start' gap='xl'>
           <Divider label='Resources' labelPosition='left' />
@@ -102,7 +100,7 @@ const Page: NextPageWithLayout = () => {
           <Divider label='Notifications' labelPosition='left' />
           <NotificationList />
           <Divider label='Blogs' labelPosition='left' />
-          <BlogList blogs={workspace?.blogs} />
+          <BlogList />
           <Divider />
           <MemberList members={workspace?.users} />
         </Stack>

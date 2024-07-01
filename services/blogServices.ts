@@ -186,3 +186,13 @@ export const fetchBlogsForMasterAdmin = async (page: number): Promise<BlogRespon
       });
   });
 };
+export const fetchBlogsForWorkspace = async (wksp_id: string): Promise<BlogResponse[]> => {
+  return new Promise((resolve, reject) => {
+    api
+      .get<BlogResponse[]>(`/blogs/for/workspace/${wksp_id}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => {
+        reject(new Error(error.response?.data?.message || error.message));
+      });
+  });
+};

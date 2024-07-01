@@ -39,7 +39,7 @@ export const useGetAllUsers = () => {
     users: data!,
     isError,
     isFetching,
-    isPending
+    userPending: isPending
   };
 };
 
