@@ -17,6 +17,7 @@ import {
   Flex,
   Group,
   Loader,
+  LoadingOverlay,
   Pagination,
   rem,
   Space,
@@ -39,6 +40,8 @@ import IconColumn from '@/components/blogTable/iconColumn';
 import ShowContent from '@/components/EditorContent';
 import { userAttribute } from '@/libs/constants/userAttribute';
 import { notificationAttribute } from '@/libs/constants/notiAttribute';
+import { useRemoveNotificationById } from '@/libs/hooks/mutations/notiMutations';
+import { ErrorResponseType } from '@/libs/types';
 
 const NotificationCompTable = ({
   dataTable,
@@ -55,7 +58,7 @@ const NotificationCompTable = ({
 }) => {
   const [tableValues, setTableValues] = useState<Noti[]>([]);
   // hook delete blog:
-  const { removeBlog, isPending, isError: isErrorRemoveBlog, errorMessage } = useRemoveBlogById();
+  const { removeNotification, isPending, isError: isErrorRemove } = useRemoveNotificationById();
   const theme = useMantineTheme();
   const router = useRouter();
   const [activePage, setPage] = useState(currentPage);
@@ -86,9 +89,6 @@ const NotificationCompTable = ({
       size: 300,
 
       cell: ({ row }) => <ShowContent className='line-clamp-2' content={row.original.noti_cont} />
-      // filterFn: (row, columnId, filterValue) => {
-      //   return row.original.blog_tle.toLowerCase().includes(filterValue.toLowerCase());
-      // }
     },
     {
       accessorKey: 'user',
@@ -126,9 +126,12 @@ const NotificationCompTable = ({
         <Flex justify='center'>
           <Tooltip label='Delete'>
             <div>
-              <IconColumn isRed={true} blog_id={row.original.noti_id} onClick={handleDelete}>
-                <FaRegTrashAlt />
-              </IconColumn>
+              {!isPending && (
+                <IconColumn isRed={true} blog_id={row.original.noti_id} onClick={handleDelete}>
+                  <FaRegTrashAlt />
+                </IconColumn>
+              )}
+              {isPending && <Loader />}
             </div>
           </Tooltip>
         </Flex>
@@ -161,13 +164,14 @@ const NotificationCompTable = ({
     setPage(currentPage);
   }, [currentPage]);
 
-  const handleDelete = (blog_id: string) => {
-    removeBlog(blog_id, {
+  const handleDelete = (noti_id: string) => {
+    removeNotification(noti_id, {
       onSuccess: () => {
-        showSuccessToast('Delete blog successfully!');
+        showSuccessToast('Delete Notification successfully!');
       },
       onError: (error) => {
-        showErrorToast(`${Array.isArray(error) ? error.join('\n') : error}`);
+        const message = (error as ErrorResponseType).response.data.message;
+        showErrorToast(`${Array.isArray(message) ? message.join('\n') : message}`);
       }
     });
   };

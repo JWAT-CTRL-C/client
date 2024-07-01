@@ -34,11 +34,19 @@ export const getUnreadAmount = () => {
   });
 };
 
-
 export const fetchNotificationsAdmin = (pageParam: number) => {
   return new Promise<NotificationResponseWithPagination>((resolve, reject) => {
     api
       .get(`/notifications/for/admin?page=${pageParam}`)
+      .then((response) => resolve(response.data))
+      .catch((error) => reject(error));
+  });
+};
+
+export const removeNotificationById = async (noti_id: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    api
+      .delete(`/notifications/${noti_id}`)
       .then((response) => resolve(response.data))
       .catch((error) => reject(error));
   });
