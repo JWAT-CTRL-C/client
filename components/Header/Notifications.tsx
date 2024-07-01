@@ -24,20 +24,19 @@ const Notifications = () => {
       opened={opened}
       onChange={setOpened}
       closeOnClickOutside
-      closeOnItemClick
+      closeOnItemClick={false}
       shadow='md'
-      offset={10}
-      keepMounted
-      withArrow
+      // keepMounted
       width={400}
+      zIndex={100}
       position='bottom'
       transitionProps={{ transition: 'fade-down', duration: 150 }}>
       <Menu.Target>
-        <Indicator inline label={unreadAmount} disabled={!unreadAmount} size={16} className='cursor-pointer'>
+        <Indicator label={unreadAmount} disabled={!unreadAmount} size={16} className='cursor-pointer'>
           <Tooltip label='Notifications' openDelay={500}>
-            <div>
+            <span>
               <FaBell className='size-6 max-md:size-5' />
-            </div>
+            </span>
           </Tooltip>
         </Indicator>
       </Menu.Target>
