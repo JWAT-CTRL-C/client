@@ -11,11 +11,6 @@ export interface IRecentNotificationsProps {}
 export default function RecentNotifications({}: IRecentNotificationsProps) {
   const [withoutSys, setWithoutSys] = useState(false);
   const { notifications, isPending } = useFetchNotifications(withoutSys ? 1 : 0);
-  console.log(notifications);
-  // const showNotificationsList = notifications?.filter((notification) =>
-  //   withoutSys ? !_.isNil(notification.user) : true
-  // );
-  // console.log(showNotificationsList);
   return (
     <div className='px-1 py-2 md:px-3 md:py-5'>
       <div className='flex-end w-full gap-3 pr-5'>
