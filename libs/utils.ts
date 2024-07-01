@@ -11,7 +11,7 @@ import moment from 'moment-timezone';
 import { createBreakpoint } from 'react-use';
 
 const today = new Date();
-const offset = today.getTimezoneOffset();
+const offset = -7 * 60; // UTC+7
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
