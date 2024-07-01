@@ -1,3 +1,4 @@
+import { memberAttribute } from '@/libs/constants/memberAttribute';
 import { useMyInfo } from '@/libs/hooks/queries/userQueries';
 import { removeUserAuth } from '@/libs/utils';
 import { Avatar, Menu, Skeleton, Switch, rem, useMantineColorScheme, useMantineTheme } from '@mantine/core';
@@ -45,6 +46,7 @@ const AvatarComp = () => {
         <Menu.Label>
           {user?.fuln} #{user?.user_id}
         </Menu.Label>
+        <Menu.Label c={memberAttribute[user?.role].color}>{memberAttribute[user?.role].roleName}</Menu.Label>
         <Menu.Divider />
         <Menu.Label>Dark mode</Menu.Label>
         <Menu.Item closeMenuOnClick={false}>
